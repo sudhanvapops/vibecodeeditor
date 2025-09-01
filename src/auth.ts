@@ -8,18 +8,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // Functions that run when signIn trigger
     callbacks: {
         // user and account are JavaScript objects representing the current login attempt.
+        // They are pre given by NextAuth user and account
         async signIn({ user, account }) {
+            console.log("🔍 SignIn callback triggered")
+            console.log("👤 User:", user)
+            console.log("🔗 Account:", account)
 
             // To check if user exist or its account
-            if (!user || !account) return false
+            if (!user || !account) {
+                console.log("❌ No user or account provided")
+                return false
+            }
 
-            // if already exist 
+           try {
+             // if already exist 
             const exisitingUser = await db.user.findUnique({
                 where: { email: user.email! }
             })
+            console.log("🔍 Existing user:", exisitingUser ? "Found" : "Not found")
 
             // prisma related queries
             if (!exisitingUser) {
+                console.log("➕ Creating new user...")
                 const newUser = await db.user.create({
                     data: {
                         // userid is auto generated
@@ -44,10 +54,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         }
                     }
                 })
-
-                if (!newUser) return false
+                console.log("✅ New user created:", newUser.id)
+                if (!newUser){ 
+                    console.log("❌ Failed to create new user")
+                    return false
+                }
             } else {
-
+                console.log("🔍 Checking existing account...")
                 const exisitingAccount = await db.account.findUnique({
                     where: {
                         // Prisma “compound unique” things query -> comes from @@unique
@@ -59,6 +72,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 })
 
                 if (!exisitingAccount) {
+                    console.log("➕ Creating new account for existing user...")
                     await db.account.create({
                         data: {
                             userId: exisitingUser.id,
@@ -67,7 +81,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             providerAccountId: account.providerAccountId,
                             refreshToken: account.refresh_token,
                             accessToken: account.access_token,
-                            expiresAt: account.expires_at, 
+                            expiresAt: account.expires_at,
                             tokenType: account.token_type,
                             scope: account.scope,
                             idToken: account.id_token,
@@ -75,47 +89,69 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             sessionState: account.session_state
                         }
                     })
+                    console.log("✅ New account created for existing user")
+                }else {
+                        console.log("✅ Account already exists")
                 }
 
             }
-
+            console.log("✅ SignIn callback completed successfully")
             return true
+           } catch (error) {
+                console.error("❌ Error in signIn callback:", error)
+                return false
+           }
         },
 
 
-        async jwt({token}) {
+        async jwt({ token }) {
             // sub means subject 
             // starting there is only sub
 
-            if(!token.sub) return token
+            console.log("🔍 JWT callback triggered")
+            console.log("🎫 Token sub:", token.sub)
 
-            const exisitingUser = await getUserById(token.sub)
-            if (!exisitingUser) return token
+            if (!token.sub) return token
 
-            token.name = exisitingUser.name
-            token.email = exisitingUser.email
-            token.role = exisitingUser.role
+            try {
+                const existingUser = await getUserById(token.sub)
+                if (!existingUser) {
+                    console.log("❌ User not found in JWT callback")
+                    return token
+                }
 
-            return token
-            
+                token.name = existingUser.name
+                token.email = existingUser.email
+                token.role = existingUser.role
+
+                console.log("✅ JWT token updated with user data")
+                return token
+            } catch (error) {
+                console.error("❌ Error in JWT callback:", error)
+                return token
+            }
+
         },
 
 
-        async session({session,token}){
+        async session({ session, token }) {
 
-            if(token.sub && session.user){
+            console.log("🔍 Session callback triggered")
+            
+            if (token.sub && session.user) {
                 session.user.id = token.sub
             }
 
-            if(token.sub && session.user){
+            if (token.role && session.user) {
                 session.user.role = token.role
             }
 
+            console.log("✅ Session updated:", session.user.id)
             return session
         }
-        
+
     },
     secret: process.env.AUTH_SECRET,
-    adapter: PrismaAdapter(db),
+    // adapter: PrismaAdapter(db),
     ...authConfig
 })
