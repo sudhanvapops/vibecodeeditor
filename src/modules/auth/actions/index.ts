@@ -7,7 +7,7 @@ import { db } from "@/lib/db"
 export const getUserById = async (id:string) => {
     try {
         const user = await db.user.findUnique({
-            where: {id:id},
+            where: {id},
             // this populates account 
             include:{
                 accounts:true
@@ -30,6 +30,7 @@ export const getAccountByUserId = async (userId:string) => {
         })
 
         return account
+        
     } catch (error) {
         console.log(`Error in getAccountByUserId: ${error}`)        
         return null
