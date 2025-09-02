@@ -9,6 +9,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     callbacks: {
         // user and account are JavaScript objects representing the current login attempt.
         // They are pre given by NextAuth user and account
+        // When Ever SignIn Happens This function is called
+        // Callback signIn (inside [...nextauth].ts)
+        // Runs after provider login but before session is created.
         async signIn({ user, account }) {
             console.log("🔍 SignIn callback triggered")
             console.log("👤 User:", user)
@@ -97,6 +100,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
             console.log("✅ SignIn callback completed successfully")
             return true
+
            } catch (error) {
                 console.error("❌ Error in signIn callback:", error)
                 return false
@@ -123,6 +127,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 token.name = existingUser.name
                 token.email = existingUser.email
                 token.role = existingUser.role
+
+                
 
                 console.log("✅ JWT token updated with user data")
                 return token
@@ -152,6 +158,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     },
     secret: process.env.AUTH_SECRET,
-    // adapter: PrismaAdapter(db),
+    adapter: PrismaAdapter(db),
+    session: { strategy: "jwt" },
     ...authConfig
 })
