@@ -39,6 +39,7 @@ export const getAccountByUserId = async (userId:string) => {
 
 
 export const currentUser = async () => {
+    // Returns a Session Object
     const user = await auth()
     return user?.user
 }

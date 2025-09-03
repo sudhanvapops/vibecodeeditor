@@ -36,23 +36,27 @@ export default auth((req: NextRequest & { auth: any }) => {
         isAuthRoute
     })
 
+    // Main Intnetion of the function / logic 
 
+    // /api/auth -> its for auth.js auth routes
     if (isApiAuthRoute) {
         console.log("✅ Allowing API auth route")
         return NextResponse.next()
     }
 
     // if goes to signIn page
+    // /auth/signIn -> for signIn page
     if (isAuthRoute) { // or you can isAuthRoute && isLoggedIn
         // And if Logged In
         if (isLoggedIn) {
             console.log("🔄 Redirecting logged-in user from auth route to home")
-            return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
+            return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl)) // "/"
         }
         console.log("✅ Allowing access to auth route")
         return NextResponse.next();
     }
 
+    
     if (!isLoggedIn && !isPublicRoute) {
         console.log("🚫 Redirecting unauthenticated user to sign-in")
         return NextResponse.redirect(new URL("/auth/signIn", nextUrl))

@@ -21,11 +21,11 @@ const UserButton = () => {
   return (
     <DropdownMenu>
         
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger className="cursor-pointer">
         <div className={cn("relative rounded-full")}>
           <Avatar>
             <AvatarImage src={user?.image!} alt={user?.name!} />
-            <AvatarFallback className="bg-red-500">
+            <AvatarFallback className="bg-green-500">
               <User className="text-white" />
             </AvatarFallback>
           </Avatar>

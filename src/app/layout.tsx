@@ -25,7 +25,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
+  // This is server side fecthing session 
   const session = await auth()
   return (
     <SessionProvider session={session}>

@@ -14,7 +14,7 @@ export const protectedRoutes: string[] = [
  */
 
 export const authRoutes: string[] = [
-    "/auth/signIn", // Added leading slash
+    "/auth/signIn",
 ]
 
 

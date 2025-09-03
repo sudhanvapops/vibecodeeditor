@@ -32,7 +32,7 @@ model Account {
   sessionState      String? @map("session_state")
 
   // This is a relation 
-  // If User is deleted This accounts also deleted
+  // If User is deleted This accounts also deleted onDelete
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])

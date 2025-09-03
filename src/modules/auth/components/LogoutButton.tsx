@@ -9,10 +9,12 @@ import { signOut } from 'next-auth/react';
 // When you click it it logouts
 const LogoutButton = ({children}:LogoutButtonProps) => {
     const router = useRouter();
+
     const onLogout = async()=>{
         await signOut()
         router.refresh()
     }
+    
   return (
     <span className='cursor-pointer' onClick={onLogout}>
         {children}

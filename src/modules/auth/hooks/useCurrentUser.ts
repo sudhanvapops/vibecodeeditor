@@ -1,5 +1,5 @@
-// This is for client to get user
 
+// This is for client to get user
 import { useSession } from "next-auth/react";
 
 export const useCurrentUser = () => {

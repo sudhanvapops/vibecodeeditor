@@ -13,6 +13,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Callback signIn (inside [...nextauth].ts)
         // Runs after provider login but before session is created.
         async signIn({ user, account }) {
+
             console.log("🔍 SignIn callback triggered")
             console.log("👤 User:", user)
             console.log("🔗 Account:", account)
@@ -24,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             }
 
            try {
-             // if already exist 
+            
             const exisitingUser = await db.user.findUnique({
                 where: { email: user.email! }
             })
@@ -57,11 +58,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         }
                     }
                 })
-                console.log("✅ New user created:", newUser.id)
+                
                 if (!newUser){ 
                     console.log("❌ Failed to create new user")
                     return false
                 }
+
+                console.log("✅ New user created:", newUser.id)
+
             } else {
                 console.log("🔍 Checking existing account...")
                 const exisitingAccount = await db.account.findUnique({
@@ -107,10 +111,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
            }
         },
 
+                // ↓ next this triggers
+                // jwt and session independently and simultaniosly triggers wen auth() is called
 
+
+        // ! JWT is created → jwt callback runs (can enrich token).
         async jwt({ token }) {
             // sub means subject 
-            // starting there is only sub
+            // its like id 
+            // NextAuth automatically sets this to the user’s id from your database (after sign-in).
 
             console.log("🔍 JWT callback triggered")
             console.log("🎫 Token sub:", token.sub)
@@ -139,10 +148,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         },
 
+        // Session is called after jwt 
+        // This is to expose things to the client side or frontend side
 
+        // ! Session is returned → session callback runs (can enrich session)
         async session({ session, token }) {
 
             console.log("🔍 Session callback triggered")
+            
+            // Adding role and id to session
             
             if (token.sub && session.user) {
                 session.user.id = token.sub
