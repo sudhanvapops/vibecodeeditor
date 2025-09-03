@@ -14,6 +14,8 @@ ui.chaicode.com
 Undraw
  – Open-source illustrations for personal and commercial use.
 
- 
+
 Icon Used: 
     <a href="https://www.flaticon.com/free-icons/web-development" title="web development icons">Web development icons created by surang - Flaticon</a>
+
+    <a target="_blank" href="https://icons8.com/icon/4Z2nCrz5iPY2/github">GitHub</a> icon by <a target="_blank" href="https://icons8.com">Icons8</a>
