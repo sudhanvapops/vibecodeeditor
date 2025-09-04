@@ -2,6 +2,7 @@
 
 import { db } from "@/lib/db"
 import { currentUser } from "@/modules/auth/actions"
+import { revalidatePath } from "next/cache"
 
 // all the playGround data of currentl loged in user
 export const getAllPlaygroundForUser = async ()=>{
@@ -24,3 +25,99 @@ export const getAllPlaygroundForUser = async ()=>{
         console.log(`Error In getAllPlaygroundForUser: ${error}`)
     }
 }
+
+export const createPlayground = async (data:{
+    title: string,
+    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
+    description?: string
+}) => {
+    const user = await currentUser()
+    // Comes from Selecting Modal 
+    const {template,title,description} = data
+
+    try {
+        const playground = await db.playground.create({
+            data:{
+                title,
+                description,
+                template,
+                userId: user?.id!
+            }
+        })
+        console.log(`Playground: ${playground}`);
+        
+        return playground
+    } catch (error) {
+        console.log(`Error in createPlayground: ${error}`)
+    }
+
+}
+
+export const deleteProjectById = async (id:string) => {
+    try {
+        await db.playground.delete({
+            where:{id}
+        })
+
+        // It’s a Next.js server utility that lets you manually invalidate cached data and trigger a re-fetch/re-render for a specific path
+        // Server-only
+        revalidatePath("/dashboard")
+    } catch (error) {
+        console.log(`Error in deleteProjectById: ${error}`)
+    }
+}
+
+export const editProjectById = async (id:string,data:{
+    title: string,
+    description?: string
+}) => {
+    try {
+        await db.playground.update({
+            where:{
+                id,
+            },
+            data
+        })
+
+        revalidatePath("/dashboard")
+    } catch (error) {
+        console.log(`Error in editProjectById: ${error}`)
+    }
+}
+
+export const duplicateProjectById = async (id:string) => {
+    try {
+        const originalPlaygroundData = await db.playground.findUnique({
+            where:{
+                id
+            }
+            // todo add template file
+        })
+
+        console.log(`originalPlaygroundData: ${originalPlaygroundData}`)
+
+        if(!originalPlaygroundData){
+            throw new Error("Original playground not found")
+        }
+
+        const duplicatedPlayground = await db.playground.create({
+            data:{
+                title: `${originalPlaygroundData.title} (copy)`,
+                description: originalPlaygroundData.description,
+                template: originalPlaygroundData.template,
+                userId: originalPlaygroundData.userId
+
+                // todo: template file
+            }
+        })
+
+        console.log(`duplicatedPlayground: ${duplicatedPlayground}`)
+        revalidatePath("/dashboard")
+
+        return duplicatedPlayground
+
+    } catch (error) {
+        console.log(`Error in duplicateProjectById: ${error}`)
+    }
+}
+
