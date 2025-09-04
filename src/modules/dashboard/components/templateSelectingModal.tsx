@@ -184,7 +184,9 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
 
 
     const handleCreateProject = () => {
+        
         if (selectedTemplate) {
+
             const templateMap: Record<string, "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR"> = {
                 react: "REACT",
                 nextjs: "NEXTJS",
