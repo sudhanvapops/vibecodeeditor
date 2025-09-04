@@ -44,7 +44,7 @@ export const createPlayground = async (data:{
                 userId: user?.id!
             }
         })
-        console.log(`Playground: ${playground}`);
+        console.log(`Playground Created: ${playground.title} ${playground.template}`);
         
         return playground
     } catch (error) {
@@ -55,12 +55,13 @@ export const createPlayground = async (data:{
 
 export const deleteProjectById = async (id:string) => {
     try {
-        await db.playground.delete({
+        const res = await db.playground.delete({
             where:{id}
         })
 
         // It’s a Next.js server utility that lets you manually invalidate cached data and trigger a re-fetch/re-render for a specific path
         // Server-only
+        console.log(`\nProject deleted ${res.title}\n`)
         revalidatePath("/dashboard")
     } catch (error) {
         console.log(`Error in deleteProjectById: ${error}`)
@@ -72,7 +73,7 @@ export const editProjectById = async (id:string,data:{
     description?: string
 }) => {
     try {
-        await db.playground.update({
+        const res = await db.playground.update({
             where:{
                 id,
             },
@@ -80,6 +81,8 @@ export const editProjectById = async (id:string,data:{
         })
 
         revalidatePath("/dashboard")
+        console.log(`Project Updated: ${res.title}`);
+
     } catch (error) {
         console.log(`Error in editProjectById: ${error}`)
     }
@@ -111,7 +114,7 @@ export const duplicateProjectById = async (id:string) => {
             }
         })
 
-        console.log(`duplicatedPlayground: ${duplicatedPlayground}`)
+        console.log(`PlayGround Duplicated: ${duplicatedPlayground.title}`)
         revalidatePath("/dashboard")
 
         return duplicatedPlayground

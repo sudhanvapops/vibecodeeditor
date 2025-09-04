@@ -9,10 +9,34 @@ import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { toast } from "sonner";
 import TemplateSelectingModal from "./templateSelectingModal";
+import { createPlayground } from "../actions";
 
 const AddNewButton = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<{
+    title: string,
+    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
+    description?: string,
+  } | null>(null)
+  const router = useRouter()
+
+
+  // todo Make a type 
+  const handleSubmit = async (data: {
+    title: string,
+    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
+    description?: string,
+  }) => {
+    setSelectedTemplate(data)
+
+    const res = await createPlayground(data)
+    toast.success("Playground Created Successfully")
+    setIsModalOpen(false)
+    // Removed router.push() cause wanted to open in new tab
+    window.open(`/playground/${res?.id}`, "_blank");
+    router.refresh()
+  }
 
   return (
     <>
@@ -48,14 +72,14 @@ const AddNewButton = () => {
           />
         </div>
       </div>
-      
-    {/* // Todo Implement Template Selecting Model here */}
+
+      {/* // Todo Implement Template Selecting Model here */}
 
       {/*//  ! Can Be Improved */}
       <TemplateSelectingModal
         isOpen={isModalOpen}
-        onClose={()=>setIsModalOpen(false)}
-        onSubmit={()=>{}}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleSubmit}
 
       />
 
