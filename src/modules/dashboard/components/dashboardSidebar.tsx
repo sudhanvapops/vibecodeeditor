@@ -40,13 +40,14 @@ import {
 } from "@/components/ui/sidebar"
 
 import Image from "next/image"
+import { ThemeToggle } from "@/components/ui/themeToggle"
 
 
 // Define the interface for a single playground item, icon is now a string
 interface PlaygroundData {
   id: string
   name: string
-  icon: string 
+  icon: string
   starred: boolean
 }
 
@@ -64,7 +65,7 @@ const lucideIconMap: Record<string, LucideIcon> = {
 }
 
 
-export default function  DashboardSidebar({ initialPlaygroundData }: { initialPlaygroundData: PlaygroundData[] }) {
+export default function DashboardSidebar({ initialPlaygroundData }: { initialPlaygroundData: PlaygroundData[] }) {
 
   const pathname = usePathname()
   const [starredPlaygrounds, setStarredPlaygrounds] = useState(initialPlaygroundData.filter((p) => p.starred))
@@ -72,11 +73,14 @@ export default function  DashboardSidebar({ initialPlaygroundData }: { initialPl
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="border-1 border-r">
+              <div className="flex flex-row-reverse">
+                <ThemeToggle />
+              </div>
       <SidebarHeader>
         <div className="flex items-center gap-2 px-4 py-3 justify-center">
           <Image src={"/logo.png"} alt="logo" height={60} width={60} />
         </div>
-       
+
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -97,7 +101,7 @@ export default function  DashboardSidebar({ initialPlaygroundData }: { initialPl
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-          
+
           </SidebarMenu>
         </SidebarGroup>
 
