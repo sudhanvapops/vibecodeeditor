@@ -8,8 +8,10 @@ import Image from "next/image"
 import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { toast } from "sonner";
+import TemplateSelectingModal from "./templateSelectingModal";
 
 const AddNewButton = () => {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
@@ -48,6 +50,15 @@ const AddNewButton = () => {
       </div>
       
     {/* // Todo Implement Template Selecting Model here */}
+
+      {/*//  ! Can Be Improved */}
+      <TemplateSelectingModal
+        isOpen={isModalOpen}
+        onClose={()=>setIsModalOpen(false)}
+        onSubmit={()=>{}}
+
+      />
+
     </>
   )
 }
