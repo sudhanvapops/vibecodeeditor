@@ -44,6 +44,7 @@ import { useState } from "react"
 import { MoreHorizontal, Edit3, Trash2, ExternalLink, Copy, Download, Eye } from "lucide-react"
 
 import { toast } from "sonner"
+import { MarkedToggleButton } from "./MarkedToggleButton"
 
 
 interface ProjectTableProps {
@@ -215,7 +216,8 @@ export default function ProjectTable({
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem asChild>
-                        {/* <MarkedToggleButton markedForRevision={project.Starmark[0]?.isMarked} id={project.id} /> */}
+                        {/* REf is passed automatically by ShadCn  */}
+                        <MarkedToggleButton markedForRevision={project.starMark[0]?.isMarked ?? false} id={project.id} />
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link href={`playground/${project.id}`} className="flex items-center">
