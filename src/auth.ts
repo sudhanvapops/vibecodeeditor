@@ -152,12 +152,24 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // This is to expose things to the client side or frontend side
 
         // ! Session is returned → session callback runs (can enrich session)
-        async session({ session, token }) {
+        // for now
+        // @ts-ignore
+        async session({ session, token, user }) {
 
             console.log("🔍 Session callback triggered")
             
-            // Adding role and id to session
+            // forcing logout if no user was found
+            const dbUser = await db.user.findUnique({
+                where:{
+                    id: token.sub
+                }
+            })
+
+            // You can’t directly return null in session callback.
+            // You can extend types 
+            if (!dbUser) return null // forces signOut
             
+            // Adding role and id to session
             if (token.sub && session.user) {
                 session.user.id = token.sub
             }
