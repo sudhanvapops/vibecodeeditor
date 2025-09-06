@@ -50,7 +50,9 @@ export async function GET(req: NextRequest,{params}:{params:Promise<{id:string}>
 
         if(!validateJsonStructure(result.items)) return NextResponse.json({error:"Invalid JSON Structure"},{status: 500})    
 
-        await fs.unlink(outputFile)
+        // ! Uncomment it after 
+        // Store the json and call it from db next time 
+        // await fs.unlink(outputFile)
 
         return NextResponse.json({
             success: true,
@@ -58,6 +60,7 @@ export async function GET(req: NextRequest,{params}:{params:Promise<{id:string}>
         },{
             status: 200
         })
+
 
     } catch (error) {
         console.error(`Error generating template JSON api: ${error}`)

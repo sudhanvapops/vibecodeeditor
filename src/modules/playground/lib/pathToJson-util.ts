@@ -228,6 +228,7 @@ async function processDirectory(
  * @param options - Scanning options
  * @returns Promise resolving when the file has been written
  */
+// todo: Reorder json for to show folder first and then files
 export async function saveTemplateStructureToJson(
   templatePath: string, 
   outputPath: string,
