@@ -3,41 +3,72 @@
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { TemplateFileTree } from '@/modules/playground/components/playgroundExplorer'
+import { useFileExplorer } from '@/modules/playground/hooks/useFileExplorer'
 import { usePlayground } from '@/modules/playground/hooks/usePlayground'
+import { TemplateFile } from '@/modules/playground/lib/pathToJson-util'
 import { Separator } from '@radix-ui/react-separator'
 import { useParams } from 'next/navigation'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const MainPlaygroudPage = () => {
 
   const { id } = useParams<{ id: string }>()
   const { error, isLoading, playgroundData, templateData, saveTemplateData } = usePlayground(id)
+  const {
+    activeFileId,
+    closeAllFiles,
+    openFile,
+    openFiles,
+    setTemplateData,
+    setActiveFileId,
+    setPlaygroundId,
+    setOpenFiles
+  } = useFileExplorer()
 
 
-  const activeFile = "sample.txt"
+  useEffect(()=>{
+    setPlaygroundId(id)
+  },[id,setPlaygroundId])
 
-  const wrappedHandleAddFile = ()=>{}
-  const wrappedHandleAddFolder = ()=>{}
-  const wrappedHandleDeleteFile = ()=>{}
-  const wrappedHandleDeleteFolder = ()=>{}
-  const wrappedHandleRenameFile = ()=>{}
-  const wrappedHandleRenameFolder = ()=>{}
+  useEffect(() => {
+    
+    if (templateData && !openFiles.length){
+      setTemplateData(templateData)
+    }
+    
+  }, [templateData,setTemplateData,openFiles.length])
+  
+
+  const activeFile = openFiles.find((file)=>file.id === activeFileId)
+  const hasUnsavedChanges = openFiles.some((file)=>file.hasUnsavedChanges)
+
+  const handleFileSelect = (file:TemplateFile){
+    openFile(file)
+  }
+
+
+  const wrappedHandleAddFile = () => { }
+  const wrappedHandleAddFolder = () => { }
+  const wrappedHandleDeleteFile = () => { }
+  const wrappedHandleDeleteFolder = () => { }
+  const wrappedHandleRenameFile = () => { }
+  const wrappedHandleRenameFolder = () => { }
 
 
   return (
     <TooltipProvider>
       <>
-        <TemplateFileTree 
+        <TemplateFileTree
           data={templateData}
-          onFileSelect={()=>{}}
+          onFileSelect={handleFileSelect}
           selectedFile={activeFile}
           title="File Explorer"
-          onAddFile = {wrappedHandleAddFile}
-          onAddFolder = {wrappedHandleAddFolder}
-          onDeleteFile = {wrappedHandleDeleteFile}
-          onDeleteFolder = {wrappedHandleDeleteFolder}
-          onRenameFile = {wrappedHandleRenameFile}
-          onRenameFolder = {wrappedHandleRenameFolder}
+          onAddFile={wrappedHandleAddFile}
+          onAddFolder={wrappedHandleAddFolder}
+          onDeleteFile={wrappedHandleDeleteFile}
+          onDeleteFolder={wrappedHandleDeleteFolder}
+          onRenameFile={wrappedHandleRenameFile}
+          onRenameFolder={wrappedHandleRenameFolder}
         />
         <SidebarInset>
 
