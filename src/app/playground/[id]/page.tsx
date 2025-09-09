@@ -2,10 +2,12 @@
 
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { Separator } from '@/components/ui/separator'
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import PlaygroundEditor from '@/modules/playground/components/playgroundEditor'
 import { TemplateFileTree } from '@/modules/playground/components/playgroundExplorer'
 import { useFileExplorer } from '@/modules/playground/hooks/useFileExplorer'
 import { usePlayground } from '@/modules/playground/hooks/usePlayground'
@@ -66,7 +68,7 @@ const MainPlaygroudPage = () => {
     <TooltipProvider>
       <>
         <TemplateFileTree
-          data={templateData}
+          data={templateData!}
           onFileSelect={handleFileSelect}
           selectedFile={activeFile}
           title="File Explorer"
@@ -138,7 +140,7 @@ const MainPlaygroudPage = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => setIsPreviewVisible(!isPreviewVisible)}
+                      onClick={() => setisPreviewVisible(!isPreviewVisible)}
                     >
                       {isPreviewVisible ? "Hide" : "Show"} Preview
                     </DropdownMenuItem>
@@ -205,7 +207,18 @@ const MainPlaygroudPage = () => {
                   </div>
 
                   <div className='flex-1 flex'>
-                        {activeFile?.content}
+                    <ResizablePanelGroup
+                      direction='horizontal'
+                      className='h-full'
+                    >
+                      <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
+                          <PlaygroundEditor 
+                            activeFile={activeFile}
+                            content={activeFile?.content || ""}
+                            onContentChange={()=>{}}
+                          />
+                      </ResizablePanel>
+                    </ResizablePanelGroup>
                   </div>
 
                 </div>
