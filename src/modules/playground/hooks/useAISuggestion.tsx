@@ -173,4 +173,12 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
         });
     }, []);
 
+    return {
+        ...state,
+        toggleEnabled,
+        fetchSuggestion,
+        acceptSuggestion,
+        rejectSuggestion,
+        clearSuggestion,
+    }
 }
