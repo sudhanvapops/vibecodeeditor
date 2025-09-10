@@ -507,7 +507,7 @@ const MainPlaygroudPage = () => {
                                 writeFileSync={writeFileSync}
                                 isLoading={containerLoading}
                                 error={containerError}
-                                serverUrl={serverUrl}
+                                serverUrl={serverUrl!} // ? Check it 
                                 forceResetup={false}
                               />
                             </ResizablePanel>
