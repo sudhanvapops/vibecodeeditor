@@ -10,13 +10,13 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import LoadingStep from '@/modules/playground/components/loader'
 import PlaygroundEditor from '@/modules/playground/components/playgroundEditor'
 import { TemplateFileTree } from '@/modules/playground/components/playgroundExplorer'
+import ToggleAI from '@/modules/playground/components/toogleAi'
 import { useFileExplorer } from '@/modules/playground/hooks/useFileExplorer'
 import { usePlayground } from '@/modules/playground/hooks/usePlayground'
 import { findFilePath } from '@/modules/playground/lib'
 import { TemplateFile, TemplateFolder } from '@/modules/playground/lib/pathToJson-util'
 import WebContainerPreview from '@/modules/webcontainers/components/webContainerPreview'
 import { useWebContainer } from '@/modules/webcontainers/hooks/useWebContainer'
-import { WebContainer } from '@webcontainer/api'
 import { AlertCircle, Bot, FileText, FolderOpen, Save, Settings, X } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
@@ -26,7 +26,7 @@ const MainPlaygroudPage = () => {
 
   const { id } = useParams<{ id: string }>()
   const { error, isLoading, playgroundData, templateData, saveTemplateData } = usePlayground(id)
-  const [isPreviewVisible, setisPreviewVisible] = useState(false)
+  const [isPreviewVisible, setisPreviewVisible] = useState(true)
 
   const {
     activeFileId,
@@ -401,9 +401,11 @@ const MainPlaygroudPage = () => {
                   <TooltipContent>Save All (Ctrl+Shift+S)</TooltipContent>
                 </Tooltip>
 
-                <Button variant={"default"} size={"icon"}>
-                  <Bot className='size-4' />
-                </Button>
+               <ToggleAI
+                isEnabled = {true}
+                onToggle = {()=>{}}
+                suggestionLoading={false}
+               /> 
 
 
                 <DropdownMenu>
