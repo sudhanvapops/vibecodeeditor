@@ -63,6 +63,7 @@ export const useWebContainer = ({ templateData }: useWebContainerProps): useWebC
             if (instance) {
                 instance.teardown()
             }
+            // destroy() // ? Cant I ?
         }
 
     }, [])
