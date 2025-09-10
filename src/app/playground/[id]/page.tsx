@@ -236,8 +236,8 @@ const MainPlaygroudPage = () => {
                       {
                         isPreviewVisible && (
                           <>
-                            <ResizableHandle>
-                              <ResizablePanel>
+                            <ResizableHandle />
+                              <ResizablePanel defaultSize={50} >
                                 <WebContainerPreview
                                   templateData={templateData}
                                   instance={instance}
@@ -248,7 +248,6 @@ const MainPlaygroudPage = () => {
                                   forceResetup={false}
                                 />
                               </ResizablePanel>
-                            </ResizableHandle>
                           </>
                         )
                       }
