@@ -143,6 +143,34 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
     }, [])
 
 
-    
+    const rejectSuggestion = useCallback((editor: any) => {
+        setState((currentState) => {
+            if (editor && currentState.decoration.length > 0) {
+                editor.deltaDecorations(currentState.decoration, [])
+            }
+
+            return {
+                ...currentState,
+                suggestion: null,
+                position: null,
+                decoration: []
+            }
+        })
+    }, []);
+
+
+    const clearSuggestion = useCallback((editor: any) => {
+        setState((currentState) => {
+            if (editor && currentState.decoration.length > 0) {
+                editor.deltaDecorations(currentState.decoration, []);
+            }
+            return {
+                ...currentState,
+                suggestion: null,
+                position: null,
+                decoration: [],
+            };
+        });
+    }, []);
 
 }
