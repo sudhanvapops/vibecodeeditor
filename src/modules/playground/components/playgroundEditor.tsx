@@ -12,12 +12,12 @@ interface PlaygroundEditorProps {
     content: string
     onContentChange: (value: string) => void
 
-    // suggestion: string | null
-    // suggestionLoading: boolean
-    // suggestionPosition: { line: number; column: number } | null
-    // onAcceptSuggestion: (editor: any, monaco: any) => void
-    // onRejectSuggestion: (editor: any) => void
-    // onTriggerSuggestion: (type: string, editor: any) => void
+    suggestion: string | null
+    suggestionLoading: boolean
+    suggestionPosition: { line: number; column: number } | null
+    onAcceptSuggestion: (editor: any, monaco: any) => void
+    onRejectSuggestion: (editor: any) => void
+    onTriggerSuggestion: (type: string, editor: any) => void
 
 }
 
@@ -25,12 +25,12 @@ interface PlaygroundEditorProps {
 const PlaygroundEditor = ({ activeFile,
     content,
     onContentChange,
-    // suggestion,
-    // suggestionLoading,
-    // suggestionPosition,
-    // onAcceptSuggestion,
-    // onRejectSuggestion,
-    // onTriggerSuggestion,
+    suggestion,
+    suggestionLoading,
+    suggestionPosition,
+    onAcceptSuggestion,
+    onRejectSuggestion,
+    onTriggerSuggestion,
 }: PlaygroundEditorProps) => {
 
     const editorRef = useRef<any>(null)
