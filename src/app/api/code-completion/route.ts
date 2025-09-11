@@ -113,7 +113,7 @@ function analyzeCodeContext(
 }
 
 
-
+// The Prompt 
 function buildPrompt(context: CodeContext, suggestionType: string): string {
     return `You are an expert code completion assistant. Generate a ${suggestionType} suggestion.
 
@@ -145,15 +145,19 @@ Generate suggestion:`;
 
 
 async function generateSuggestion(prompt: string): Promise<string> {
+
     try {
         const response = await fetch("http://localhost:11434/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
+                // ! Improve make an env 
                 model: "codellama:latest",
                 prompt,
                 stream: false,
                 option: {
+                    // IF this is high it can think out of context 
+                    // ? Read More
                     temperature: 0.7,
                     max_tokens: 300,
                 },
