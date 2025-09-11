@@ -4,7 +4,7 @@
     {
       "filename": "package",
       "fileExtension": "json",
-      "content": "{\r\n  \"name\": \"hono-nodejs-starter\",\r\n  \"type\": \"module\",\r\n  \"scripts\": {\r\n    \"dev\": \"tsx watch src/index.ts\"\r\n  },\r\n  \"dependencies\": {\r\n    \"@hono/node-server\": \"1.13.8\",\r\n    \"hono\": \"4.7.4\"\r\n  },\r\n  \"devDependencies\": {\r\n    \"@types/node\": \"22.13.9\",\r\n    \"tsx\": \"4.19.3\"\r\n  }\r\n}\r\n"
+      "content": "{\r\n  \"name\": \"hono-nodejs-starter\",\r\n  \"type\": \"module\",\r\n  \"scripts\": {\r\n    \"start\": \"tsx watch src/index.ts\"\r\n  },\r\n  \"dependencies\": {\r\n    \"@hono/node-server\": \"1.13.8\",\r\n    \"hono\": \"4.7.4\",\r\n    \"@types/node\": \"22.13.9\",\r\n    \"tsx\": \"4.19.3\"\r\n  }\r\n}"
     },
     {
       "filename": "README",
