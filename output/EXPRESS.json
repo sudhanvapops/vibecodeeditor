@@ -9,7 +9,7 @@
     {
       "filename": "package",
       "fileExtension": "json",
-      "content": "{\r\n  \"name\": \"express-simple-starter\",\r\n  \"private\": true,\r\n  \"scripts\": {\r\n    \"start\": \"nodemon index.js\"\r\n  },\r\n  \"dependencies\": {\r\n    \"express\": \"^4.18.2\",\r\n    \"nodemon\": \"^3.0.1\"\r\n  }\r\n}\r\n"
+      "content": "{\r\n  \"name\": \"express-simple-starter\",\r\n  \"private\": true,\r\n  \"scripts\": {\r\n    \"start\": \"nodemon --ext js,html index.js\"\r\n  },\r\n  \"dependencies\": {\r\n    \"express\": \"^4.18.2\",\r\n    \"nodemon\": \"^3.0.1\"\r\n  }\r\n}\r\n"
     },
     {
       "folderName": "pages",

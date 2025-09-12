@@ -127,3 +127,66 @@ Always provide clear, practical answers. Use proper code formatting when showing
     }
 
 }
+
+// Perplexity
+
+// interface ChatMessage {
+//     role: "system" | "user" | "assistant";
+//     content: string;
+// }
+
+// async function generateAIResponse(messages: ChatMessage[]): Promise<string> {
+//     const systemPrompt = `You are a helpful AI coding assistant. You help developers with:
+// - Code explanations and debugging
+// - Best practices and architecture advice  
+// - Writing clean, efficient code
+// - Troubleshooting errors
+// - Code reviews and optimizations
+
+// Always provide clear, practical answers. Use proper code formatting when showing examples.`;
+
+//     const fullMessages = [
+//         { role: "system" as const, content: systemPrompt },
+//         ...messages
+//     ];
+
+//     try {
+//         const response = await fetch("https://api.perplexity.ai/chat/completions", {
+//             method: "POST",
+//             headers: {
+//                 "Authorization": `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+//                 "Content-Type": "application/json",
+//             },
+//             body: JSON.stringify({
+//                 model: "sonar", // Select model by user preference
+//                 messages: fullMessages,
+//                 max_tokens: 1000,
+//                 temperature: 0.7, // Controls randomness (0-1)
+//                 top_p: 0.9, // Controls diversity
+//                 stream: false,
+//                 return_citations: false,
+//                 return_images: false,
+//                 return_related_questions: false,
+//                 presence_penalty: 0,
+//                 frequency_penalty: 0.1
+//             }),
+//         });
+
+//         if (!response.ok) {
+//             const errorData = await response.json().catch(() => ({}));
+//             throw new Error(`Perplexity API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+//         }
+
+//         const data = await response.json();
+        
+//         if (!data.choices?.[0]?.message?.content) {
+//             throw new Error("No response from Perplexity AI model");
+//         }
+
+//         return data.choices[0].message.content.trim();
+
+//     } catch (error) {
+//         console.error("AI generation error:", error);
+//         throw new Error("Failed to generate AI response");
+//     }
+// }
