@@ -11,7 +11,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // They are pre given by NextAuth user and account
         // When Ever SignIn Happens This function is called
         // Callback signIn (inside [...nextauth].ts)
-        // Runs after provider login but before session is created.
+        // Runs after provider login but before session/client side is created.
         async signIn({ user, account }) {
 
             console.log("🔍 SignIn callback triggered")
@@ -24,102 +24,104 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 return false
             }
 
-           try {
-            
-            const exisitingUser = await db.user.findUnique({
-                where: { email: user.email! }
-            })
-            console.log("🔍 Existing user:", exisitingUser ? "Found" : "Not found")
+            try {
 
-            // prisma related queries
-            if (!exisitingUser) {
-                console.log("➕ Creating new user...")
-                const newUser = await db.user.create({
-                    data: {
-                        // userid is auto generated
-                        email: user.email!,
-                        name: user.name,
-                        image: user.image!,
+                const exisitingUser = await db.user.findUnique({
+                    where: { email: user.email! }
+                })
+                console.log("🔍 Existing user:", exisitingUser ? "Found" : "Not found")
 
-                        accounts: {
-                            // @ts-ignore
-                            create: {
+                // prisma related queries
+                if (!exisitingUser) {
+                    console.log("➕ Creating new user...")
+                    const newUser = await db.user.create({
+                        data: {
+                            // userid is auto generated
+                            email: user.email!,
+                            name: user.name,
+                            image: user.image!,
+
+                            accounts: {
+                                // @ts-ignore
+                                create: {
+                                    type: account.type,
+                                    provider: account.provider,
+                                    providerAccountId: account.providerAccountId,
+                                    refreshToken: account.refresh_token,
+                                    accessToken: account.access_token,
+                                    expiresAt: account.expires_at, // these e_a these are maped version in prisma 
+                                    tokenType: account.token_type,
+                                    scope: account.scope,
+                                    idToken: account.id_token,
+                                    sessionState: account.session_state
+                                }
+                            }
+                        }
+                    })
+
+                    if (!newUser) {
+                        console.log("❌ Failed to create new user")
+                        return false
+                    }
+
+                    console.log("✅ New user created:", newUser.id)
+
+                } else {
+                    console.log("🔍 Checking existing account...")
+                    const exisitingAccount = await db.account.findUnique({
+                        where: {
+                            // Prisma “compound unique” things query -> comes from @@unique
+                            provider_providerAccountId: {
+                                provider: account.provider,
+                                providerAccountId: account.providerAccountId
+                            }
+                        }
+                    })
+
+                    if (!exisitingAccount) {
+                        console.log("➕ Creating new account for existing user...")
+                        await db.account.create({
+                            data: {
+                                userId: exisitingUser.id,
                                 type: account.type,
                                 provider: account.provider,
                                 providerAccountId: account.providerAccountId,
                                 refreshToken: account.refresh_token,
                                 accessToken: account.access_token,
-                                expiresAt: account.expires_at, // these e_a these are maped version in prisma 
+                                expiresAt: account.expires_at,
                                 tokenType: account.token_type,
                                 scope: account.scope,
                                 idToken: account.id_token,
+                                // @ts-ignore
                                 sessionState: account.session_state
                             }
-                        }
-                    }
-                })
-                
-                if (!newUser){ 
-                    console.log("❌ Failed to create new user")
-                    return false
-                }
-
-                console.log("✅ New user created:", newUser.id)
-
-            } else {
-                console.log("🔍 Checking existing account...")
-                const exisitingAccount = await db.account.findUnique({
-                    where: {
-                        // Prisma “compound unique” things query -> comes from @@unique
-                        provider_providerAccountId: {
-                            provider: account.provider,
-                            providerAccountId: account.providerAccountId
-                        }
-                    }
-                })
-
-                if (!exisitingAccount) {
-                    console.log("➕ Creating new account for existing user...")
-                    await db.account.create({
-                        data: {
-                            userId: exisitingUser.id,
-                            type: account.type,
-                            provider: account.provider,
-                            providerAccountId: account.providerAccountId,
-                            refreshToken: account.refresh_token,
-                            accessToken: account.access_token,
-                            expiresAt: account.expires_at,
-                            tokenType: account.token_type,
-                            scope: account.scope,
-                            idToken: account.id_token,
-                            // @ts-ignore
-                            sessionState: account.session_state
-                        }
-                    })
-                    console.log("✅ New account created for existing user")
-                }else {
+                        })
+                        console.log("✅ New account created for existing user")
+                    } else {
                         console.log("✅ Account already exists")
+                    }
+
                 }
+                console.log("✅ SignIn callback completed successfully")
+                return true
 
-            }
-            console.log("✅ SignIn callback completed successfully")
-            return true
-
-           } catch (error) {
+            } catch (error) {
                 console.error("❌ Error in signIn callback:", error)
                 return false
-           }
+            }
         },
 
-                // ↓ next this triggers
-                // jwt and session independently and simultaniosly triggers wen auth() is called
+        // ↓ next this triggers
+        // jwt and session independently and simultaniosly triggers wen auth() is called
 
 
         // ! JWT is created → jwt callback runs (can enrich token).
-        async jwt({ token }) {
+        async jwt({ token, user }) {
             // sub means subject 
             // its like id 
             // NextAuth automatically sets this to the user’s id from your database (after sign-in).
+
+            // user is an object which is created only once after when signed in imediatly for subsequent request no user is created
 
             console.log("🔍 JWT callback triggered")
             console.log("🎫 Token sub:", token.sub)
@@ -127,20 +129,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (!token.sub) return token
 
             try {
-                const existingUser = await getUserById(token.sub)
-                if (!existingUser) {
-                    console.log("❌ User not found in JWT callback")
+                // const existingUser = await getUserById(token.sub)
+                // if (!existingUser) {
+                //     console.log("❌ User not found in JWT callback")
+                //     return token
+                // }
+
+                // token.name = existingUser.name
+                // token.email = existingUser.email
+                // token.role = existingUser.role
+
+                // console.log("✅ JWT token updated with user data")
+                // return token
+
+                // ! new way no db query for optimization
+
+                if (user) {
+                    token.name = user.name
+                    token.email = user.email
+                    token.id = user.id
+                    token.role = user.role || "USER"
+
                     return token
                 }
 
-                token.name = existingUser.name
-                token.email = existingUser.email
-                token.role = existingUser.role
-
-                
-
-                console.log("✅ JWT token updated with user data")
                 return token
+                
             } catch (error) {
                 console.error("❌ Error in JWT callback:", error)
                 return token
@@ -157,18 +171,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         async session({ session, token, user }) {
 
             console.log("🔍 Session callback triggered")
-            
+
             // forcing logout if no user was found
-            const dbUser = await db.user.findUnique({
-                where:{
-                    id: token.sub
-                }
-            })
+            // const dbUser = await db.user.findUnique({
+            //     where: {
+            //         id: token.sub
+            //     }
+            // })
 
             // You can’t directly return null in session callback.
             // You can extend types 
-            if (!dbUser) return null // forces signOut
-            
+            // if (!dbUser) return null // forces signOut
+            // Do it in jwt
+
             // Adding role and id to session
             if (token.sub && session.user) {
                 session.user.id = token.sub

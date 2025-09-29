@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # My Files
 
 /MyNotes/Refrence
@@ -8,6 +6,9 @@ Interview.md
 /MyNotes/todos
 loc.py
 /output
+folder.py
+*.pdf
+
 
 # dependencies
 /node_modules
