@@ -20,7 +20,3 @@ is designed for server-side usage. This ensures that sensitive session informati
 - you can use "use server" inside the function to run it in server
 
 forms use action = {function name } to send data to that
-
-
-### Logout Button.tsx
-
