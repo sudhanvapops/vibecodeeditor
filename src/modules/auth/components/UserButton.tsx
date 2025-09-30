@@ -39,12 +39,12 @@ const UserButton = () => {
         </span>
       </DropdownMenuItem>
       <DropdownMenuSeparator/>
-        <LogoutButton>
             <DropdownMenuItem>
+        <LogoutButton>
                 <LogOut className="h-4 w-4 mr-2"/>
                 LogOut
-            </DropdownMenuItem>
         </LogoutButton>
+            </DropdownMenuItem>
     </DropdownMenuContent>
 
     </DropdownMenu>
