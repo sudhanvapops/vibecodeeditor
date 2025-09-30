@@ -8,12 +8,13 @@
     - jwt
     - Session
 
+- you are exporting all of it to use 
 
 ### SignIn
 
 - runs after provider login but before the session is created
 
-SignIn -> for signIn 
+- SignIn -> for signIn 
     - use oauth
     - storing to db
     - creating accessToken 
