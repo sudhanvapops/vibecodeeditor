@@ -1,32 +1,31 @@
 "use client";
 
 import { Button } from "@/components/ui/button"
-// import { createPlayground } from "@/features/playground/actions";
 import { Plus } from 'lucide-react'
 import Image from "next/image"
 import { useRouter } from "next/navigation";
 import { useState } from "react"
 import { toast } from "sonner";
+
 import TemplateSelectingModal from "./templateSelectingModal";
-import { createPlayground } from "../actions";
+import { createPlayground } from "@/modules/dashboard/actions";
+
+
+interface Data {
+  title: string,
+  template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
+  description?: string,
+}
 
 const AddNewButton = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<{
-    title: string,
-    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
-    description?: string,
-  } | null>(null)
+  const [selectedTemplate, setSelectedTemplate] = useState<Data | null>(null)
+
   const router = useRouter()
 
 
-  // todo Make a type 
-  const handleSubmit = async (data: {
-    title: string,
-    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
-    description?: string,
-  }) => {
+  const handleSubmit = async (data: Data) => {
     setSelectedTemplate(data)
 
     const res = await createPlayground(data)
