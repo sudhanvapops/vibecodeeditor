@@ -40,3 +40,16 @@ All Play Ground [
   }
 ]
 
+
+
+#### createPlayground()
+
+db.playground.create({
+            data: {
+                title,
+                description,
+                template,
+                userId: user?.id!
+            }
+})
+
