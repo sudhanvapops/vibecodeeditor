@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 // Gets the current route
 import { usePathname } from "next/navigation"
@@ -70,6 +70,12 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
   const pathname = usePathname()
   const [starredPlaygrounds, setStarredPlaygrounds] = useState(initialPlaygroundData.filter((p) => p.starred))
   const [recentPlaygrounds, setRecentPlaygrounds] = useState(initialPlaygroundData)
+  
+  // TODO: Add for recent changes and all to display right away
+  useEffect(() => {
+    
+  }, [starredPlaygrounds])
+  
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="border-1 border-r">
@@ -196,16 +202,17 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
         {/* View All Playground */}
         <SidebarGroup>
 
-          <SidebarGroupLabel>
+          {/* <SidebarGroupLabel>
             <Compass className="h-4 w-4 mr-2" />
             Playground
-          </SidebarGroupLabel>
+          </SidebarGroupLabel> */}
+
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="View all">
-                  <Link href="/playgrounds">
-                    <span className="text-sm text-muted-foreground ">View all playgrounds</span>
+                  <Link href="/playgrounds" className="text-muted-foreground">
+                    <Compass className="h-4 w-4 mr-2" /> View all playgrounds
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -228,6 +235,7 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+      
       <SidebarRail />
     </Sidebar>
   )
