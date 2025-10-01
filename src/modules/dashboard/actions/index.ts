@@ -4,29 +4,34 @@ import { db } from "@/lib/db"
 import { currentUser } from "@/modules/auth/actions"
 import { revalidatePath } from "next/cache"
 
+interface Data {
+    title: string,
+    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
+    description?: string
+}
 
-export const toggleStarMarked = async (playgroundId:string, isChecked:boolean) => {
+export const toggleStarMarked = async (playgroundId: string, isChecked: boolean) => {
     const user = await currentUser()
     const userId = user?.id
 
-    if (!userId){
+    if (!userId) {
         throw new Error("User Id is required")
     }
 
     try {
-        
+
         if (isChecked) {
             await db.starMark.create({
-                data:{
-                    userId:userId,
+                data: {
+                    userId: userId,
                     playgroundId,
                     isMarked: isChecked
                 }
             })
         } else {
             await db.starMark.delete({
-                where:{
-                    userId_playgroundId:{
+                where: {
+                    userId_playgroundId: {
                         userId,
                         playgroundId
                     }
@@ -41,7 +46,7 @@ export const toggleStarMarked = async (playgroundId:string, isChecked:boolean) =
 
     } catch (error) {
         console.error(`Error in toggleStarMarked: ${error}`)
-        return  {
+        return {
             success: true,
             isMarked: isChecked,
             error
@@ -50,23 +55,23 @@ export const toggleStarMarked = async (playgroundId:string, isChecked:boolean) =
 }
 
 // all the playGround data of currently loged in user
-export const getAllPlaygroundForUser = async ()=>{
+export const getAllPlaygroundForUser = async () => {
 
     const user = await currentUser()
 
     try {
         const playground = await db.playground.findMany({
-            where:{
+            where: {
                 userId: user?.id
             },
-            include:{
-                user:true,
+            include: {
+                user: true,
                 starMark: {
-                    where:{
+                    where: {
                         userId: user?.id
                     },
-                    select:{
-                        isMarked:true
+                    select: {
+                        isMarked: true
                     }
                 }
             }
@@ -79,18 +84,15 @@ export const getAllPlaygroundForUser = async ()=>{
     }
 }
 
-export const createPlayground = async (data:{
-    title: string,
-    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
-    description?: string
-}) => {
+export const createPlayground = async (data: Data) => {
+    
     const user = await currentUser()
     // Comes from Selecting Modal 
-    const {template,title,description} = data
+    const { template, title, description } = data
 
     try {
         const playground = await db.playground.create({
-            data:{
+            data: {
                 title,
                 description,
                 template,
@@ -98,7 +100,7 @@ export const createPlayground = async (data:{
             }
         })
         console.log(`Playground Created: ${playground.title} ${playground.template}`);
-        
+
         return playground
     } catch (error) {
         console.log(`Error in createPlayground: ${error}`)
@@ -106,10 +108,10 @@ export const createPlayground = async (data:{
 
 }
 
-export const deleteProjectById = async (id:string) => {
+export const deleteProjectById = async (id: string) => {
     try {
         const res = await db.playground.delete({
-            where:{id}
+            where: { id }
         })
 
         // It’s a Next.js server utility that lets you manually invalidate cached data and trigger a re-fetch/re-render for a specific path
@@ -121,13 +123,13 @@ export const deleteProjectById = async (id:string) => {
     }
 }
 
-export const editProjectById = async (id:string,data:{
+export const editProjectById = async (id: string, data: {
     title: string,
     description?: string
 }) => {
     try {
         const res = await db.playground.update({
-            where:{
+            where: {
                 id,
             },
             data
@@ -141,10 +143,10 @@ export const editProjectById = async (id:string,data:{
     }
 }
 
-export const duplicateProjectById = async (id:string) => {
+export const duplicateProjectById = async (id: string) => {
     try {
         const originalPlaygroundData = await db.playground.findUnique({
-            where:{
+            where: {
                 id
             }
             // todo add template file
@@ -152,12 +154,12 @@ export const duplicateProjectById = async (id:string) => {
 
         console.log(`originalPlaygroundData: ${originalPlaygroundData}`)
 
-        if(!originalPlaygroundData){
+        if (!originalPlaygroundData) {
             throw new Error("Original playground not found")
         }
 
         const duplicatedPlayground = await db.playground.create({
-            data:{
+            data: {
                 title: `${originalPlaygroundData.title} (copy)`,
                 description: originalPlaygroundData.description,
                 template: originalPlaygroundData.template,
