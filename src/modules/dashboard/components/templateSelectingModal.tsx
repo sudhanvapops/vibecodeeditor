@@ -27,7 +27,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 
-import {templates} from "../data/templates"
+import { templates } from "../data/templates"
 
 
 // TemplateSelectionModal.tsx
@@ -51,6 +51,13 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
     const [category, setCategory] = useState<"all" | "frontend" | "backend" | "fullstack">("all");
     const [projectName, setProjectName] = useState("");
 
+    const resetState = () => {
+        onClose();
+        setStep("select");
+        setSelectedTemplate(null);
+        setProjectName("");
+    }
+
 
     // Search Feature
     const filteredTemplates = templates.filter((template) => {
@@ -68,8 +75,6 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
     })
 
 
-
-
     // For selecting higlight purose
     const handleSelectTemplate = (templateId: string) => {
         setSelectedTemplate(templateId);
@@ -83,7 +88,7 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
 
 
     const handleCreateProject = () => {
-        
+
         if (selectedTemplate) {
 
             const templateMap: Record<string, "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR"> = {
@@ -104,11 +109,8 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                 description: template?.description
             })
 
-            onClose();
             // Reset state for next time
-            setStep("select");
-            setSelectedTemplate(null);
-            setProjectName("");
+            resetState()
         }
     };
 
@@ -116,7 +118,6 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
         setStep("select");
     };
 
-    // This is filling with random stars 
     const renderStars = (count: number) => {
         return Array(5)
             .fill(0)
@@ -136,17 +137,17 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
     return (
         <Dialog
             open={isOpen}
+            // called whenever dialog wants to open/close
             onOpenChange={(open) => {
                 if (!open) {
-                    onClose();
                     // Reset state when closing
-                    setStep("select");
-                    setSelectedTemplate(null);
-                    setProjectName("");
+                    resetState()
                 }
             }}
         >
             <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+
+                {/* Select */}
                 {step === "select" ? (
                     <>
                         <DialogHeader>
@@ -159,8 +160,11 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                             </DialogDescription>
                         </DialogHeader>
 
+                        {/* Search */}
                         <div className="flex flex-col gap-6 py-4">
                             <div className="flex flex-col sm:flex-row gap-4">
+
+                                {/* Search bar */}
                                 <div className="relative flex-1">
                                     <Search
                                         className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 outline-none"
@@ -174,6 +178,8 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                                     />
                                 </div>
 
+
+                                {/* Tabs */}
                                 <Tabs
                                     defaultValue="all"
                                     className="w-full sm:w-auto"
@@ -188,6 +194,8 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                                 </Tabs>
                             </div>
 
+
+                            {/* All the template to select React,NextJs etc... */}
                             <RadioGroup
                                 value={selectedTemplate || ""}
                                 onValueChange={handleSelectTemplate}
@@ -293,9 +301,13 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                                     )}
                                 </div>
                             </RadioGroup>
+
                         </div>
 
+
+                        {/* Bottom Close/Continue */}
                         <div className="flex justify-between gap-3 mt-4 pt-4 border-t">
+
                             <div className="flex items-center text-sm text-muted-foreground">
                                 <Clock size={14} className="mr-1" />
                                 <span>
@@ -303,16 +315,17 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                                     {selectedTemplate ? "2-5 minutes" : "Select a template"}
                                 </span>
                             </div>
+
                             <div className="flex gap-3">
+                                {/* Cancel */}
                                 <Button className="cursor-pointer" variant="outline" onClick={() => {
-                                    onClose();
                                     // Reset state when closing
-                                    setStep("select");
-                                    setSelectedTemplate(null);
-                                    setProjectName("");
+                                    resetState()
                                 }}>
                                     Cancel
                                 </Button>
+
+                                {/* Continue */}
                                 <Button
                                     className="cursor-pointer hover:bg-[#9b63ff] bg-[#8746f9] text-white"
                                     disabled={!selectedTemplate}
@@ -324,6 +337,7 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                         </div>
                     </>
                 ) : (
+                        //  ConFigure
                     <>
                         <DialogHeader>
                             <DialogTitle className="text-2xl font-bold">
@@ -335,7 +349,10 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                             </DialogDescription>
                         </DialogHeader>
 
+                        {/* Project Name */}
                         <div className="flex flex-col gap-6 py-4">
+
+                            {/* Setting Project Name Search Bar */}
                             <div className="flex flex-col gap-2">
                                 <Label htmlFor="project-name">Project Name</Label>
                                 <Input
@@ -346,6 +363,7 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                                 />
                             </div>
 
+                            {/* Seected Template Features */}
                             <div className="p-4 shadow-[0_0_0_1px_#9b63ff,0_8px_20px_rgba(233,63,63,0.15)] rounded-lg border">
                                 <h3 className="font-medium mb-2">Selected Template Features</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -361,6 +379,7 @@ const TemplateSelectingModal = ({ isOpen, onClose, onSubmit }: TemplateSelection
                             </div>
                         </div>
 
+                        {/* Create Project  */}
                         <div className="flex justify-between gap-3 mt-4 pt-4 border-t">
                             <Button variant="outline" onClick={handleBack} className="cursor-pointer">
                                 Back
