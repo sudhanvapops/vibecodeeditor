@@ -41,6 +41,7 @@ const AddNewButton = () => {
 
     } catch (error) {
       toast.error("Failed to create playground");
+      console.error("Error in handleSubmit addNewButton.tsx ",error)
     }
   }
 
