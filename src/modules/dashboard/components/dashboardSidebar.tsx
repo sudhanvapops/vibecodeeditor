@@ -73,16 +73,19 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="border-1 border-r">
-              <div className="flex flex-row-reverse">
-                <ThemeToggle />
-              </div>
       <SidebarHeader>
+        <div className="flex flex-row-reverse">
+          <ThemeToggle />
+        </div>
         <div className="flex items-center gap-2 px-4 py-3 justify-center">
           <Image src={"/logo.png"} alt="logo" height={60} width={60} />
         </div>
 
       </SidebarHeader>
+
       <SidebarContent>
+
+        {/* Home / DashBorad */}
         <SidebarGroup>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -105,6 +108,7 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
           </SidebarMenu>
         </SidebarGroup>
 
+        {/* Stared Group */}
         <SidebarGroup>
           <SidebarGroupLabel>
             <Star className="h-4 w-4 mr-2" />
@@ -114,6 +118,7 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
             <Plus className="h-4 w-4" />
           </SidebarGroupAction>
           <SidebarGroupContent>
+
             <SidebarMenu>
 
               {starredPlaygrounds.length === 0 && recentPlaygrounds.length === 0 ? (
@@ -138,22 +143,33 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
                 })
               )}
             </SidebarMenu>
+
           </SidebarGroupContent>
+
         </SidebarGroup>
 
+
+        {/* Recent Group */}
         <SidebarGroup>
+
           <SidebarGroupLabel>
             <History className="h-4 w-4 mr-2" />
             Recent
           </SidebarGroupLabel>
+
           <SidebarGroupAction title="Create new playground">
             <FolderPlus className="h-4 w-4" />
           </SidebarGroupAction>
+
           <SidebarGroupContent>
             <SidebarMenu>
+
+              {/* To render Recent Things */}
               {starredPlaygrounds.length === 0 && recentPlaygrounds.length === 0 ? null : (
                 recentPlaygrounds.map((playground) => {
+
                   const IconComponent = lucideIconMap[playground.icon] || Code2;
+
                   return (
                     <SidebarMenuItem key={playground.id}>
                       <SidebarMenuButton
@@ -170,17 +186,36 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
                   );
                 })
               )}
+
+
+
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* View All Playground */}
+        <SidebarGroup>
+
+          <SidebarGroupLabel>
+            <Compass className="h-4 w-4 mr-2" />
+            Playground
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="View all">
                   <Link href="/playgrounds">
-                    <span className="text-sm text-muted-foreground">View all playgrounds</span>
+                    <span className="text-sm text-muted-foreground ">View all playgrounds</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
       </SidebarContent>
+
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>

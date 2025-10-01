@@ -49,7 +49,7 @@ export const toggleStarMarked = async (playgroundId:string, isChecked:boolean) =
     }
 }
 
-// all the playGround data of currentl loged in user
+// all the playGround data of currently loged in user
 export const getAllPlaygroundForUser = async ()=>{
 
     const user = await currentUser()
