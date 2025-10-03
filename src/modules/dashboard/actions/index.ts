@@ -108,21 +108,6 @@ export const createPlayground = async (data: Data) => {
 
 }
 
-export const deleteProjectById = async (id: string) => {
-    try {
-        const res = await db.playground.delete({
-            where: { id }
-        })
-
-        // It’s a Next.js server utility that lets you manually invalidate cached data and trigger a re-fetch/re-render for a specific path
-        // Server-only
-        console.log(`\nProject deleted ${res.title}\n`)
-        revalidatePath("/dashboard")
-    } catch (error) {
-        console.log(`Error in deleteProjectById: ${error}`)
-    }
-}
-
 export const editProjectById = async (id: string, data: {
     title: string,
     description?: string
@@ -145,11 +130,11 @@ export const editProjectById = async (id: string, data: {
 
 export const duplicateProjectById = async (id: string) => {
     try {
+
         const originalPlaygroundData = await db.playground.findUnique({
             where: {
                 id
             }
-            // todo add template file
         })
 
         console.log(`originalPlaygroundData: ${originalPlaygroundData}`)
@@ -164,8 +149,6 @@ export const duplicateProjectById = async (id: string) => {
                 description: originalPlaygroundData.description,
                 template: originalPlaygroundData.template,
                 userId: originalPlaygroundData.userId
-
-                // todo: template file
             }
         })
 
@@ -179,3 +162,18 @@ export const duplicateProjectById = async (id: string) => {
     }
 }
 
+
+export const deleteProjectById = async (id: string) => {
+    try {
+        const res = await db.playground.delete({
+            where: { id }
+        })
+
+        // It’s a Next.js server utility that lets you manually invalidate cached data and trigger a re-fetch/re-render for a specific path
+        // Server-only
+        console.log(`\nProject deleted ${res.title}\n`)
+        revalidatePath("/dashboard")
+    } catch (error) {
+        console.log(`Error in deleteProjectById: ${error}`)
+    }
+}

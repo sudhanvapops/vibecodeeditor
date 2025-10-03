@@ -37,12 +37,21 @@ import { toast } from "sonner"
 import { MarkedToggleButton } from "./MarkedToggleButton"
 import EditDialog from "./editDialog"
 
+interface DuplicatedPlayground {
+  id: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  title: string;
+  description: string | null;
+  template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR";
+}
 
 interface ProjectTableProps {
   projects: Project[]
   onUpdateProject?: (id: string, data: { title: string; description: string }) => Promise<void>
   onDeleteProject?: (id: string) => Promise<void>
-  onDuplicateProject?: (id: string) => Promise<void>
+  onDuplicateProject?: (id: string) => Promise<DuplicatedPlayground | undefined>
   onMarkasFavorite?: (id: string) => Promise<void>
 }
 
@@ -56,17 +65,16 @@ export default function ProjectTable({
   onUpdateProject,
   onDeleteProject,
   onDuplicateProject,
-  // todo: later
-  onMarkasFavorite,
 }: ProjectTableProps) {
 
 
-  // Edit Dialog Group
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [editData, setEditData] = useState<EditProjectData>({ title: "", description: "" })
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
 
   const handleEditClick = (project: Project) => {
     setSelectedProject(project)
@@ -96,24 +104,28 @@ export default function ProjectTable({
 
   }
 
+  const handleDuplicateProject = async (project: Project) => {
+    if (!onDuplicateProject) return
 
-
-  const [favoutrie, setFavourite] = useState(false)
+    setIsLoading(true)
+    try {
+      await onDuplicateProject(project.id)
+      toast.success("Project Duplicated SUccessfully")
+    } catch (error) {
+      toast.error("Failed to Duplicate Project")
+      console.error("Error Duplicating Project handleDuplicateProject", error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleDeleteClick = async (project: Project) => {
     setSelectedProject(project)
     setDeleteDialogOpen(true)
   }
 
-
-
-  const handleMarkasFavorite = async (project: Project) => {
-    // todo
-  }
-
-
   const handleDeleteProject = async () => {
-    // If you dont have any selected project or OnUpdateProject antha
+    // If you dont have any selected project or OnUpdateProject 
     if (!selectedProject || !onDeleteProject) return
 
     setIsLoading(true)
@@ -131,27 +143,11 @@ export default function ProjectTable({
     }
   }
 
-  const handleDuplicateProject = async (project: Project) => {
-    if (!onDuplicateProject) return
-
-    setIsLoading(true)
-    try {
-      await onDuplicateProject(project.id)
-      toast.success("Project Duplicated SUccessfully")
-    } catch (error) {
-      toast.error("Failed to Duplicate Project")
-      console.error("Error Duplicating Project handleDuplicateProject", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const copyProjectUrl = (projectId: string) => {
     const url = `${window.location.origin}/playgroud/${projectId}`
     navigator.clipboard.writeText(url)
     toast.success("Project Url Copied")
   }
-
 
 
   return (
