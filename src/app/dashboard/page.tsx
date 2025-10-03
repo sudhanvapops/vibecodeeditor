@@ -27,7 +27,6 @@ const DashBoard = async () => {
           ) : (
             <ProjectTable
               projects = {playgrounds || []}
-              // ! Can be Improved
               onDeleteProject={deleteProjectById}
               onUpdateProject={editProjectById}
               onDuplicateProject={duplicateProjectById}

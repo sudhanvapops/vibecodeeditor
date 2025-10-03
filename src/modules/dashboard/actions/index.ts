@@ -11,6 +11,7 @@ interface Data {
 }
 
 export const toggleStarMarked = async (playgroundId: string, isChecked: boolean) => {
+    
     const user = await currentUser()
     const userId = user?.id
 
@@ -161,7 +162,6 @@ export const duplicateProjectById = async (id: string) => {
         console.log(`Error in duplicateProjectById: ${error}`)
     }
 }
-
 
 export const deleteProjectById = async (id: string) => {
     try {

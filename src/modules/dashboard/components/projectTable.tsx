@@ -75,7 +75,6 @@ export default function ProjectTable({
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
-
   const handleEditClick = (project: Project) => {
     setSelectedProject(project)
     setEditData({
@@ -221,7 +220,6 @@ export default function ProjectTable({
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreHorizontal className="h-4 w-4" />
                         <span className="sr-only" >Open menu</span>
-
                       </Button>
                     </DropdownMenuTrigger>
 
@@ -229,7 +227,6 @@ export default function ProjectTable({
 
                       {/* Mark as Fav  */}
                       <DropdownMenuItem asChild>
-                        {/* REf is passed automatically by ShadCn  */}
                         <MarkedToggleButton markedForRevision={project.starMark[0]?.isMarked ?? false} id={project.id} />
                       </DropdownMenuItem>
 
