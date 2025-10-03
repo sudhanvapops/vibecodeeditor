@@ -10,9 +10,6 @@ and display them in dashboard
 using tables from shadcn
 
 
-<!-- ! MarkedasFavuite see -->
-
-
 ### Link In Table Body
 
 - In HTML, the rel attribute on links describes the relationship between the current page and the linked page.
@@ -41,6 +38,18 @@ using tables from shadcn
 - Open In New Tab
 
 - Link tag is used 
+
+
+### Marked As Fav
+- calls  a component
+- it passes props
+    - isItMarked
+    - Id
+
+- since we are visually changin it 
+- we extracted to seprate component
+- and ref is forwerded cause the menu wont close automatically 
+
 
 ### For
 

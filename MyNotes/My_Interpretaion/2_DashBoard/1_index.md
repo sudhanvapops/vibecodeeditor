@@ -73,3 +73,24 @@ db.playground.create({
 
 - just db call for delete via id
 - ad revalidatePath()
+
+### toggleStarMarked()
+
+- takes the playGroundID
+- and isChecked which is recent one
+
+same
+
+- find user
+- validate
+
+- try catch
+
+if checked -> create 
+{
+  userId: userId,
+  playgroundId,
+  isMarked: isChecked
+}
+
+no then -> delete
