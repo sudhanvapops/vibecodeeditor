@@ -11,6 +11,7 @@ const AddRepo = () => {
         shadow-[0_2px_10px_rgba(0,0,0,0.08)]
         hover:shadow-[0_10px_30px_rgba(155,99,255,0.2)]"
     >
+      
       <div className="flex flex-row justify-center items-start gap-4">
         <Button
           variant={"outline"}
@@ -19,11 +20,14 @@ const AddRepo = () => {
         >
           <ArrowDown size={30} className="transition-transform duration-300 group-hover:translate-y-1" />
         </Button>
+
+
         <div className="flex flex-col">
           <h1 className="text-xl font-bold text-[#c5a6fb]">Open Github Repository</h1>
           <p className="text-sm text-muted-foreground max-w-[220px]">Work with your repositories in our editor</p>
         </div>
       </div>
+
 
       <div className="relative overflow-hidden">
         <Image

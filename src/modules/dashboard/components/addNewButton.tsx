@@ -84,9 +84,6 @@ const AddNewButton = () => {
 
       </div>
 
-      {/* // Todo Implement Template Selecting Model here */}
-
-      {/*//  ! Can Be Improved */}
       <TemplateSelectingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
