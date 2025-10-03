@@ -40,6 +40,9 @@ export const toggleStarMarked = async (playgroundId: string, isChecked: boolean)
             })
         }
 
+        revalidatePath('/dashboard', 'layout')
+        revalidatePath('/playgrounds', 'page')
+        
         return {
             success: true,
             isMarked: isChecked
@@ -121,7 +124,8 @@ export const editProjectById = async (id: string, data: {
             data
         })
 
-        revalidatePath("/dashboard")
+        revalidatePath("/dashboard","layout")
+        revalidatePath('/dashboard', 'page')
         console.log(`Project Updated: ${res.title}`);
 
     } catch (error) {
@@ -154,7 +158,8 @@ export const duplicateProjectById = async (id: string) => {
         })
 
         console.log(`PlayGround Duplicated: ${duplicatedPlayground.title}`)
-        revalidatePath("/dashboard")
+        revalidatePath("/dashboard","layout")
+        revalidatePath('/dashboard', 'page')
 
         return duplicatedPlayground
 
@@ -172,7 +177,8 @@ export const deleteProjectById = async (id: string) => {
         // It’s a Next.js server utility that lets you manually invalidate cached data and trigger a re-fetch/re-render for a specific path
         // Server-only
         console.log(`\nProject deleted ${res.title}\n`)
-        revalidatePath("/dashboard")
+        revalidatePath("/dashboard","layout")
+        revalidatePath('/dashboard', 'page')
     } catch (error) {
         console.log(`Error in deleteProjectById: ${error}`)
     }

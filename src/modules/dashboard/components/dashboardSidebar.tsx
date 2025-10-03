@@ -68,14 +68,15 @@ const lucideIconMap: Record<string, LucideIcon> = {
 export default function DashboardSidebar({ initialPlaygroundData }: { initialPlaygroundData: PlaygroundData[] }) {
 
   const pathname = usePathname()
-  const [starredPlaygrounds, setStarredPlaygrounds] = useState(initialPlaygroundData.filter((p) => p.starred))
-  const [recentPlaygrounds, setRecentPlaygrounds] = useState(initialPlaygroundData)
+
+  const [playgrounds, setPlaygrounds] = useState(initialPlaygroundData)
   
-  // TODO: Add for recent changes and all to display right away
+  const starredPlaygrounds = playgrounds.filter((p) => p.starred)
+  const recentPlaygrounds = playgrounds
+
   useEffect(() => {
-    
-  }, [starredPlaygrounds])
-  
+    setPlaygrounds(initialPlaygroundData)
+  }, [initialPlaygroundData])
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="border-1 border-r">
