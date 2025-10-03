@@ -93,3 +93,49 @@ since we make url via project id
 
 - url = ${window.location.origin}/playgroud/${projectId}
 - navigator.clipboard.writeText(url)
+
+
+
+### Todo UI not updating layout 
+
+- sidebar was a client component with local state that wasn't syncing with server-side updates:
+
+What was happening:
+
+User stars/unstars a playground
+Server action updates the database 
+revalidatePath() triggers layout to re-fetch data 
+Layout gets new data from server 
+Layout passes new data to sidebar as props 
+BUT sidebar's useState never updates because React doesn't re-initialize state when props change 
+
+
+### Fix
+
+- added state 
+- Added useEffect to sync props with state
+
+
+### Flow
+
+1. User clicks star button
+   ↓
+2. useOptimistic updates UI instantly ⚡
+   ↓
+3. Server action runs (toggleStarMarked)
+   ↓
+4. Database updated
+   ↓
+5. revalidatePath('/dashboard', 'layout') called
+   ↓
+6. Layout re-runs on server
+   ↓
+7. getAllPlaygroundForUser() fetches fresh data
+   ↓
+8. Layout passes new initialPlaygroundData to sidebar
+   ↓
+9. Sidebar's useEffect detects prop change
+   ↓
+10. setPlaygrounds(initialPlaygroundData) updates state
+   ↓
+11. Sidebar re-renders with correct data ✅
