@@ -1,4 +1,3 @@
-
 "use client"
 
 import Image from "next/image"
@@ -26,25 +25,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+
 import Link from "next/link"
 import { useState } from "react"
 import { MoreHorizontal, Edit3, Trash2, ExternalLink, Copy, Download, Eye } from "lucide-react"
 
 import { toast } from "sonner"
 import { MarkedToggleButton } from "./MarkedToggleButton"
+import EditDialog from "./editDialog"
 
 
 interface ProjectTableProps {
@@ -114,6 +105,7 @@ export default function ProjectTable({
     // todo
   }
 
+
   const handleDeleteProject = async () => {
     // If you dont have any selected project or OnUpdateProject antha
     if (!selectedProject || !onDeleteProject) return
@@ -155,10 +147,12 @@ export default function ProjectTable({
   }
 
 
+
   return (
     <>
       <div className="border rounded-lg overflow-hidden">
         <Table>
+
           <TableHeader>
             <TableRow>
               <TableHead>Project</TableHead>
@@ -168,16 +162,19 @@ export default function ProjectTable({
               <TableHead className="w-[50px]">Actions</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {projects.map((project) => (
               <TableRow key={project.id}>
+
+                {/* Project Name */}
                 <TableCell className="font-medium">
                   <div className="flex flex-col">
-                    {/* Designed to open in New Page noopner and ... for security purpose */}
+
                     <Link
                       href={`/playground/${project.id}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      target="_blank" // Open in new page
+                      rel="noopener noreferrer"  // for security purpose
                       className="hover:underline"
                     >
                       <span className="font-semibold">{project.title}</span>
@@ -186,12 +183,18 @@ export default function ProjectTable({
                     <span className="text-sm text-gray-500 line-clamp-1">{project.description}</span>
                   </div>
                 </TableCell>
+
+                {/* Template */}
                 <TableCell>
                   <Badge variant="outline" className="bg-[#9b63ff15] text-[#9b63ff] border-[#9b63ff]">
                     {project.template}
                   </Badge>
                 </TableCell>
+
+                {/* Created At */}
                 <TableCell>{format(new Date(project.createdAt), "MMM d, yyyy")}</TableCell>
+
+                {/* Which User  */}
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full overflow-hidden">
@@ -206,45 +209,70 @@ export default function ProjectTable({
                     <span className="text-sm">{project.user.name}</span>
                   </div>
                 </TableCell>
+
+                {/* Actions */}
                 <TableCell>
+
                   <DropdownMenu>
+
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Open menu</span>
+                        <span className="sr-only" >Open menu</span>
+
                       </Button>
                     </DropdownMenuTrigger>
+
                     <DropdownMenuContent align="end" className="w-48">
+
+                      {/* Mark as Fav  */}
                       <DropdownMenuItem asChild>
                         {/* REf is passed automatically by ShadCn  */}
                         <MarkedToggleButton markedForRevision={project.starMark[0]?.isMarked ?? false} id={project.id} />
                       </DropdownMenuItem>
+
+                      {/* Open Project */}
                       <DropdownMenuItem asChild>
                         <Link href={`playground/${project.id}`} className="flex items-center">
                           <Eye className="h-4 w-4 mr-2" />
                           Open Project
                         </Link>
                       </DropdownMenuItem>
+
+                      {/* Open In New Tab */}
                       <DropdownMenuItem asChild>
-                        <Link href={`playground/${project.id}`} target="_blank" className="flex items-center">
+                        <Link href={`playground/${project.id}`} target="_blank" rel="noopener noreferrer" className="flex items-center">
                           <ExternalLink className="h-4 w-4 mr-2" />
                           Open in New Tab
                         </Link>
                       </DropdownMenuItem>
+
+
                       <DropdownMenuSeparator />
+                      {/* CRUD Starts Here */}
+
+                      {/* EDIT Project */}
                       <DropdownMenuItem onClick={() => handleEditClick(project)}>
                         <Edit3 className="h-4 w-4 mr-2" />
                         Edit Project
                       </DropdownMenuItem>
+
+                      {/* DUPLICATE PROJECT */}
                       <DropdownMenuItem onClick={() => handleDuplicateProject(project)}>
                         <Copy className="h-4 w-4 mr-2" />
                         Duplicate
                       </DropdownMenuItem>
+
+                      {/* COPY URL */}
                       <DropdownMenuItem onClick={() => copyProjectUrl(project.id)}>
                         <Download className="h-4 w-4 mr-2" />
                         Copy URL
                       </DropdownMenuItem>
+
+
                       <DropdownMenuSeparator />
+
+                      {/* DELETE Project */}
                       <DropdownMenuItem
                         onClick={() => handleDeleteClick(project)}
                         className="text-destructive focus:text-destructive"
@@ -252,55 +280,29 @@ export default function ProjectTable({
                         <Trash2 className="h-4 w-4 mr-2" />
                         Delete Project
                       </DropdownMenuItem>
+
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
+
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
 
+
       {/* Edit Project Dialog */}
-      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Edit Project</DialogTitle>
-            <DialogDescription>
-              Make changes to your project details here. Click save when you're done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="title">Project Title</Label>
-              <Input
-                id="title"
-                value={editData.title}
-                onChange={(e) => setEditData((prev) => ({ ...prev, title: e.target.value }))}
-                placeholder="Enter project title"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={editData.description}
-                onChange={(e) => setEditData((prev) => ({ ...prev, description: e.target.value }))}
-                placeholder="Enter project description"
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)} disabled={isLoading}>
-              Cancel
-            </Button>
-            <Button type="button" onClick={handleUpdateProject} disabled={isLoading || !editData.title.trim()}>
-              {isLoading ? "Saving..." : "Save Changes"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <EditDialog
+        {...{
+          editDialogOpen,
+          setEditDialogOpen,
+          editData,
+          setEditData,
+          handleUpdateProject,
+          isLoading,
+        }}
+      />
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
@@ -324,6 +326,7 @@ export default function ProjectTable({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
     </>
   )
 }
