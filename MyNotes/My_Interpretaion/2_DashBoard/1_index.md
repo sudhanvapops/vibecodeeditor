@@ -61,3 +61,15 @@ db.playground.create({
 - update in db
 - revalidate to dashboard
 
+
+
+### duplicateProjectById()
+
+- gets the originalPlaygrond via ID
+- then create a new Playground add (copy) in name 
+
+
+### onDeleteProject()
+
+- just db call for delete via id
+- ad revalidatePath()

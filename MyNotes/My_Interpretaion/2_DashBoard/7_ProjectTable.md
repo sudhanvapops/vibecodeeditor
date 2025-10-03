@@ -12,10 +12,6 @@ using tables from shadcn
 
 <!-- ! MarkedasFavuite see -->
 
-<!-- TODO -->
-- onMarkasFavorite()
-    - Set as Favourite is still not implimented 
-
 
 ### Link In Table Body
 
@@ -50,8 +46,8 @@ using tables from shadcn
 
 - EDIT 
 - DUPLICATE
-- COPY URL
 - DELETE PROJECT
+- COPY URL
 
 - Respective functions used
 
@@ -65,3 +61,26 @@ using tables from shadcn
 - it calls onUpdateProject()
 - which is a porp sent by page.tsx
 - which actuall function is editProjectById() in index.ts
+
+### Dupilcate handleDuplicateProject(): 
+
+- same here 
+- it calls duplicateProjectById() from index.ts
+- but handleDuplicateProject() handles UI 
+- where as duplicateProjectById() handles Backend 
+
+
+### handleDeleteClick() && handleDeleteProject()
+
+- same opens a Dialog Box
+- in dialog You call handleDeleteProject()
+- handleDeleteProject() -> onDeleteProject() from index.ts
+
+
+### Copy: copyProjectUrl()
+
+- just copys via project id 
+since we make url via project id
+
+- url = ${window.location.origin}/playgroud/${projectId}
+- navigator.clipboard.writeText(url)
