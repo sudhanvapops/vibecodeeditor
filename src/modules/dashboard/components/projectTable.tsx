@@ -60,13 +60,13 @@ export default function ProjectTable({
   onMarkasFavorite,
 }: ProjectTableProps) {
 
+
+  // Edit Dialog Group
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const [editData, setEditData] = useState<EditProjectData>({ title: "", description: "" })
   const [isLoading, setIsLoading] = useState(false)
-  const [favoutrie, setFavourite] = useState(false)
-
 
   const handleEditClick = (project: Project) => {
     setSelectedProject(project)
@@ -75,11 +75,6 @@ export default function ProjectTable({
       description: project.description || ""
     })
     setEditDialogOpen(true)
-  }
-
-  const handleDeleteClick = async (project: Project) => {
-    setSelectedProject(project)
-    setDeleteDialogOpen(true)
   }
 
   const handleUpdateProject = async () => {
@@ -100,6 +95,17 @@ export default function ProjectTable({
     }
 
   }
+
+
+
+  const [favoutrie, setFavourite] = useState(false)
+
+  const handleDeleteClick = async (project: Project) => {
+    setSelectedProject(project)
+    setDeleteDialogOpen(true)
+  }
+
+
 
   const handleMarkasFavorite = async (project: Project) => {
     // todo

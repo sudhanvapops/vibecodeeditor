@@ -53,3 +53,11 @@ db.playground.create({
             }
 })
 
+
+
+### editProjectById()
+
+- it takes the title and desc
+- update in db
+- revalidate to dashboard
+
