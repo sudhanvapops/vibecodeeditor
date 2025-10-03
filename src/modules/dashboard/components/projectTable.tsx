@@ -30,6 +30,7 @@ import {
 import { Button } from "@/components/ui/button"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { MoreHorizontal, Edit3, Trash2, ExternalLink, Copy, Download, Eye } from "lucide-react"
 
@@ -67,6 +68,7 @@ export default function ProjectTable({
   onDuplicateProject,
 }: ProjectTableProps) {
 
+  const router = useRouter() 
 
   const [editDialogOpen, setEditDialogOpen] = useState(false)
   const [editData, setEditData] = useState<EditProjectData>({ title: "", description: "" })
@@ -94,6 +96,7 @@ export default function ProjectTable({
       await onUpdateProject(selectedProject.id, editData)
       setEditDialogOpen(false)
       toast.success("Project Upadted Successfully")
+      router.refresh()
     } catch (error) {
       toast.error("Failed to update project")
       console.error(`Error Updating Project handleUpdateProject: ${error}`)
@@ -110,6 +113,7 @@ export default function ProjectTable({
     try {
       await onDuplicateProject(project.id)
       toast.success("Project Duplicated SUccessfully")
+      router.refresh() 
     } catch (error) {
       toast.error("Failed to Duplicate Project")
       console.error("Error Duplicating Project handleDuplicateProject", error)
@@ -134,6 +138,7 @@ export default function ProjectTable({
       setDeleteDialogOpen(false)
       setSelectedProject(null)
       toast.success("Project deleted successfully")
+      router.refresh() 
     } catch (error) {
       toast.error("Failed to delete project")
       console.error(`Error deleting Project handleDeleteProject: ${error}`)
