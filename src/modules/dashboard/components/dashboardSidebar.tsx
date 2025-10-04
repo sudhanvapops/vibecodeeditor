@@ -67,6 +67,9 @@ const lucideIconMap: Record<string, LucideIcon> = {
 
 export default function DashboardSidebar({ initialPlaygroundData }: { initialPlaygroundData: PlaygroundData[] }) {
 
+  // If the initialPlaygroundData prop changes later, your useState calls for starredPlaygrounds and recentPlaygrounds will NOT update automatically.
+  // So Manually update it
+  
   const pathname = usePathname()
 
   const [playgrounds, setPlaygrounds] = useState(initialPlaygroundData)

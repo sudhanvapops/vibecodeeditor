@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 
 import { StarIcon, StarOffIcon } from "lucide-react"
 import type React from "react"
-import { useState } from "react"
 import { toast } from "sonner"
 
 import { toggleStarMarked } from "../actions"
@@ -24,24 +23,23 @@ export const MarkedToggleButton = ({ markedForRevision, id }: MarkedToggleButton
     (state, newState: boolean) => newState
   )
 
-  // const [isMarked, setIsMarked] = useState(markedForRevision)
-
 
   const handleToggle = async () => {
 
     const newMarkedState = !optimisticMarked
 
+    // Update the UI right away so it feels instant, but treat this update as non-blocking, so don’t freeze the UI while doing it.
     startTransition(async () => {
+
       // Optimistically update the UI immediately
       setOptimisticMarked(newMarkedState)
-
 
       try {
 
         const res = await toggleStarMarked(id, newMarkedState)
         const { success, error, isMarked } = res;
 
-        //    if ismarked true then show marked successfully otherwise show start over
+        //    if ismarked true then show marked successfully otherwise show error msg
         if (!success || error) {
           // Revert on error
           setOptimisticMarked(!newMarkedState)
@@ -59,8 +57,8 @@ export const MarkedToggleButton = ({ markedForRevision, id }: MarkedToggleButton
       } catch (error) {
         console.error("Failed to toggle mark for revision:", error)
         setOptimisticMarked(!newMarkedState)
+        toast.success("Failed to update favorite")
         // Revert state if the update fails
-        // You might want to add a toast notification here for the user
       }
     })
   }
