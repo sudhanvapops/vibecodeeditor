@@ -41,7 +41,7 @@ export const toggleStarMarked = async (playgroundId: string, isChecked: boolean)
         }
 
         revalidatePath('/dashboard', 'layout')
-        revalidatePath('/playgrounds', 'page')
+        revalidatePath('/dashboard', 'page')
         
         return {
             success: true,

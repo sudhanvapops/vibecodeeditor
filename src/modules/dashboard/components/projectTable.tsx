@@ -87,7 +87,6 @@ export default function ProjectTable({
   }
 
   const handleUpdateProject = async () => {
-    // ! didnt understood
     if (!selectedProject || !onUpdateProject) return;
 
     setIsLoading(true)
