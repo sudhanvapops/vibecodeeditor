@@ -11,7 +11,7 @@ export const getPlaygroundById = async (id: string) => {
                 id
             },
             select: {
-                title:true,
+                title: true,
                 templateFiles: {
                     select: {
                         content: true
@@ -27,21 +27,35 @@ export const getPlaygroundById = async (id: string) => {
 }
 
 export const saveUpdatedCode = async (playgroundId: string, data: TemplateFolder) => {
-
-    const user = await currentUser()
-    if (!user) return null
-
     try {
+
+        const user = await currentUser()
+        if (!user) return null
+
+        const playground = await db.playground.findUnique({
+            where: {
+                id: playgroundId
+            },
+            select: {
+                userId: true
+            }
+
+        })
+
+        if (!playground || playground.userId !== user.id) {
+            throw new Error("Playground doesnt belongs to user")
+        }
+
         const updatedPlayground = await db.templateFile.upsert({
-            where:{
+            where: {
                 playgroundId
             },
-            update:{
-                content:JSON.stringify(data)
+            update: {
+                content: JSON.stringify(data)
             },
-            create:{
+            create: {
                 playgroundId,
-                content:JSON.stringify(data)
+                content: JSON.stringify(data)
             }
         })
 

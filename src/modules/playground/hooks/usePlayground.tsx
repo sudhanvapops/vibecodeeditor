@@ -84,11 +84,14 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
     const saveTemplateData = useCallback(async (data: TemplateFolder) => {
         try {
-            await saveUpdatedCode(id, data)
+            const result = await saveUpdatedCode(id, data)
+            if (result == null){
+                throw new Error("Failed to save changes: unauthorized or not found")
+            }
             setTemplateData(data)
             toast.success("Changed saved successfully")
         } catch (error) {
-            console.error("Failed to sve changes")
+            console.error("Failed to save changes",error)
             toast.error("Failed to save changes")
             throw error
         }
