@@ -257,6 +257,7 @@ export async function saveTemplateStructureToJson(
   }
 }
 
+
 export async function readTemplateStructureFromJson(filePath: string): Promise<TemplateFolder> {
   try {
     const data = await fs.promises.readFile(filePath, 'utf8');
@@ -265,25 +266,3 @@ export async function readTemplateStructureFromJson(filePath: string): Promise<T
     throw new Error(`Error reading template structure: ${(error as Error).message}`);
   }
 }
-
-/**
- * Example usage:
- * 
- * Basic usage with default options
- * const templateStructure = await scanTemplateDirectory('./templates/react-app');
- * 
- *  With custom options
- * const customOptions = {
- *   ignoreFiles: ['README.md', 'CHANGELOG.md'],
- *   ignoreFolders: ['docs', 'examples'],
- *   maxFileSize: 500 * 1024 // 500KB
- * };
- * const templateStructure = await scanTemplateDirectory('./templates/react-app', customOptions);
- * 
- * Saving directly to a JSON file with custom options
- * await saveTemplateStructureToJson(
- *   './templates/react-app', 
- *   './output/react-app-template.json',
- *   customOptions
- * );
- */

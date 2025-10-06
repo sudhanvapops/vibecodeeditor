@@ -17,9 +17,9 @@ const { auth } = NextAuth(authConfig)
 // Go to Notes to know more
 export default auth((req: NextRequest & { auth: any }) => {
 
-
     const { nextUrl } = req
     const isLoggedIn = !!req.auth //req.auth is null or undefined → !!req.auth becomes false.
+    // req.auth -> gives session obj
 
     // console.log("🛡️ Middleware triggered for:", nextUrl.pathname)
     // console.log("🔐 Is logged in:", isLoggedIn)
