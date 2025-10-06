@@ -89,10 +89,12 @@ export function TemplateFileTree({
   onRenameFile,
   onRenameFolder,
 }: TemplateFileTreeProps) {
+
   const isRootFolder = data && typeof data === "object" && "folderName" in data;
   const [isNewFileDialogOpen, setIsNewFileDialogOpen] = React.useState(false);
   const [isNewFolderDialogOpen, setIsNewFolderDialogOpen] =
     React.useState(false);
+
 
   const handleAddRootFile = () => {
     setIsNewFileDialogOpen(true);
@@ -126,27 +128,50 @@ export function TemplateFileTree({
   };
 
   return (
+
     <Sidebar>
+
       <SidebarContent>
+
+        {/* Ttitle */}
         <SidebarGroup>
+
+          <SidebarGroupContent>
+
           <SidebarGroupLabel>{title}</SidebarGroupLabel>
+
+          {/* Menu for New File & Folder */}
           <DropdownMenu>
+
             <DropdownMenuTrigger asChild>
+              {/* SidebarGroupAction is just a helper wrapper for placing an action button next to a sidebar group title — with perfect styling and alignment, without writing manual CSS. */}
               <SidebarGroupAction>
                 <Plus className="h-4 w-4" />
               </SidebarGroupAction>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end">
+              
               <DropdownMenuItem onClick={handleAddRootFile}>
                 <FilePlus className="h-4 w-4 mr-2" />
                 New File
               </DropdownMenuItem>
+
               <DropdownMenuItem onClick={handleAddRootFolder}>
                 <FolderPlus className="h-4 w-4 mr-2" />
                 New Folder
               </DropdownMenuItem>
             </DropdownMenuContent>
+
           </DropdownMenu>
+
+            
+
+          </SidebarGroupContent>
+
+        </SidebarGroup>
+
+        <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
               {isRootFolder ? (
@@ -184,8 +209,10 @@ export function TemplateFileTree({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
       </SidebarContent>
-      <SidebarRail />
+
+      <SidebarRail /> {/* This is side bar extending feature */}
 
       <NewFileDialog
         isOpen={isNewFileDialogOpen}
@@ -198,6 +225,7 @@ export function TemplateFileTree({
         onClose={() => setIsNewFolderDialogOpen(false)}
         onCreateFolder={handleCreateFolder}
       />
+
     </Sidebar>
   );
 }

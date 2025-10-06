@@ -20,6 +20,7 @@ interface NewFileDialogProps {
 }
 
 function NewFileDialog({ isOpen, onClose, onCreateFile }: NewFileDialogProps) {
+
   const [filename, setFilename] = React.useState("");
   const [extension, setExtension] = React.useState("js");
 
@@ -34,15 +35,20 @@ function NewFileDialog({ isOpen, onClose, onCreateFile }: NewFileDialogProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+
       <DialogContent>
+
         <DialogHeader>
           <DialogTitle>Create New File</DialogTitle>
           <DialogDescription>
             Enter a name for the new file and select its extension.
           </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit}>
+
           <div className="grid gap-4 py-4">
+
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="filename" className="text-right">
                 Filename
@@ -56,6 +62,7 @@ function NewFileDialog({ isOpen, onClose, onCreateFile }: NewFileDialogProps) {
                 placeholder="main"
               />
             </div>
+
             <div className="grid grid-cols-3 items-center gap-4">
               <Label htmlFor="extension" className="text-right">
                 Extension
@@ -69,6 +76,7 @@ function NewFileDialog({ isOpen, onClose, onCreateFile }: NewFileDialogProps) {
               />
             </div>
           </div>
+
           <DialogFooter>
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
@@ -77,6 +85,7 @@ function NewFileDialog({ isOpen, onClose, onCreateFile }: NewFileDialogProps) {
               Create
             </Button>
           </DialogFooter>
+          
         </form>
       </DialogContent>
     </Dialog>

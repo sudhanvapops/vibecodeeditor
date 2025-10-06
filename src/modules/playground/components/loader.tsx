@@ -1,15 +1,15 @@
 import { Loader2 } from "lucide-react";
 
+
 interface LoadingStepProps {
   currentStep: number;
   step: number;
   label: string;
 }
-const LoadingStep: React.FC<LoadingStepProps> = ({
-  currentStep,
-  step,
-  label,
-}) => (
+
+
+const LoadingStep = ({ currentStep, step, label }:LoadingStepProps) => (
+
   <div className="flex items-center gap-2 mb-2 justify-center h-screen">
     <div
       className={`rounded-full p-1 ${
@@ -20,6 +20,7 @@ const LoadingStep: React.FC<LoadingStepProps> = ({
           : "bg-gray-100"
       }`}
     >
+      
       {currentStep > step ? (
         <svg
           className="h-4 w-4 text-green-500"

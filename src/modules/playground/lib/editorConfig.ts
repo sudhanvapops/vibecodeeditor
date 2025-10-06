@@ -54,6 +54,7 @@ export const getEditorLanguage = (fileExtension: string): string => {
   return languageMap[extension] || "plaintext";
 };
 
+
 export const configureMonaco = (monaco: Monaco) => {
 
   // Define a beautiful modern dark theme
@@ -266,6 +267,7 @@ export const configureMonaco = (monaco: Monaco) => {
     typeRoots: ["node_modules/@types"],
   });
 };
+
 
 export const defaultEditorOptions = {
   // Font settings
