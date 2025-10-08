@@ -14,9 +14,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // Runs after provider login but before session/client side is created.
         async signIn({ user, account }) {
 
-            console.log("🔍 SignIn callback triggered")
-            console.log("👤 User:", user)
-            console.log("🔗 Account:", account)
+            // console.log("🔍 SignIn callback triggered")
+            // console.log("👤 User:", user)
+            // console.log("🔗 Account:", account)
 
             // To check if user exist or its account
             if (!user || !account) {
@@ -102,6 +102,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
 
                 }
+                
                 console.log("✅ SignIn callback completed successfully")
                 return true
 
