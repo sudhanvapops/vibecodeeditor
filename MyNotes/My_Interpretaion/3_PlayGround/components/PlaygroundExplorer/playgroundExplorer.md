@@ -36,3 +36,5 @@ It displays:
 ## handleCreateFile() 
 - documented in new_File_Dialog.md
 
+## handleCreateFolder()
+- documented in new_Folder_Dialog.md
