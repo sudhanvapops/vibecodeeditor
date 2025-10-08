@@ -33,6 +33,7 @@ export function DeleteDialog({
   cancelLabel = "Cancel",
 }: DeleteDialogProps) {
   return (
+    
     <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>

@@ -127,6 +127,20 @@ export function TemplateFileTree({
     setIsNewFolderDialogOpen(false);
   };
 
+  const commonProps = {
+    onFileSelect,
+    selectedFile,
+    level: 0,
+    path: "",
+    onAddFile,
+    onAddFolder,
+    onDeleteFile,
+    onDeleteFolder,
+    onRenameFile,
+    onRenameFolder
+  };
+
+
   return (
 
     <Sidebar>
@@ -138,34 +152,34 @@ export function TemplateFileTree({
 
           <SidebarGroupContent>
 
-          <SidebarGroupLabel>{title}</SidebarGroupLabel>
+            <SidebarGroupLabel>{title}</SidebarGroupLabel>
 
-          {/* Menu for New File & Folder */}
-          <DropdownMenu>
+            {/* Menu for New File & Folder */}
+            <DropdownMenu>
 
-            <DropdownMenuTrigger asChild>
-              {/* SidebarGroupAction is just a helper wrapper for placing an action button next to a sidebar group title — with perfect styling and alignment, without writing manual CSS. */}
-              <SidebarGroupAction>
-                <Plus className="h-4 w-4" />
-              </SidebarGroupAction>
-            </DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
+                {/* SidebarGroupAction is just a helper wrapper for placing an action button next to a sidebar group title — with perfect styling and alignment, without writing manual CSS. */}
+                <SidebarGroupAction>
+                  <Plus className="h-4 w-4" />
+                </SidebarGroupAction>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              
-              <DropdownMenuItem onClick={handleAddRootFile}>
-                <FilePlus className="h-4 w-4 mr-2" />
-                New File
-              </DropdownMenuItem>
+              <DropdownMenuContent align="end">
 
-              <DropdownMenuItem onClick={handleAddRootFolder}>
-                <FolderPlus className="h-4 w-4 mr-2" />
-                New Folder
-              </DropdownMenuItem>
-            </DropdownMenuContent>
+                <DropdownMenuItem onClick={handleAddRootFile}>
+                  <FilePlus className="h-4 w-4 mr-2" />
+                  New File
+                </DropdownMenuItem>
 
-          </DropdownMenu>
+                <DropdownMenuItem onClick={handleAddRootFolder}>
+                  <FolderPlus className="h-4 w-4 mr-2" />
+                  New Folder
+                </DropdownMenuItem>
+              </DropdownMenuContent>
 
-            
+            </DropdownMenu>
+
+
 
           </SidebarGroupContent>
 
@@ -173,40 +187,23 @@ export function TemplateFileTree({
 
         <SidebarGroup>
           <SidebarGroupContent>
+
             <SidebarMenu>
-              {isRootFolder ? (
-                (data as TemplateFolder).items.map((child, index) => (
+
+              {isRootFolder
+                // If Root Folder
+                ? (data as TemplateFolder).items.map((child, index) => (
                   <TemplateNode
                     key={index}
                     item={child}
-                    onFileSelect={onFileSelect}
-                    selectedFile={selectedFile}
-                    level={0}
-                    path=""
-                    onAddFile={onAddFile}
-                    onAddFolder={onAddFolder}
-                    onDeleteFile={onDeleteFile}
-                    onDeleteFolder={onDeleteFolder}
-                    onRenameFile={onRenameFile}
-                    onRenameFolder={onRenameFolder}
+                    {...commonProps}
                   />
                 ))
-              ) : (
-                <TemplateNode
-                  item={data}
-                  onFileSelect={onFileSelect}
-                  selectedFile={selectedFile}
-                  level={0}
-                  path=""
-                  onAddFile={onAddFile}
-                  onAddFolder={onAddFolder}
-                  onDeleteFile={onDeleteFile}
-                  onDeleteFolder={onDeleteFolder}
-                  onRenameFile={onRenameFile}
-                  onRenameFolder={onRenameFolder}
-                />
-              )}
+                // IF Not Root folder
+                : <TemplateNode item={data} {...commonProps} />
+              }
             </SidebarMenu>
+
           </SidebarGroupContent>
         </SidebarGroup>
 
@@ -266,25 +263,35 @@ function TemplateNode({
   onRenameFile,
   onRenameFolder,
 }: TemplateNodeProps) {
+
   const isValidItem = item && typeof item === "object";
-  const isFolder = isValidItem && "folderName" in item;
+  if (!isValidItem) return null;
+  
   const [isNewFileDialogOpen, setIsNewFileDialogOpen] = React.useState(false);
   const [isNewFolderDialogOpen, setIsNewFolderDialogOpen] =
-    React.useState(false);
+  React.useState(false);
   const [isRenameDialogOpen, setIsRenameDialogOpen] = React.useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = React.useState(false);
   const [isOpen, setIsOpen] = React.useState(level < 2);
+  
 
-  if (!isValidItem) return null;
+  const isFolder = isValidItem && "folderName" in item;
 
+  // Handling Files 
+  // if it is not a folder
   if (!isFolder) {
-    const file = item as TemplateFile;
+
+    const file = item as TemplateFile; // telling compiler that ittem is Template File
     const fileName = `${file.filename}.${file.fileExtension}`;
 
+    // Checks if this file is currently selected
     const isSelected =
       selectedFile &&
       selectedFile.filename === file.filename &&
       selectedFile.fileExtension === file.fileExtension;
+
+
+    // Actions for files:
 
     const handleRename = () => {
       setIsRenameDialogOpen(true);
@@ -304,9 +311,12 @@ function TemplateNode({
       setIsRenameDialogOpen(false);
     };
 
+
     return (
+
       <SidebarMenuItem>
         <div className="flex items-center group">
+
           <SidebarMenuButton
             isActive={isSelected}
             onClick={() => onFileSelect?.(file)}
@@ -317,6 +327,7 @@ function TemplateNode({
           </SidebarMenuButton>
 
           <DropdownMenu>
+
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
@@ -326,12 +337,16 @@ function TemplateNode({
                 <MoreHorizontal className="h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end">
+
               <DropdownMenuItem onClick={handleRename}>
                 <Edit3 className="h-4 w-4 mr-2" />
                 Rename
               </DropdownMenuItem>
+
               <DropdownMenuSeparator />
+
               <DropdownMenuItem
                 onClick={handleDelete}
                 className="text-destructive"
@@ -341,6 +356,7 @@ function TemplateNode({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
         </div>
 
         <RenameFileDialog
@@ -363,11 +379,15 @@ function TemplateNode({
         />
       </SidebarMenuItem>
     );
+
   } else {
+
+    // Creates the full path for nested folders.
     const folder = item as TemplateFolder;
     const folderName = folder.folderName;
     const currentPath = path ? `${path}/${folderName}` : folderName;
 
+    // Folder Actions:
     const handleAddFile = () => {
       setIsNewFileDialogOpen(true);
     };
@@ -417,13 +437,16 @@ function TemplateNode({
       setIsRenameDialogOpen(false);
     };
 
+
     return (
       <SidebarMenuItem>
+
         <Collapsible
           open={isOpen}
           onOpenChange={setIsOpen}
           className="group/collapsible [&[data-state=open]>div>button>svg:first-child]:rotate-90"
         >
+          
           <div className="flex items-center group">
             <CollapsibleTrigger asChild>
               <SidebarMenuButton className="flex-1">
