@@ -140,10 +140,13 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
 
     closeFile(fileId) {
+
         const { openFiles, activeFileId } = get()
         const newFiles = openFiles.filter((f) => f.id !== fileId)
 
         // If we are closing the active file switch to another file or clear active
+        // Prepare temporary variables to decide the next active file and editor content.
+        // Start with current active file and content.
         let newActiveFileId = activeFileId
         let newEditorContent = get().editorContent
 
