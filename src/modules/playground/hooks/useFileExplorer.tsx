@@ -6,13 +6,14 @@ import { generateFileId } from "../lib"
 
 
 interface OpenFile extends TemplateFile {
-    id: string,
+    id: string, 
     hasUnsavedChanges: boolean
     content: string,
     originalContent: string
 }
 
 interface FileExplorerState {
+
     playgroundId: string,
     templateData: TemplateFolder | null,
     openFiles: OpenFile[],
@@ -82,6 +83,7 @@ interface FileExplorerState {
 
 // @ts-ignore
 export const useFileExplorer = create<FileExplorerState>((set, get) => ({
+
     templateData: null,
     playgroundId: "",
     openFiles: [] satisfies OpenFile[],
@@ -103,6 +105,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
     // Can be better
     openFile(file) {
+        
         const fileId = generateFileId(file, get().templateData!)
         const { openFiles } = get()
         const existingFile = openFiles.find((f) => f.id === fileId)

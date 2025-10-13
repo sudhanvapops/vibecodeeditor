@@ -55,6 +55,7 @@ const PlaygroundEditor = ({ activeFile,
     const createInlineCompletionProvider = useCallback(
         (monaco: Monaco) => {
             return {
+                
                 provideInlineCompletions: async (model: any, position: any, context: any, token: any) => {
                     console.log("provideInlineCompletions called", {
                         hasSuggestion: !!suggestion,
@@ -127,6 +128,7 @@ const PlaygroundEditor = ({ activeFile,
                         ],
                     }
                 },
+
                 freeInlineCompletions: (completions: any) => {
                     console.log("freeInlineCompletions called")
                 },
