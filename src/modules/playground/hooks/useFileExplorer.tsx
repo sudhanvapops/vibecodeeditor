@@ -84,13 +84,15 @@ interface FileExplorerState {
 // @ts-ignore
 export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
+    // Data
     templateData: null,
     playgroundId: "",
     openFiles: [] satisfies OpenFile[],
     activeFileId: null,
     editorContent: "",
 
-    setTemplateData: (data) => set({ templateData: data }),
+    // setters
+    setTemplateData: (data) => set({ templateData: data }), // folder structure data
     setPlaygroundId(id) {
         set({ playgroundId: id })
     },
@@ -105,18 +107,20 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
     // Can be better
     openFile(file) {
-        
+
+        // Generates File ID
         const fileId = generateFileId(file, get().templateData!)
         const { openFiles } = get()
         const existingFile = openFiles.find((f) => f.id === fileId)
 
+        // If there mark as activeFile, Update the editor window 
         if (existingFile) {
             set({ activeFileId: fileId, editorContent: existingFile.content })
             return
         }
 
+        
         // new file
-
         const newOpenFile: OpenFile = {
             ...file,
             id: fileId,
