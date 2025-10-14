@@ -194,6 +194,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
     async handleAddFile(newFile, parentPath, writeFileSync, instance, saveTemplateData) {
 
+        // If the folder structure isn’t loaded yet → abort.
         const { templateData } = get()
         if (!templateData) return
 
@@ -203,6 +204,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
             const pathParts = parentPath.split("/");
             let currentFolder = updatedTemplateData;
 
+            // Traverse Folder Path EG: src/components -> split it and traverse the array to reach target folder
             for (const part of pathParts) {
                 if (part) {
                     const nextFolder = currentFolder.items.find(
@@ -212,12 +214,17 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 }
             }
 
+            // Add the new file to items[].
             currentFolder.items.push(newFile);
+            // Update state so sidebar/file tree shows the new file.
             set({ templateData: updatedTemplateData });
             toast.success(`Created file: ${newFile.filename}.${newFile.fileExtension}`);
 
+
             // Use the passed saveTemplateData function
+            // its a client func -> calls a server action to store new file in db
             await saveTemplateData(updatedTemplateData);
+
 
             // Sync with web container
             if (writeFileSync) {
@@ -227,6 +234,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 await writeFileSync(filePath, newFile.content || "");
             }
 
+            // Automatically opens the new file in the editor, so the user can start editing immediately.
             get().openFile(newFile);
         } catch (error) {
             console.error("Error adding file:", error);
