@@ -3,3 +3,5 @@
 2. closeAllFile()
 
 3. handleAddFile(newFile, parentPath, writeFileSync, instance, saveTemplateData)
+4. handleAddFolder(folderName, parentPath, instance, saveTemplateData)
+

@@ -245,10 +245,13 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
     
     handleAddFolder: async (newFolder, parentPath, instance, saveTemplateData) => {
+
+        // If No Folder Structure return
         const { templateData } = get();
         if (!templateData) return;
 
         try {
+            
             const updatedTemplateData = JSON.parse(JSON.stringify(templateData)) as TemplateFolder;
             const pathParts = parentPath.split("/");
             let currentFolder = updatedTemplateData;
