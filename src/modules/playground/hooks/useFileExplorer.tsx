@@ -3,6 +3,7 @@ import { create } from "zustand"
 
 import { TemplateFile, TemplateFolder } from "../lib/pathToJson-util"
 import { generateFileId } from "../lib"
+import { sortFileExplorer } from "../lib/sortJson"
 
 
 interface OpenFile extends TemplateFile {
@@ -217,13 +218,14 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
             // Add the new file to items[].
             currentFolder.items.push(newFile);
             // Update state so sidebar/file tree shows the new file.
-            set({ templateData: updatedTemplateData });
+            const sortedUpdatedTemplateData = sortFileExplorer(updatedTemplateData)
+            set({ templateData: sortedUpdatedTemplateData });
             toast.success(`Created file: ${newFile.filename}.${newFile.fileExtension}`);
 
 
             // Use the passed saveTemplateData function
             // its a client func -> calls a server action to store new file in db
-            await saveTemplateData(updatedTemplateData);
+            await saveTemplateData(sortedUpdatedTemplateData);
 
 
             // Sync with web container
@@ -266,11 +268,12 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
             }
 
             currentFolder.items.push(newFolder);
-            set({ templateData: updatedTemplateData });
+            const sortedUpdatedTemplateData = sortFileExplorer(updatedTemplateData)
+            set({ templateData: sortedUpdatedTemplateData });
             toast.success(`Created folder: ${newFolder.folderName}`);
 
             // Use the passed saveTemplateData function
-            await saveTemplateData(updatedTemplateData);
+            await saveTemplateData(sortedUpdatedTemplateData);
 
             // Sync with web container
             if (instance && instance.fs) {
@@ -322,11 +325,12 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 // Close the file using the closeFile method
                 get().closeFile(fileId);
             }
-
-            set({ templateData: updatedTemplateData });
+            
+            const sortedUpdatedTemplateData = sortFileExplorer(updatedTemplateData)
+            set({ templateData: sortedUpdatedTemplateData });
 
             // Use the passed saveTemplateData function
-            await saveTemplateData(updatedTemplateData);
+            await saveTemplateData(sortedUpdatedTemplateData);
             toast.success(`Deleted file: ${file.filename}.${file.fileExtension}`);
         } catch (error) {
             console.error("Error deleting file:", error);
@@ -376,10 +380,12 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
             closeFilesInFolder(folder, parentPath ? `${parentPath}/${folder.folderName}` : folder.folderName);
 
-            set({ templateData: updatedTemplateData });
+            
+            const sortedUpdatedTemplateData = sortFileExplorer(updatedTemplateData)
+            set({ templateData: sortedUpdatedTemplateData });
 
             // Use the passed saveTemplateData function
-            await saveTemplateData(updatedTemplateData);
+            await saveTemplateData(sortedUpdatedTemplateData);
             toast.success(`Deleted folder: ${folder.folderName}`);
         } catch (error) {
             console.error("Error deleting folder:", error);
@@ -446,14 +452,16 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                         : f
                 );
 
+
+                const sortedUpdatedTemplateData = sortFileExplorer(updatedTemplateData)
                 set({
-                    templateData: updatedTemplateData,
+                    templateData: sortedUpdatedTemplateData,
                     openFiles: updatedOpenFiles,
                     activeFileId: activeFileId === oldFileId ? newFileId : activeFileId,
                 });
 
                 // Use the passed saveTemplateData function
-                await saveTemplateData(updatedTemplateData);
+                await saveTemplateData(sortedUpdatedTemplateData);
                 toast.success(`Renamed file to: ${newFilename}.${newExtension}`);
             }
         } catch (error) {
@@ -494,10 +502,12 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 } as TemplateFolder;
                 currentFolder.items[folderIndex] = updatedFolder;
 
-                set({ templateData: updatedTemplateData });
+                
+                const sortedUpdatedTemplateData = sortFileExplorer(updatedTemplateData)
+                set({ templateData: sortedUpdatedTemplateData });
 
                 // Use the passed saveTemplateData function
-                await saveTemplateData(updatedTemplateData);
+                await saveTemplateData(sortedUpdatedTemplateData);
                 toast.success(`Renamed folder to: ${newFolderName}`);
             }
         } catch (error) {
