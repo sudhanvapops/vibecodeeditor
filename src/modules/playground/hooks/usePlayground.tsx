@@ -47,8 +47,6 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
             if (typeof rawContent === "string") {
                 const parsedContent = JSON.parse(rawContent)
-                console.log(parsedContent)
-
                 setTemplateData(()=>sortFileExplorer(parsedContent))
                 toast.success("Playground loaded successfully")
                 return
