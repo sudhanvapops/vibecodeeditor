@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
-import type { TemplateFolder } from "../lib/pathToJson-util";
+import type { TemplateFolder, TemplateItem } from "../lib/pathToJson-util";
 import { getPlaygroundById, saveUpdatedCode } from "../actions";
+import { sortFileExplorer } from "../lib/sortJson";
 
 interface PlaygroundData {
     id: string,
@@ -12,7 +13,7 @@ interface PlaygroundData {
 
 interface UsePlaygroundReturn {
     playgroundData: PlaygroundData | null,
-    templateData: TemplateFolder | null,
+    templateData: TemplateItem | null,
     isLoading: boolean,
     error: string | null,
     loadPlayground: () => Promise<void>
@@ -23,7 +24,7 @@ interface UsePlaygroundReturn {
 export const usePlayground = (id: string): UsePlaygroundReturn => {
 
     const [playgroundData, setPlaygroundData] = useState<PlaygroundData | null>(null)
-    const [templateData, setTemplateData] = useState<TemplateFolder | null>(null)
+    const [templateData, setTemplateData] = useState<TemplateItem | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
@@ -37,6 +38,7 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
             setIsLoading(true)
             setError(null)
 
+            // db call
             const data = await getPlaygroundById(id)
 
             // @ts-ignore
@@ -45,7 +47,9 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
             if (typeof rawContent === "string") {
                 const parsedContent = JSON.parse(rawContent)
-                setTemplateData(parsedContent)
+                console.log(parsedContent)
+
+                setTemplateData(()=>sortFileExplorer(parsedContent))
                 toast.success("Playground loaded successfully")
                 return
             }
