@@ -73,9 +73,7 @@ const MainPlaygroudPage = () => {
   useEffect(() => {
 
     if (templateData && !openFiles.length) {
-      // @ts-ignore
       setTemplateData(templateData)
-      // A chain of type erros
     }
 
   }, [templateData, setTemplateData, openFiles.length])
@@ -525,8 +523,7 @@ const MainPlaygroudPage = () => {
                             <ResizableHandle />
                             <ResizablePanel defaultSize={50} >
                               <WebContainerPreview
-                                // @ts-ignore
-                                templateData={templateData} // ! a chain of type erros
+                                templateData={templateData}
                                 instance={instance}
                                 writeFileSync={writeFileSync}
                                 isLoading={containerLoading}

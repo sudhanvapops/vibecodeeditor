@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
-import type { TemplateFolder, TemplateItem } from "../lib/pathToJson-util";
+import type { TemplateFolder } from "../lib/pathToJson-util";
 import { getPlaygroundById, saveUpdatedCode } from "../actions";
 import { sortFileExplorer } from "../lib/sortJson";
 
@@ -13,7 +13,7 @@ interface PlaygroundData {
 
 interface UsePlaygroundReturn {
     playgroundData: PlaygroundData | null,
-    templateData: TemplateItem | null,
+    templateData: TemplateFolder | null,
     isLoading: boolean,
     error: string | null,
     loadPlayground: () => Promise<void>
@@ -24,7 +24,7 @@ interface UsePlaygroundReturn {
 export const usePlayground = (id: string): UsePlaygroundReturn => {
 
     const [playgroundData, setPlaygroundData] = useState<PlaygroundData | null>(null)
-    const [templateData, setTemplateData] = useState<TemplateItem | null>(null)
+    const [templateData, setTemplateData] = useState<TemplateFolder | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 

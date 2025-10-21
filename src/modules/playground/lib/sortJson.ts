@@ -1,18 +1,6 @@
-interface FileNode {
-  filename: string;
-  fileExtension: string;
-  content: string;
-}
+import { TemplateFile,TemplateFolder } from "./pathToJson-util";
 
-interface FolderNode {
-  folderName: string;
-  items: (FileNode | FolderNode)[];
-}
-
-type TreeNode = FileNode | FolderNode;
-
-
-export const sortFileExplorer = (node: TreeNode): TreeNode => {
+export const sortFileExplorer = (node: TemplateFolder): TemplateFolder => {
 
   if (!('items' in node) || !Array.isArray(node.items)) {
     return node;
@@ -21,12 +9,12 @@ export const sortFileExplorer = (node: TreeNode): TreeNode => {
   console.log("Sort Renderd")
 
   const folders = node.items
-    .filter((item): item is FolderNode => (
+    .filter((item): item is TemplateFolder => (
       "folderName" in item
     ))
-    .map(folder => sortFileExplorer(folder) as FolderNode)
+    .map(folder => sortFileExplorer(folder) as TemplateFolder)
 
-  const files: FileNode[] = node.items.filter((item): item is FileNode => (
+  const files: TemplateFile[] = node.items.filter((item): item is TemplateFile => (
     "filename" in item
   ))
 
