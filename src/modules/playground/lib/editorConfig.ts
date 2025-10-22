@@ -167,8 +167,8 @@ export const configureMonaco = (monaco: Monaco) => {
       "scrollbarSlider.activeBackground": "#6E7681BB",
       
       // Minimap
-      "minimap.background": "#161B22",
-      "minimap.selectionHighlight": "#264F78",
+      // "minimap.background": "#161B22",
+      // "minimap.selectionHighlight": "#264F78",
       
       // Find/Replace
       "editor.findMatchBackground": "#9E6A03",
@@ -278,7 +278,7 @@ export const defaultEditorOptions = {
   
   // Layout
   minimap: { 
-    enabled: true,
+    enabled: false,
     size: "proportional",
     showSlider: "mouseover"
   },
