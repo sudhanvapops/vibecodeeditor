@@ -1,12 +1,20 @@
 import { TemplateFile,TemplateFolder } from "./pathToJson-util";
 
+
+/** This Function Is to Sort the Folders in the File Explorer
+  * Seprate Folder and Files
+  * Sorts Folders First
+  * Files later
+  * Recursivly
+  * and then put folders first to array and files latter
+*/ 
 export const sortFileExplorer = (node: TemplateFolder): TemplateFolder => {
 
   if (!('items' in node) || !Array.isArray(node.items)) {
     return node;
   }
 
-  console.log("Sort Renderd")
+  // console.log("Sort Renderd")
 
   const folders = node.items
     .filter((item): item is TemplateFolder => (

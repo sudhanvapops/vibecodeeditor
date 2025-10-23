@@ -5815,6 +5815,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"monaco-editor-textmate@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "monaco-editor-textmate@npm:4.0.0"
+  peerDependencies:
+    monaco-editor: 0.x.x
+    monaco-textmate: ^3.0.0
+  checksum: 10c0/f5594c8640c672081bfd0b8831566a9c05e82a1b2fdd65a043d8ab89eef01ea0acc99e916434cdf490ccd389e99640cf5abdcd551b53af4b740e92b47450df8d
+  languageName: node
+  linkType: hard
+
 "monaco-editor-with-textmate@npm:^1.0.11":
   version: 1.0.11
   resolution: "monaco-editor-with-textmate@npm:1.0.11"
@@ -7778,6 +7788,7 @@ __metadata:
     ioredis: "npm:^5.7.0"
     lucide-react: "npm:^0.542.0"
     monaco-editor: "npm:^0.53.0"
+    monaco-editor-textmate: "npm:^4.0.0"
     monaco-editor-with-textmate: "npm:^1.0.11"
     monaco-textmate: "npm:^3.0.1"
     motion: "npm:^12.23.12"

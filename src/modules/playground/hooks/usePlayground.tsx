@@ -86,6 +86,7 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
     const saveTemplateData = useCallback(async (data: TemplateFolder) => {
         try {
+            // DB call 
             const result = await saveUpdatedCode(id, data)
             if (result == null){
                 throw new Error("Failed to save changes: unauthorized or not found")
