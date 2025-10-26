@@ -5,7 +5,6 @@ import Editor, { type Monaco } from "@monaco-editor/react"
 import { TemplateFile } from "../lib/pathToJson-util"
 import { configureMonaco, defaultEditorOptions, getEditorLanguage } from "../lib/editorConfig"
 
-
 interface PlaygroundEditorProps {
 
     activeFile: TemplateFile | undefined
@@ -22,7 +21,8 @@ interface PlaygroundEditorProps {
 }
 
 
-const PlaygroundEditor = ({ activeFile,
+const PlaygroundEditor = ({ 
+    activeFile,
     content,
     onContentChange,
     suggestion,
@@ -47,6 +47,8 @@ const PlaygroundEditor = ({ activeFile,
     const tabCommandRef = useRef<any>(null)
 
 
+    
+
     // Generate unique ID for each suggestion
     const generateSuggestionId = () => `suggestion-${Date.now()}-${Math.random()}`
 
@@ -55,7 +57,7 @@ const PlaygroundEditor = ({ activeFile,
     const createInlineCompletionProvider = useCallback(
         (monaco: Monaco) => {
             return {
-                
+
                 provideInlineCompletions: async (model: any, position: any, context: any, token: any) => {
                     console.log("provideInlineCompletions called", {
                         hasSuggestion: !!suggestion,
@@ -319,7 +321,7 @@ const PlaygroundEditor = ({ activeFile,
         }
     }, [suggestion, suggestionPosition, activeFile, createInlineCompletionProvider])
 
-    
+
     const handleEditorDidMount = (editor: any, monaco: Monaco) => {
         editorRef.current = editor
         monacoRef.current = monaco
