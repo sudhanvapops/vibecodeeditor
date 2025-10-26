@@ -24,7 +24,7 @@
   <a href="https://next-auth.js.org/"><img src="https://img.shields.io/badge/NextAuth.js-3B82F6?logo=auth0&logoColor=white" alt="NextAuth.js"/></a>
   <br>
   <!-- Testing & Utilities -->
-  <a href="https://chai.js.org/"><img src="https://img.shields.io/badge/Chai%20Aur%20Code-FF2D55?logo=youtube&logoColor=white" alt="Chai aur Code"/></a>
+  <a href="[[https://chai.js.org/](https://www.youtube.com/@HiteshCodeLab)](https://www.youtube.com/@HiteshCodeLab)"><img src="https://img.shields.io/badge/Chai%20Aur%20Code-FF2D55?logo=youtube&logoColor=white" alt="Hitesh Choudhary"/></a>
   <br>
   <!-- Deployment & License -->
   <a href="https://vercel.com/"><img src="https://img.shields.io/badge/Vercel-000000?logo=vercel&logoColor=white" alt="Vercel"/></a>
