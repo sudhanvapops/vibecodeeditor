@@ -12,6 +12,8 @@
     You’re checking currentUser() — good. Make sure you also verify that the user owns this playground before updating. ✅
 
 
+6. Add socket connection to Ai suggestion 
+
 ### Fix Bug
 
 1. File viewer upgrade any library to show folder strucure 

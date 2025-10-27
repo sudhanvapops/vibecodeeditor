@@ -160,8 +160,10 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
         }, [])
 
 
+    // To reject the ai suggestion
     const rejectSuggestion = useCallback((editor: any) => {
         setState((currentState) => {
+            
             if (editor && currentState.decoration.length > 0) {
                 editor.deltaDecorations(currentState.decoration, [])
             }
