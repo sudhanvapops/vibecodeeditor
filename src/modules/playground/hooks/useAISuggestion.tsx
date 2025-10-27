@@ -29,21 +29,26 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
     });
 
 
+    // Toggeling suggestion
     const toggleEnabled = useCallback(() => {
         setState((prev) => ({ ...prev, isEnabled: !prev.isEnabled }))
     }, [])
 
 
+    // Fetching Suggestions from API call
     const fetchSuggestion = useCallback(async (type: string, editor: any) => {
 
         setState((currentState) => {
 
+            // If suggestions are disabled → do nothing.
             if (!currentState.isEnabled) return currentState
 
+            // If editor doesn’t exist → do nothing.
             if (!editor) return currentState
 
-            const model = editor.getModel()
-            const cursorPosition = editor.getPosition()
+            // Getting code + cursor
+            const model = editor.getModel() // gives the entire code as text.
+            const cursorPosition = editor.getPosition() // give cursor location.
 
             if (!model || !cursorPosition) return currentState
             const newState = { ...currentState, isLoading: true };
@@ -52,6 +57,7 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
             (async () => {
                 try {
 
+                    // Building the request Payload
                     const payload = {
                         fileContent: model.getValue(),
                         cursorLine: cursorPosition.lineNumber - 1,
@@ -59,6 +65,7 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
                         suggestionType: type
                     }
 
+                    // Sends POST request to your backend
                     const res = await fetch("/api/code-completion", {
                         method: "POST",
                         headers: {
@@ -67,6 +74,7 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
                         body: JSON.stringify(payload)
                     })
 
+                    // Handeling the response
                     if (!res.ok) {
                         throw new Error(`API Response failed fetchSuggestion ${res.status}`)
                     }
@@ -107,27 +115,36 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
     }, [])
 
 
-    const acceptSuggestion = useCallback(() => {
+    // inserts the accepted suggestion into the Monaco editor once the user confirms it (e.g., presses Tab or Enter).
+    const acceptSuggestion = useCallback(
+
         (editor: any, monaco: any) => {
+
+            // Setting the current state 
             setState((currentState) => {
+
+                // If any required info is missing, it just returns without changing anything.
                 if (!currentState.suggestion || !currentState.position || !editor || !monaco) {
                     return currentState;
                 }
 
                 const { line, column } = currentState.position;
-                // making onaco comapatable
+                // making Monaco comapatable
+                // Removes things like “1: ” or “2: ” that may appear if the model formatted its output as numbered lines.
                 const sanitizedSuggestion = currentState.suggestion.replace(/^\d+:\s*/gm, "");
 
-                // automatically write the edits
+
+                // inserts the text directly into the editor.
                 editor.executeEdits("", [
                     {
-                        range: new monaco.Range(line, column, line, column),
+                        range: new monaco.Range(line, column, line, column), // defines where in the document the text should be inserted
                         text: sanitizedSuggestion,
-                        forceMoveMarkers: true,
+                        forceMoveMarkers: true, // makes Monaco update cursor positions and markers properly.
                     }
                 ]);
 
 
+                // Removing decorations (UI highlights)
                 if (editor && currentState.decoration.length > 0) {
                     editor.deltaDecorations(currentState.decoration, [])
                 }
@@ -139,8 +156,8 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
                     decoration: []
                 }
             })
-        }
-    }, [])
+
+        }, [])
 
 
     const rejectSuggestion = useCallback((editor: any) => {
