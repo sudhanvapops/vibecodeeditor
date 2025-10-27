@@ -5,6 +5,7 @@ import Editor, { type Monaco } from "@monaco-editor/react"
 import { TemplateFile } from "../lib/pathToJson-util"
 import { configureMonaco, defaultEditorOptions, getEditorLanguage } from "../lib/editorConfig"
 
+
 interface PlaygroundEditorProps {
 
     activeFile: TemplateFile | undefined
@@ -33,6 +34,7 @@ const PlaygroundEditor = ({
     onTriggerSuggestion,
 }: PlaygroundEditorProps) => {
 
+
     const editorRef = useRef<any>(null)
     const monacoRef = useRef<Monaco | null>(null)
     const inlineCompletionProviderRef = useRef<any>(null)
@@ -47,18 +49,20 @@ const PlaygroundEditor = ({
     const tabCommandRef = useRef<any>(null)
 
 
-    
-
     // Generate unique ID for each suggestion
     const generateSuggestionId = () => `suggestion-${Date.now()}-${Math.random()}`
 
 
     // Create inline completion provider
-    const createInlineCompletionProvider = useCallback(
-        (monaco: Monaco) => {
+    // This function creates (returns) an object that conforms to Monaco’s InlineCompletionsProvider Interface
+    const createInlineCompletionProvider = useCallback((monaco: Monaco) => {
+
             return {
 
+                // his async function is called automatically by Monaco every time the cursor moves or user types
+                // (when inline suggestions are enabled).
                 provideInlineCompletions: async (model: any, position: any, context: any, token: any) => {
+
                     console.log("provideInlineCompletions called", {
                         hasSuggestion: !!suggestion,
                         hasPosition: !!suggestionPosition,
@@ -84,11 +88,14 @@ const PlaygroundEditor = ({
                     const currentLine = position.lineNumber
                     const currentColumn = position.column
 
+                    // You don’t want to show the suggestion if the user has moved their cursor far away.
                     const isPositionMatch =
                         currentLine === suggestionPosition.line &&
                         currentColumn >= suggestionPosition.column &&
                         currentColumn <= suggestionPosition.column + 2 // Small tolerance
+                        // The small tolerance (±2 columns) ensures minor cursor movement doesn’t cancel the suggestion too easily.
 
+                    
                     if (!isPositionMatch) {
                         console.log("Position mismatch", {
                             current: `${currentLine}:${currentColumn}`,
@@ -97,6 +104,9 @@ const PlaygroundEditor = ({
                         return { items: [] }
                     }
 
+                    // Save this suggestion for later
+                    // This remembers which suggestion is being displayed.
+                    // So when user presses Tab, the editor knows what to insert.
                     const suggestionId = generateSuggestionId()
                     currentSuggestionRef.current = {
                         text: suggestion,
@@ -131,6 +141,7 @@ const PlaygroundEditor = ({
                     }
                 },
 
+                // The freeInlineCompletions function is a cleanup hook.
                 freeInlineCompletions: (completions: any) => {
                     console.log("freeInlineCompletions called")
                 },
@@ -153,6 +164,7 @@ const PlaygroundEditor = ({
 
     // Accept current suggestion with double-acceptance prevention
     const acceptCurrentSuggestion = useCallback(() => {
+
         console.log("acceptCurrentSuggestion called", {
             hasEditor: !!editorRef.current,
             hasMonaco: !!monacoRef.current,
@@ -173,6 +185,7 @@ const PlaygroundEditor = ({
         }
 
         // Set flags IMMEDIATELY to prevent any race conditions
+        // This ensures that even if Tab or similar key is pressed twice quickly, only one suggestion is applied
         isAcceptingSuggestionRef.current = true
         suggestionAcceptedRef.current = true
 
@@ -246,7 +259,7 @@ const PlaygroundEditor = ({
             setTimeout(() => {
                 suggestionAcceptedRef.current = false
                 console.log("Reset suggestionAcceptedRef flag")
-            }, 1000) // Increased delay to 1 second
+            }, 2000) // Increased delay to 2 second
         }
     }, [clearCurrentSuggestion, onAcceptSuggestion])
 
@@ -268,6 +281,7 @@ const PlaygroundEditor = ({
 
     // Update inline completions when suggestion changes
     useEffect(() => {
+
         if (!editorRef.current || !monacoRef.current) return
 
         const editor = editorRef.current
@@ -302,6 +316,7 @@ const PlaygroundEditor = ({
             const language = getEditorLanguage(activeFile?.fileExtension || "")
             const provider = createInlineCompletionProvider(monaco)
 
+            // Then, later in your component, this provider is registered: of  createInlineCompletionProvider
             inlineCompletionProviderRef.current = monaco.languages.registerInlineCompletionsProvider(language, provider)
 
             // Small delay to ensure editor is ready, then trigger suggestions
@@ -323,6 +338,7 @@ const PlaygroundEditor = ({
 
 
     const handleEditorDidMount = (editor: any, monaco: Monaco) => {
+        
         editorRef.current = editor
         monacoRef.current = monaco
         console.log("Editor instance mounted:", !!editorRef.current)
@@ -417,6 +433,7 @@ const PlaygroundEditor = ({
 
         // Listen for cursor position changes to hide suggestions when moving away
         editor.onDidChangeCursorPosition((e: any) => {
+
             if (isAcceptingSuggestionRef.current) return
 
             const newPosition = e.position
@@ -473,6 +490,7 @@ const PlaygroundEditor = ({
                 clearCurrentSuggestion()
             }
 
+            
             // Trigger context-aware suggestions on certain typing patterns
             if (e.changes.length > 0 && !suggestionAcceptedRef.current) {
                 const change = e.changes[0]

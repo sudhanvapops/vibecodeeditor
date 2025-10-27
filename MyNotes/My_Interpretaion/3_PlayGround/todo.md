@@ -12,17 +12,17 @@
     You’re checking currentUser() — good. Make sure you also verify that the user owns this playground before updating. ✅
 
 
-6. Add socket connection to Ai suggestion 
+6. Add socket connection to Ai suggestion
 
 ### Fix Bug
 
-1. File viewer upgrade any library to show folder strucure 
+1. File viewer upgrade any library to show folder strucure
 or 
-✅ show folder first and then files 
+✅ show folder first and then files
 
 
 
-### 2.store files to bucket Consider 
+### 2.store files to bucket Consider
 
 1. Store as Git Repo (Like StackBlitz does)
 When saving → Initialize a private GitHub repo via API and push files

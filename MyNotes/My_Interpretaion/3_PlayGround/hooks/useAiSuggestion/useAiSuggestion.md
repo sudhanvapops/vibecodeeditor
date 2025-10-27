@@ -1,5 +1,3 @@
-
-
 1. 🎯 Goal
 
 - The useAISuggestions hook manages AI-powered code completions in your editor (like Monaco).

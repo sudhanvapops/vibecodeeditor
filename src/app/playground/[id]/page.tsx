@@ -358,7 +358,7 @@ const MainPlaygroudPage = () => {
         />
 
         {/* A wrapper that creates the main content area to the right of the sidebar */}
-        <SidebarInset> 
+        <SidebarInset>
 
           <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
             <SidebarTrigger className='-ml-1' />
@@ -514,7 +514,7 @@ const MainPlaygroudPage = () => {
                           }
 
                         />
-                        
+
                       </ResizablePanel>
 
                       {
