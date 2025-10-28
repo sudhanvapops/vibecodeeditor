@@ -28,12 +28,14 @@ const PlaygroundEditor = ({
     onRejectSuggestion,
     onTriggerSuggestion,
 }: PlaygroundEditorProps) => {
+    
     const editorRef = useRef<any>(null)
     const monacoRef = useRef<Monaco | null>(null)
     const providerRef = useRef<any>(null)
     const suggestionAcceptedRef = useRef(false)
 
     const handleEditorDidMount = (editor: any, monaco: Monaco) => {
+        
         editorRef.current = editor
         monacoRef.current = monaco
 
@@ -99,6 +101,7 @@ const PlaygroundEditor = ({
 
     // Register inline completions provider dynamically
     useEffect(() => {
+
         if (!monacoRef.current || !activeFile) return
 
         // Dispose previous provider
@@ -114,7 +117,9 @@ const PlaygroundEditor = ({
 
         // Register provider for the current language
         providerRef.current = monaco.languages.registerInlineCompletionsProvider(language, {
+
             provideInlineCompletions: async (model, position, context, token) => {
+
                 console.log("provideInlineCompletions called", {
                     hasSuggestion: !!suggestion,
                     hasPosition: !!suggestionPosition,
@@ -134,6 +139,7 @@ const PlaygroundEditor = ({
                     return { items: [] }
                 }
 
+                // sanitize the suggetsion
                 const cleanSuggestion = suggestion.replace(/\r/g, "")
                 
                 console.log("Returning inline completion:", cleanSuggestion.substring(0, 50))
@@ -151,11 +157,13 @@ const PlaygroundEditor = ({
                     }]
                 }
             },
+
             freeInlineCompletions: () => {
                 console.log("freeInlineCompletions called")
             }
         })
 
+        // cleaning up
         return () => {
             if (providerRef.current) {
                 providerRef.current.dispose()
@@ -164,8 +172,10 @@ const PlaygroundEditor = ({
         }
     }, [activeFile, suggestion, suggestionPosition])
 
+
     // Trigger inline suggestion when suggestion changes
     useEffect(() => {
+
         if (!editorRef.current || !suggestion || !suggestionPosition) return
 
         const editor = editorRef.current
@@ -197,6 +207,7 @@ const PlaygroundEditor = ({
 
     // Update language when file changes
     useEffect(() => {
+        
         if (!activeFile || !monacoRef.current || !editorRef.current) return
         const model = editorRef.current.getModel()
         if (!model) return

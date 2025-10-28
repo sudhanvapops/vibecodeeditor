@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -10,28 +10,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import {
   Bot,
-  Code,
   FileText,
-  Import,
   Loader2,
   Power,
   PowerOff,
-  Braces,
-  Variable
 } from "lucide-react";
 import React from "react";
 import { cn } from "@/lib/utils";
@@ -55,14 +42,28 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
   loadingProgress = 0,
   activeFeature,
 }) => {
+
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  
-  
- 
+  // Using call back to prevent un  necssary re rednders of the functions
+  const handleToggle = useCallback(() => {
+    onToggle(!isEnabled)
+  }, [onToggle, isEnabled])
+
+  const handleOpenChat = useCallback(()=>{
+    setIsChatOpen(true)
+  },[])
+
+  const handleCloseChat = useCallback(()=>{
+    setIsChatOpen(false)
+  },[])
+
+
   return (
     <>
       <DropdownMenu>
+
+        {/* Trigger */}
         <DropdownMenuTrigger asChild>
           <Button
             size="sm"
@@ -76,12 +77,15 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
             )}
             onClick={(e) => e.preventDefault()}
           >
+
             {suggestionLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Bot className="h-4 w-4" />
             )}
+
             <span>AI</span>
+
             {isEnabled ? (
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             ) : (
@@ -89,7 +93,11 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
             )}
           </Button>
         </DropdownMenuTrigger>
+
+
         <DropdownMenuContent align="end" className="w-72">
+
+          {/* Ai Assistant */}
           <DropdownMenuLabel className="flex items-center justify-between py-2">
             <div className="flex items-center gap-2">
               <Bot className="h-4 w-4 text-muted-foreground" />
@@ -108,6 +116,7 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
             </Badge>
           </DropdownMenuLabel>
 
+          {/* Progress bar for loading or not loading */}
           {suggestionLoading && activeFeature && (
             <div className="px-3 pb-3">
               <div className="space-y-2">
@@ -125,17 +134,21 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
 
           <DropdownMenuSeparator />
 
+          {/* On off Ai Button */}
           <DropdownMenuItem
-            onClick={() => onToggle(!isEnabled)}
+            onClick={handleToggle}
             className="py-2.5 cursor-pointer"
           >
+
             <div className="flex items-center justify-between w-full">
+
               <div className="flex items-center gap-3">
                 {isEnabled ? (
                   <Power className="h-4 w-4 text-muted-foreground" />
                 ) : (
                   <PowerOff className="h-4 w-4 text-muted-foreground" />
                 )}
+
                 <div>
                   <div className="text-sm font-medium">
                     {isEnabled ? "Disable" : "Enable"} AI
@@ -145,6 +158,7 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
                   </div>
                 </div>
               </div>
+
               <div className={cn(
                 "w-8 h-4 rounded-full border transition-all duration-200 relative",
                 isEnabled
@@ -161,8 +175,9 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
 
           <DropdownMenuSeparator />
 
+          {/* Open Chat */}
           <DropdownMenuItem
-            onClick={() => setIsChatOpen(true)}
+            onClick={handleOpenChat}
             className="py-2.5 cursor-pointer"
           >
             <div className="flex items-center gap-3 w-full">
@@ -175,13 +190,14 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
               </div>
             </div>
           </DropdownMenuItem>
+          
         </DropdownMenuContent>
       </DropdownMenu>
 
 
       <AIChatSidePanel
         isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
+        onClose={handleCloseChat}
 
       />
 

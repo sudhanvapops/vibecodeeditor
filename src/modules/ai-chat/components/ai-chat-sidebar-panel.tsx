@@ -11,18 +11,14 @@ import {
     Send,
     User,
     Copy,
-
     X,
-
     Code,
     Sparkles,
     MessageSquare,
     RefreshCw,
-
     Settings,
     Zap,
     Brain,
-
     Search,
     Filter,
     Download,
@@ -68,6 +64,7 @@ const MessageTypeIndicator: React.FC<{
     model?: string;
     tokens?: number;
 }> = ({ type, model, tokens }) => {
+
     const getTypeConfig = (type?: string) => {
         switch (type) {
             case "code_review":
@@ -106,10 +103,12 @@ const MessageTypeIndicator: React.FC<{
     );
 };
 
+
 export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
     isOpen,
     onClose,
 }) => {
+    
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
