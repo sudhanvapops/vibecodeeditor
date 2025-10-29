@@ -5,7 +5,7 @@
 import {createHighlighter } from "shiki"
 
 export const highlighter = await createHighlighter({
-    themes: ["dark-plus"],
+    themes: ["dark-plus","light-plus"],
     langs:[
         "javascript",
         "typescript",

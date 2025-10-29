@@ -24,6 +24,8 @@ import { useParams } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
+
+
 const MainPlaygroudPage = () => {
 
   const { id } = useParams<{ id: string }>()
@@ -70,6 +72,7 @@ const MainPlaygroudPage = () => {
   useEffect(() => {
     setPlaygroundId(id)
   }, [id, setPlaygroundId])
+
 
   useEffect(() => {
 
@@ -154,95 +157,95 @@ const MainPlaygroudPage = () => {
   }
 
 
-  const handleSave = useCallback(async (fileId?: string) => {
+  const handleSave = useCallback(
 
-    const targetFileId = fileId || activeFileId;
-    if (!targetFileId) return;
+    async (fileId?: string) => {
 
-    const fileToSave = openFiles.find((f) => f.id === targetFileId);
+      const targetFileId = fileId || activeFileId;
+      if (!targetFileId) return;
 
-    if (!fileToSave) return;
+      const fileToSave = openFiles.find((f) => f.id === targetFileId);
 
-    const latestTemplateData = useFileExplorer.getState().templateData;
-    if (!latestTemplateData) return
+      if (!fileToSave) return;
 
-
-    try {
-
-      const filePath = findFilePath(fileToSave, latestTemplateData);
-      if (!filePath) {
-        toast.error(
-          `Could not find path for file: ${fileToSave.filename}.${fileToSave.fileExtension}`
-        );
-        return;
-      }
+      const latestTemplateData = useFileExplorer.getState().templateData;
+      if (!latestTemplateData) return
 
 
-      const updatedTemplateData = JSON.parse(
-        JSON.stringify(latestTemplateData)
-      );
+      try {
 
-      // @ts-ignore
-      const updateFileContent = (items: any[]) =>
-        // @ts-ignore
-        items.map((item) => {
-          if ("folderName" in item) {
-            return { ...item, items: updateFileContent(item.items) };
-          } else if (
-            item.filename === fileToSave.filename &&
-            item.fileExtension === fileToSave.fileExtension
-          ) {
-            return { ...item, content: fileToSave.content };
-          }
-          return item;
-        });
-
-
-      updatedTemplateData.items = updateFileContent(
-        updatedTemplateData.items
-      );
-
-
-      // Sync with WebContainer
-      if (writeFileSync) {
-        await writeFileSync(filePath, fileToSave.content);
-        lastSyncedContent.current.set(fileToSave.id, fileToSave.content);
-        if (instance && instance.fs) {
-          await instance.fs.writeFile(filePath, fileToSave.content);
+        const filePath = findFilePath(fileToSave, latestTemplateData);
+        if (!filePath) {
+          toast.error(
+            `Could not find path for file: ${fileToSave.filename}.${fileToSave.fileExtension}`
+          );
+          return;
         }
-      }
 
-      const newTemplateData = await saveTemplateData(updatedTemplateData);
-      // ! 
-      // @ts-ignore
-      setTemplateData(()=>sortFileExplorer(newTemplateData || updatedTemplateData));
+        // TO Make a Deep Copy
+        const updatedTemplateData: TemplateFolder = JSON.parse(
+          JSON.stringify(latestTemplateData)
+        );
+
+        // @ts-ignore
+        const updateFileContent = (items: any[]) =>
+          // @ts-ignore
+          items.map((item) => {
+            if ("folderName" in item) {
+              return { ...item, items: updateFileContent(item.items) };
+            } else if (
+              item.filename === fileToSave.filename &&
+              item.fileExtension === fileToSave.fileExtension
+            ) {
+              return { ...item, content: fileToSave.content };
+            }
+            return item;
+          });
 
 
-      // Update open files
-      const updatedOpenFiles = openFiles.map((f) =>
-        f.id === targetFileId
-          ? {
-            ...f,
-            content: fileToSave.content,
-            originalContent: fileToSave.content,
-            hasUnsavedChanges: false,
+        updatedTemplateData.items = updateFileContent(
+          updatedTemplateData.items
+        );
+
+
+        // Sync with WebContainer
+        if (writeFileSync) {
+          await writeFileSync(filePath, fileToSave.content);
+          lastSyncedContent.current.set(fileToSave.id, fileToSave.content);
+          if (instance && instance.fs) {
+            await instance.fs.writeFile(filePath, fileToSave.content);
           }
-          : f
-      );
-      setOpenFiles(updatedOpenFiles);
+        }
 
-      toast.success(
-        `Saved ${fileToSave.filename}.${fileToSave.fileExtension}`
-      );
+        const newTemplateData = await saveTemplateData(updatedTemplateData);
+        setTemplateData(sortFileExplorer(newTemplateData || updatedTemplateData));
 
-    } catch (error) {
-      console.error("Error saving file:", error);
-      toast.error(
-        `Failed to save ${fileToSave.filename}.${fileToSave.fileExtension}`
-      );
-      throw error;
-    }
-  }, [
+
+        // Update open files
+        const updatedOpenFiles = openFiles.map((file) =>
+          file.id === targetFileId
+            ? {
+              ...file,
+              content: fileToSave.content,
+              originalContent: fileToSave.content,
+              hasUnsavedChanges: false,
+            }
+            : file
+        );
+        setOpenFiles(updatedOpenFiles);
+
+        toast.success(
+          `Saved ${fileToSave.filename}.${fileToSave.fileExtension}`
+        );
+
+      } catch (error) {
+        console.error("Error saving file:", error);
+        toast.error(
+          `Failed to save ${fileToSave.filename}.${fileToSave.fileExtension}`
+        );
+        throw error;
+      }
+    }, [
     activeFileId,
     openFiles,
     writeFileSync,
@@ -254,6 +257,7 @@ const MainPlaygroudPage = () => {
 
 
   const handleSaveAll = async () => {
+
     const unsavedFiles = openFiles.filter((f) => f.hasUnsavedChanges);
 
     if (unsavedFiles.length === 0) {
@@ -268,6 +272,7 @@ const MainPlaygroudPage = () => {
       toast.error("Failed to save some files");
     }
   };
+
 
   // S Key Down Event
   useEffect(() => {
@@ -284,6 +289,10 @@ const MainPlaygroudPage = () => {
   }, [handleSave]);
 
 
+  useEffect(() => {
+    // What to Write
+  }, [isPreviewVisible])
+
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center h-[calc(100vh-4rem)] p-4">
@@ -298,6 +307,7 @@ const MainPlaygroudPage = () => {
       </div>
     );
   }
+
 
   // Loading state
   if (isLoading) {
@@ -325,6 +335,7 @@ const MainPlaygroudPage = () => {
     );
   }
 
+
   // No template data
   if (!templateData) {
     return (
@@ -343,6 +354,7 @@ const MainPlaygroudPage = () => {
 
 
   return (
+
     <TooltipProvider>
       <>
         <TemplateFileTree
@@ -362,10 +374,14 @@ const MainPlaygroudPage = () => {
         <SidebarInset>
 
           <header className='flex h-16 shrink-0 items-center gap-2 border-b px-4'>
+
             <SidebarTrigger className='-ml-1' />
             <Separator orientation='vertical' className='mr-2 h-4' />
 
+
+            {/* Upper Bar */}
             <div className='flex flex-1 items-center gap-2'>
+
               <div className='flex flex-col flex-1'>
                 <h1 className='text-sm font-medium'>
                   {playgroundData?.title || "Code Playground"}
@@ -377,8 +393,9 @@ const MainPlaygroudPage = () => {
               </div>
 
               <div className="flex items-center gap-1">
+
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <Button
                       size="sm"
                       variant="outline"
@@ -415,18 +432,23 @@ const MainPlaygroudPage = () => {
 
 
                 <DropdownMenu>
+
                   <DropdownMenuTrigger asChild>
                     <Button size="sm" variant="outline">
                       <Settings className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
+
                   <DropdownMenuContent align="end">
+
                     <DropdownMenuItem
                       onClick={() => setisPreviewVisible(!isPreviewVisible)}
                     >
                       {isPreviewVisible ? "Hide" : "Show"} Preview
                     </DropdownMenuItem>
+
                     <DropdownMenuSeparator />
+
                     <DropdownMenuItem onClick={() => closeAllFiles()}>
                       Close All Files
                     </DropdownMenuItem>
@@ -438,121 +460,124 @@ const MainPlaygroudPage = () => {
             </div>
           </header>
 
+
           <div className='h-[calc(100vh-4rem)]'>
-            {
-              openFiles.length > 0 ? (
-                <div className='h-full flex flex-col'>
-                  <div className='border-b bg-muted/30'>
-                    <Tabs value={activeFileId || ""} onValueChange={setActiveFileId}>
-                      <div className="flex items-center justify-between px-4 py-2">
-                        <TabsList className="h-8 bg-transparent p-0">
-                          {openFiles.map((file) => (
-                            <TabsTrigger
-                              key={file.id}
-                              value={file.id}
-                              className="relative h-8 px-3 data-[state=active]:bg-background data-[state=active]:shadow-sm group"
+
+            <div className='h-full flex flex-col'>
+
+              <div className='border-b bg-muted/30'>
+                <Tabs value={activeFileId || ""} onValueChange={setActiveFileId}>
+                  <div className="flex items-center justify-between px-4 py-2">
+                    <TabsList className="h-8 bg-transparent p-0">
+                      {openFiles.map((file) => (
+                        <TabsTrigger
+                          key={file.id}
+                          value={file.id}
+                          className="relative h-8 px-3 data-[state=active]:bg-background data-[state=active]:shadow-sm group"
+                        >
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-3 w-3" />
+                            <span>
+                              {file.filename}.{file.fileExtension}
+                            </span>
+                            {file.hasUnsavedChanges && (
+                              <span className="h-2 w-2 rounded-full bg-orange-500" />
+                            )}
+                            <span
+                              className="ml-2 h-4 w-4 hover:bg-destructive hover:text-destructive-foreground rounded-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                closeFile(file.id);
+                              }}
                             >
-                              <div className="flex items-center gap-2">
-                                <FileText className="h-3 w-3" />
-                                <span>
-                                  {file.filename}.{file.fileExtension}
-                                </span>
-                                {file.hasUnsavedChanges && (
-                                  <span className="h-2 w-2 rounded-full bg-orange-500" />
-                                )}
-                                <span
-                                  className="ml-2 h-4 w-4 hover:bg-destructive hover:text-destructive-foreground rounded-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    closeFile(file.id);
-                                  }}
-                                >
-                                  <X className="h-3 w-3" />
-                                </span>
-                              </div>
-                            </TabsTrigger>
-                          ))}
-                        </TabsList>
+                              <X className="h-3 w-3" />
+                            </span>
+                          </div>
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
 
-                        {openFiles.length > 1 && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={closeAllFiles}
-                            className="h-6 px-2 text-xs cursor-pointer"
-                          >
-                            Close All
-                          </Button>
-                        )}
-                      </div>
-                    </Tabs>
+                    {openFiles.length > 1 && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={closeAllFiles}
+                        className="h-6 px-2 text-xs cursor-pointer"
+                      >
+                        Close All
+                      </Button>
+                    )}
                   </div>
+                </Tabs>
+              </div>
 
-                  <div className='flex-1 flex'>
-                    <ResizablePanelGroup
-                      direction='horizontal'
-                      className='h-full'
-                    >
+              <div className='flex-1 flex'>
 
-                      <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
+                <ResizablePanelGroup
+                  direction='horizontal'
+                  className='h-full'
+                >
+
+                  <ResizablePanel defaultSize={isPreviewVisible ? 50 : 100}>
+                    <div className="h-full w-full transition-all">
+                      {openFiles.length > 0 ? (
                         <PlaygroundEditor
                           activeFile={activeFile}
                           content={activeFile?.content || ""}
                           onContentChange={(value) => {
-                            activeFileId && updateFileContent(activeFileId, value)
+                            activeFileId && updateFileContent(activeFileId, value);
                           }}
-
                           suggestion={aiSuggestions.suggestion}
                           suggestionLoading={aiSuggestions.isLoading}
                           suggestionPosition={aiSuggestions.position}
-                          onAcceptSuggestion={(editor, monaco) => aiSuggestions.acceptSuggestion(editor, monaco)}
-
+                          onAcceptSuggestion={(editor, monaco) =>
+                            aiSuggestions.acceptSuggestion(editor, monaco)
+                          }
                           onRejectSuggestion={(editor) =>
                             aiSuggestions.rejectSuggestion(editor)
                           }
                           onTriggerSuggestion={(type, editor) =>
                             aiSuggestions.fetchSuggestion(type, editor)
                           }
-
                         />
+                      ) : (
+                        <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-4">
+                          <FileText className="h-16 w-16 text-gray-300" />
+                          <div className="text-center">
+                            <p className="text-lg font-medium">No files open</p>
+                            <p className="text-sm text-gray-500">
+                              Select a file from the sidebar to start editing
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </ResizablePanel>
 
-                      </ResizablePanel>
+                  {/* The Preview stays hidden but mounted */}
+                  {isPreviewVisible && <ResizableHandle />}
 
-                      {
-                        isPreviewVisible && (
-                          <>
-                            <ResizableHandle />
-                            <ResizablePanel defaultSize={50} >
-                              <WebContainerPreview
-                                templateData={templateData}
-                                instance={instance}
-                                writeFileSync={writeFileSync}
-                                isLoading={containerLoading}
-                                error={containerError}
-                                serverUrl={serverUrl!} // ? Check it 
-                                forceResetup={false}
-                              />
-                            </ResizablePanel>
-                          </>
-                        )
-                      }
+                  <ResizablePanel
+                    defaultSize={isPreviewVisible ? 50 : 0}
+                    style={{ display: isPreviewVisible ? "block" : "none" }}
+                  >
+                    <WebContainerPreview
+                      templateData={templateData}
+                      instance={instance}
+                      writeFileSync={writeFileSync}
+                      isLoading={containerLoading}
+                      error={containerError}
+                      serverUrl={serverUrl!}
+                      forceResetup={false}
+                    />
+                  </ResizablePanel>
 
-                    </ResizablePanelGroup>
-                  </div>
 
-                </div>
-              ) : (
-                <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-4">
-                  <FileText className="h-16 w-16 text-gray-300" />
-                  <div className="text-center">
-                    <p className="text-lg font-medium">No files open</p>
-                    <p className="text-sm text-gray-500">
-                      Select a file from the sidebar to start editing
-                    </p>
-                  </div>
-                </div>
-              )
-            }
+                </ResizablePanelGroup>
+
+              </div>
+
+            </div>
           </div>
 
         </SidebarInset>
