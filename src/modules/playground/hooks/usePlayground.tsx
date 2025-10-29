@@ -17,7 +17,7 @@ interface UsePlaygroundReturn {
     isLoading: boolean,
     error: string | null,
     loadPlayground: () => Promise<void>
-    saveTemplateData: (data: TemplateFolder) => Promise<void>
+    saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
 }
 
 
@@ -87,13 +87,17 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
     const saveTemplateData = useCallback(async (data: TemplateFolder) => {
         try {
             // DB call 
-            data = sortFileExplorer(data)
-            const result = await saveUpdatedCode(id, data)
+            const sortedData = sortFileExplorer(data)
+            const result = await saveUpdatedCode(id, sortedData)
             if (result == null){
                 throw new Error("Failed to save changes: unauthorized or not found")
             }
-            setTemplateData(()=>sortFileExplorer(data))
+
+            setTemplateData(sortedData)
             toast.success("Changed saved successfully")
+
+            return sortedData
+
         } catch (error) {
             console.error("Failed to save changes",error)
             toast.error("Failed to save changes")

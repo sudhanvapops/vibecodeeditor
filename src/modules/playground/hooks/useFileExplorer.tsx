@@ -40,26 +40,26 @@ interface FileExplorerState {
         parentPath: string,
         writeFileSync: (filePath: string, content: string) => Promise<void>,
         instance: any,
-        saveTemplateData: (data: TemplateFolder) => Promise<void>
+        saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
     handleAddFolder: (
         newFolder: TemplateFolder,
         parentPath: string,
         instance: any,
-        saveTemplateData: (data: TemplateFolder) => Promise<void>
+        saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
     handleDeleteFile: (
         file: TemplateFile,
         parentPath: string,
-        saveTemplateData: (data: TemplateFolder) => Promise<void>
+        saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
     handleDeleteFolder: (
         folder: TemplateFolder,
         parentPath: string,
-        saveTemplateData: (data: TemplateFolder) => Promise<void>
+        saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
     handleRenameFile: (
@@ -67,14 +67,14 @@ interface FileExplorerState {
         newFilename: string,
         newExtension: string,
         parentPath: string,
-        saveTemplateData: (data: TemplateFolder) => Promise<void>
+        saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
     handleRenameFolder: (
         folder: TemplateFolder,
         newFolderName: string,
         parentPath: string,
-        saveTemplateData: (data: TemplateFolder) => Promise<void>
+        saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
     updateFileContent: (fileId: string, content: string) => void;
