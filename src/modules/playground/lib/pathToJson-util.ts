@@ -228,7 +228,6 @@ async function processDirectory(
  * @param options - Scanning options
  * @returns Promise resolving when the file has been written
  */
-// todo: Reorder json for to show folder first and then files
 export async function saveTemplateStructureToJson(
   templatePath: string, 
   outputPath: string,
@@ -249,9 +248,6 @@ export async function saveTemplateStructureToJson(
       'utf8'
     );
     console.log(`Template structure saved to ${outputPath}`);
-
-
-    
   } catch (error) {
     throw new Error(`Error saving template structure: ${(error as Error).message}`);
   }
