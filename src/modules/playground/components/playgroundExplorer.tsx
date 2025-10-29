@@ -179,11 +179,10 @@ export function TemplateFileTree({
 
             </DropdownMenu>
 
-
-
           </SidebarGroupContent>
 
         </SidebarGroup>
+        
 
         <SidebarGroup>
           <SidebarGroupContent>

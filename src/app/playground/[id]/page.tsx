@@ -16,6 +16,7 @@ import { useFileExplorer } from '@/modules/playground/hooks/useFileExplorer'
 import { usePlayground } from '@/modules/playground/hooks/usePlayground'
 import { findFilePath } from '@/modules/playground/lib'
 import { TemplateFile, TemplateFolder } from '@/modules/playground/lib/pathToJson-util'
+import { sortFileExplorer } from '@/modules/playground/lib/sortJson'
 import WebContainerPreview from '@/modules/webcontainers/components/webContainerPreview'
 import { useWebContainer } from '@/modules/webcontainers/hooks/useWebContainer'
 import { AlertCircle, Bot, FileText, FolderOpen, Save, Settings, X } from 'lucide-react'
@@ -73,7 +74,7 @@ const MainPlaygroudPage = () => {
   useEffect(() => {
 
     if (templateData && !openFiles.length) {
-      setTemplateData(templateData)
+      setTemplateData(sortFileExplorer(templateData))
     }
 
   }, [templateData, setTemplateData, openFiles.length])
@@ -214,7 +215,7 @@ const MainPlaygroudPage = () => {
       const newTemplateData = await saveTemplateData(updatedTemplateData);
       // ! 
       // @ts-ignore
-      setTemplateData(newTemplateData || updatedTemplateData);
+      setTemplateData(()=>sortFileExplorer(newTemplateData || updatedTemplateData));
 
 
       // Update open files
