@@ -161,6 +161,7 @@ export const AIChatSidePanel = ({
     };
 
 
+    // form submit handler
     const handleSendMessage = async (e: React.FormEvent) => {
 
         e.preventDefault();
@@ -265,6 +266,7 @@ export const AIChatSidePanel = ({
     };
 
 
+    // Export chat to Json
     const exportChat = () => {
 
         const chatData = {
@@ -272,13 +274,15 @@ export const AIChatSidePanel = ({
             timestamp: new Date().toISOString(),
         };
 
+        // Creating downloadable content by generating a blob url
         const blob = new Blob([JSON.stringify(chatData, null, 2)], {
             type: "application/json",
         });
 
         const url = URL.createObjectURL(blob);
+        
+        // Create an <a> tag to make a downloadable
         const a = document.createElement("a");
-
         a.href = url;
         a.download = `ai-chat-${new Date().toISOString().split("T")[0]}.json`;
         document.body.appendChild(a);
@@ -289,6 +293,7 @@ export const AIChatSidePanel = ({
     };;
 
 
+    // Filtering the required chat
     const filteredMessages = messages
         .filter((msg) => {
             if (filterType === "all") return true
