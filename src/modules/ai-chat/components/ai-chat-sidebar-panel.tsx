@@ -44,6 +44,8 @@ import {
 import "katex/dist/katex.min.css";
 import Image from "next/image";
 
+
+// There are lot of Type of Chating style We chose this one 
 interface ChatMessage {
     role: "user" | "assistant";
     content: string;
@@ -53,6 +55,7 @@ interface ChatMessage {
     tokens?: number;
     model?: string;
 }
+
 
 interface AIChatSidePanelProps {
     isOpen: boolean;
@@ -108,7 +111,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
     isOpen,
     onClose,
 }) => {
-    
+
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -129,12 +132,14 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
         }
     };
 
+
     useEffect(() => {
         const timeoutId = setTimeout(() => {
             scrollToBottom();
         }, 100);
         return () => clearTimeout(timeoutId);
     }, [messages, isLoading]);
+
 
     const getChatModePrompt = (mode: string, content: string) => {
         switch (mode) {
@@ -148,6 +153,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                 return content
         }
     };
+
 
     const handleSendMessage = async (e: React.FormEvent) => {
 
@@ -176,6 +182,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
         setMessages((prev) => [...prev, newMessage]);
         setInput("");
         setIsLoading(true);
+
 
         try {
             const contextualMessage = getChatModePrompt(chatMode, input.trim());
@@ -262,7 +269,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
+
     };;
 
 
@@ -276,6 +283,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
             return msg.content.toLowerCase().includes(searchTerm.toLowerCase())
         })
 
+
     return (
         <TooltipProvider>
             <>
@@ -288,6 +296,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                     onClick={onClose}
                 />
 
+
                 {/* Side Panel */}
                 <div
                     className={cn(
@@ -295,6 +304,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                         isOpen ? "translate-x-0" : "translate-x-full"
                     )}
                 >
+
                     {/* Enhanced Header */}
                     <div className="shrink-0 border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-sm">
                         <div className="flex items-center justify-between p-6">
@@ -311,8 +321,13 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                                     </p>
                                 </div>
                             </div>
+
+
+                            {/* Settings */}
                             <div className="flex items-center gap-2">
+
                                 <DropdownMenu>
+
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="ghost"
@@ -322,28 +337,35 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                                             <Settings className="h-4 w-4" />
                                         </Button>
                                     </DropdownMenuTrigger>
+
                                     <DropdownMenuContent align="end">
+
                                         <DropdownMenuCheckboxItem
                                             checked={autoSave}
                                             onCheckedChange={setAutoSave}
                                         >
                                             Auto-save conversations
                                         </DropdownMenuCheckboxItem>
+
                                         <DropdownMenuCheckboxItem
                                             checked={streamResponse}
                                             onCheckedChange={setStreamResponse}
                                         >
                                             Stream responses
                                         </DropdownMenuCheckboxItem>
+
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={exportChat}>
                                             <Download className="h-4 w-4 mr-2" />
                                             Export Chat
                                         </DropdownMenuItem>
+
                                         <DropdownMenuItem onClick={() => setMessages([])}>
                                             Clear All Messages
                                         </DropdownMenuItem>
+
                                     </DropdownMenuContent>
+
                                 </DropdownMenu>
 
                                 <Button
@@ -356,6 +378,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                                 </Button>
                             </div>
                         </div>
+
 
                         {/* Enhanced Controls */}
                         <Tabs
@@ -389,7 +412,9 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                                     </TabsTrigger>
                                 </TabsList>
 
+
                                 <div className="flex items-center gap-2">
+
                                     <div className="hidden sm:flex items-center gap-2 text-xs text-zinc-400">
                                         <span className="text-zinc-500">Model:</span>
                                         <select
@@ -402,6 +427,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                                             <option value="llama2">llama2</option>
                                         </select>
                                     </div>
+
                                     <div className="relative">
                                         <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-3 w-3 text-zinc-500" />
                                         <Input
@@ -442,10 +468,12 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                                             </DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
+
                                 </div>
                             </div>
                         </Tabs>
                     </div>
+
 
                     {/* Messages Container */}
                     <div className="flex-1 overflow-y-auto bg-zinc-950">
