@@ -62,13 +62,16 @@ interface AIChatSidePanelProps {
     onClose: () => void;
 }
 
-const MessageTypeIndicator: React.FC<{
+
+// Used in chat replies
+const MessageTypeIndicator = ({ type, model, tokens }: {
     type?: string;
     model?: string;
     tokens?: number;
-}> = ({ type, model, tokens }) => {
+}) => {
 
     const getTypeConfig = (type?: string) => {
+
         switch (type) {
             case "code_review":
                 return { icon: Code, color: "text-blue-400", label: "Code Review" };
@@ -107,10 +110,10 @@ const MessageTypeIndicator: React.FC<{
 };
 
 
-export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
+export const AIChatSidePanel = ({
     isOpen,
     onClose,
-}) => {
+}: AIChatSidePanelProps) => {
 
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState("");
@@ -126,12 +129,13 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
+
+    // To keep the chat at the bootom
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth"});
         }
     };
-
 
     useEffect(() => {
         const timeoutId = setTimeout(() => {
@@ -141,6 +145,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
     }, [messages, isLoading]);
 
 
+    
     const getChatModePrompt = (mode: string, content: string) => {
         switch (mode) {
             case "review":
@@ -158,6 +163,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
     const handleSendMessage = async (e: React.FormEvent) => {
 
         e.preventDefault();
+        
         if (!input.trim() || isLoading) return;
 
         const messageType =
@@ -204,6 +210,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                 }),
             });
 
+            
             if (response.ok) {
                 const data = await response.json();
 
@@ -231,6 +238,7 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                     },
                 ]);
             }
+
         } catch (error) {
             console.error("Error sending message:", error);
             setMessages((prev) => [
@@ -244,7 +252,8 @@ export const AIChatSidePanel: React.FC<AIChatSidePanelProps> = ({
                 },
             ]);
         } finally {
-            setIsLoading(false);
+        scrollToBottom()
+
         }
     };
 
