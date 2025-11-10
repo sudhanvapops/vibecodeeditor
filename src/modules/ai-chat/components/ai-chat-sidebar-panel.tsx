@@ -162,23 +162,24 @@ export const AIChatSidePanel = ({
 
     // Helper function to ensure messages alternate between user and assistant
     const prepareHistoryForAPI = (messages: ChatMessage[]) => {
-        const alternatingMessages: { role: "user" | "assistant"; content: string }[] = [];
-        let lastRole: "user" | "assistant" | null = null;
+        const mergedMessages: { role: "user" | "assistant"; content: string }[] = [];
 
         for (const msg of messages) {
-            // Skip consecutive messages from the same role
-            if (msg.role === lastRole) {
-                continue;
-            }
+            // if last message exists and has the same role → merge content
+            const last = mergedMessages[mergedMessages.length - 1];
 
-            alternatingMessages.push({
-                role: msg.role,
-                content: msg.content
-            });
-            lastRole = msg.role;
+            if (last && last.role === msg.role) {
+                last.content += `\n\n${msg.content}`; // merge with double line break
+            } else {
+                // otherwise push a new message
+                mergedMessages.push({
+                    role: msg.role,
+                    content: msg.content
+                });
+            }
         }
 
-        return alternatingMessages;
+        return mergedMessages;
     };
 
     // form submit handler

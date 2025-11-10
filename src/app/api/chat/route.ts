@@ -154,43 +154,51 @@ async function Ollama(messages: ChatMessage[]): Promise<string> {
 }
 
 
+
+function prepareHistoryForAPI(messages: ChatMessage[]) {
+    const mergedMessages: ChatMessage[] = [];
+
+    for (const msg of messages) {
+        const last = mergedMessages[mergedMessages.length - 1];
+
+        // If last message has same role, merge content
+        if (last && last.role === msg.role) {
+            last.content += `\n\n${msg.content}`;
+        } else {
+            // Otherwise, push new message block
+            mergedMessages.push({
+                role: msg.role,
+                content: msg.content
+            });
+        }
+    }
+
+    return mergedMessages;
+}
+
+
 // Perplexity
 async function Perplexity(messages: ChatMessage[]): Promise<string> {
-
     try {
 
         if (!process.env.PERPLEXITY_API_KEY) {
             throw new Error("Missing PERPLEXITY_API_KEY in environment variables");
         }
 
-        // Ensure messages alternate between user and assistant
+        // Merge consecutive messages (user or assistant)
+        const mergedMessages = prepareHistoryForAPI(messages);
+
+        // Build final message list for API
+        // Add system prompt at the start to define assistant behavior
         const formattedMessages: ChatMessage[] = [
-            { role: "system" as const, content: systemPrompt }
+            { role: "system", content: systemPrompt },
+            ...mergedMessages
         ];
 
-        // Track the last role to ensure alternation
-        let lastRole: "user" | "assistant" | null = null;
-
-        for (const msg of messages) {
-            // Skip consecutive messages from the same role
-            if (msg.role === lastRole) {
-                continue;
-            }
-
-            // Only add user and assistant messages (system is already added)
-            if (msg.role === "user" || msg.role === "assistant") {
-                formattedMessages.push({
-                    role: msg.role,
-                    content: msg.content
-                });
-                lastRole = msg.role;
-            }
-        }
-
-        // Ensure the conversation ends with a user message
-        if (lastRole !== "user") {
-            // Find the last user message and add it
-            const lastUserMessage = messages.reverse().find(m => m.role === "user");
+        // Ensure the last message is from the user
+        const lastMessage = formattedMessages[formattedMessages.length - 1];
+        if (lastMessage.role !== "user") {
+            const lastUserMessage = [...mergedMessages].reverse().find(m => m.role === "user");
             if (lastUserMessage) {
                 formattedMessages.push({
                     role: "user",
@@ -198,6 +206,7 @@ async function Perplexity(messages: ChatMessage[]): Promise<string> {
                 });
             }
         }
+
 
         const response = await fetch("https://api.perplexity.ai/chat/completions", {
             method: "POST",
@@ -220,20 +229,26 @@ async function Perplexity(messages: ChatMessage[]): Promise<string> {
             }),
         });
 
+        // Handle HTTP or API-level errors
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(`Perplexity API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`);
+            throw new Error(
+                `Perplexity API error: ${response.status} ${response.statusText} - ${JSON.stringify(errorData)}`
+            );
         }
 
+        // Parse and extract model response
         const data = await response.json();
 
         if (!data.choices?.[0]?.message?.content) {
             throw new Error("No response from Perplexity AI model");
         }
 
+        // Return the clean assistant response
         return data.choices[0].message.content.trim();
 
     } catch (error) {
+        // Log and rethrow generic error
         console.error("AI generation error:", error);
         throw new Error("Failed to generate AI response");
     }
