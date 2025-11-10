@@ -125,7 +125,7 @@ export const AIChatSidePanel = ({
     const [filterType, setFilterType] = useState<string>("all");
     const [autoSave, setAutoSave] = useState(true);
     const [streamResponse, setStreamResponse] = useState(true);
-    const [model, setModel] = useState<string>("gpt-6");
+    const [model, setModel] = useState<string>("code-lamma");
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -160,6 +160,26 @@ export const AIChatSidePanel = ({
         }
     };
 
+    // Helper function to ensure messages alternate between user and assistant
+    const prepareHistoryForAPI = (messages: ChatMessage[]) => {
+        const alternatingMessages: { role: "user" | "assistant"; content: string }[] = [];
+        let lastRole: "user" | "assistant" | null = null;
+
+        for (const msg of messages) {
+            // Skip consecutive messages from the same role
+            if (msg.role === lastRole) {
+                continue;
+            }
+
+            alternatingMessages.push({
+                role: msg.role,
+                content: msg.content
+            });
+            lastRole = msg.role;
+        }
+
+        return alternatingMessages;
+    };
 
     // form submit handler
     const handleSendMessage = async (e: React.FormEvent) => {
@@ -198,13 +218,15 @@ export const AIChatSidePanel = ({
 
         // build history including the new message
         const contextualMessage = getChatModePrompt(chatMode, input.trim());
+
+        // Get the last 9 messages and ensure they alternate
+        const recentMessages = messages.slice(-9);
+        const alternatingHistory = prepareHistoryForAPI(recentMessages);
+
         const historyForRequest = [
-            ...messages.slice(-9), // last 9 previous messages
-            { role: "user", content: contextualMessage },
-        ].map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-        }));
+            ...alternatingHistory,
+            { role: "user" as const, content: contextualMessage }
+        ]
 
 
         try {
@@ -441,9 +463,8 @@ export const AIChatSidePanel = ({
                                             onChange={(e) => setModel(e.target.value)}
                                             className="bg-zinc-900/60 border border-zinc-800 rounded px-2 py-1 text-zinc-200 focus:outline-none"
                                         >
-                                            <option value="gpt-6">gpt-6</option>
-                                            <option value="codellama">codellama</option>
-                                            <option value="llama2">llama2</option>
+                                            <option value="code-lamma">codellama</option>
+                                            <option value="perplexity">Perplexity</option>
                                         </select>
                                     </div>
 
