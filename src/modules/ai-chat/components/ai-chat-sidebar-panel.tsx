@@ -133,7 +133,7 @@ export const AIChatSidePanel = ({
     // To keep the chat at the bootom
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: "smooth"});
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
         }
     };
 
@@ -165,10 +165,12 @@ export const AIChatSidePanel = ({
     const handleSendMessage = async (e: React.FormEvent) => {
 
         e.preventDefault();
-        
+
+        // prevent empty or duplicate sends
         if (!input.trim() || isLoading) return;
 
         // maps to chat / code_review / error_fix / optimization
+        // determine message type
         const messageType =
             chatMode === "chat"
                 ? "chat"
@@ -179,6 +181,7 @@ export const AIChatSidePanel = ({
                         : "optimization";
 
 
+        // create a new user message
         const newMessage: ChatMessage = {
             role: "user",
             content: input.trim(),
@@ -187,17 +190,26 @@ export const AIChatSidePanel = ({
             type: messageType,
         };
 
-
+        // append to UI immediately
         setMessages((prev) => [...prev, newMessage]);
         setInput("");
         setIsLoading(true);
 
 
+        // build history including the new message
+        const contextualMessage = getChatModePrompt(chatMode, input.trim());
+        const historyForRequest = [
+            ...messages.slice(-9), // last 9 previous messages
+            { role: "user", content: contextualMessage },
+        ].map((msg) => ({
+            role: msg.role,
+            content: msg.content,
+        }));
+
+
         try {
 
-            // Adds Meta Data 
-            const contextualMessage = getChatModePrompt(chatMode, input.trim());
-
+            // send to backend
             const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: {
@@ -206,48 +218,34 @@ export const AIChatSidePanel = ({
                 body: JSON.stringify({
                     message: contextualMessage,
                     // Sends the last 10 messages from the current messages state as history (context).
-                    history: messages.slice(-10).map((msg) => ({
-                        role: msg.role,
-                        content: msg.content,
-                    })),
+                    history: historyForRequest,
                     stream: streamResponse,
                     mode: chatMode,
                     model,
                 }),
             });
 
-            
-            if (response.ok) {
-
-                const data = await response.json();
-
-                // then appends assistant reply
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: "assistant",
-                        content: data.response,
-                        timestamp: new Date(),
-                        id: Date.now().toString(),
-                        type: messageType,
-                        tokens: data.tokens,
-                        model: data.model || "AI Assistant",
-                    },
-                ]);
-            } else {
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        role: "assistant",
-                        content:
-                            "Sorry, I encountered an error while processing your request. Please try again.",
-                        timestamp: new Date(),
-                        id: Date.now().toString(),
-                    },
-                ]);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
             }
 
+            const data = await response.json();
+
+            // then appends assistant reply
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: "assistant",
+                    content: data.response,
+                    timestamp: new Date(),
+                    id: Date.now().toString(),
+                    type: messageType,
+                    tokens: data.tokens,
+                    model: data.model || "AI Assistant",
+                },
+            ]);
         } catch (error) {
+
             console.error("Error sending message:", error);
             setMessages((prev) => [
                 ...prev,
@@ -260,8 +258,8 @@ export const AIChatSidePanel = ({
                 },
             ]);
         } finally {
-        setIsLoading(false);
-
+            setIsLoading(false);
+            setTimeout(scrollToBottom, 100);
         }
     };
 
@@ -280,7 +278,7 @@ export const AIChatSidePanel = ({
         });
 
         const url = URL.createObjectURL(blob);
-        
+
         // Create an <a> tag to make a downloadable
         const a = document.createElement("a");
         a.href = url;
