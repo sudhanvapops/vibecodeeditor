@@ -145,7 +145,8 @@ export const AIChatSidePanel = ({
     }, [messages, isLoading]);
 
 
-    
+
+    // Adds meta-instructions so the AI knows the intent of the user input. Good for controlling responses without changing server logic.
     const getChatModePrompt = (mode: string, content: string) => {
         switch (mode) {
             case "review":
@@ -166,6 +167,7 @@ export const AIChatSidePanel = ({
         
         if (!input.trim() || isLoading) return;
 
+        // maps to chat / code_review / error_fix / optimization
         const messageType =
             chatMode === "chat"
                 ? "chat"
@@ -191,6 +193,8 @@ export const AIChatSidePanel = ({
 
 
         try {
+
+            // Adds Meta Data 
             const contextualMessage = getChatModePrompt(chatMode, input.trim());
 
             const response = await fetch("/api/chat", {
@@ -200,6 +204,7 @@ export const AIChatSidePanel = ({
                 },
                 body: JSON.stringify({
                     message: contextualMessage,
+                    // Sends the last 10 messages from the current messages state as history (context).
                     history: messages.slice(-10).map((msg) => ({
                         role: msg.role,
                         content: msg.content,
@@ -212,8 +217,10 @@ export const AIChatSidePanel = ({
 
             
             if (response.ok) {
+
                 const data = await response.json();
 
+                // then appends assistant reply
                 setMessages((prev) => [
                     ...prev,
                     {
@@ -252,7 +259,7 @@ export const AIChatSidePanel = ({
                 },
             ]);
         } finally {
-        scrollToBottom()
+        setIsLoading(false);
 
         }
     };
