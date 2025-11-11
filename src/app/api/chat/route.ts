@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 import { ChatMessage, ChatRequest } from "./types";
-import { Ollama, Perplexity } from "./AI_Models/index"
+import { codeLamma, Perplexity } from "./AI_Models"
 
 
 
@@ -77,7 +77,7 @@ async function generateAIResponse(messages: ChatMessage[], model: string): Promi
     // Route to correct provider
     switch (selected.trim()) {
         case "code-lamma":
-            return await Ollama(messages,)
+            return await codeLamma(messages)
         case "perplexity":
             return await Perplexity(messages)
         default:

@@ -1,5 +1,5 @@
-import { ChatMessage } from "../types";
 import { systemPrompt } from "../consts"
+import { ChatMessage } from "../types";
 
 
 function prepareHistoryForPerplexity(messages: ChatMessage[]) {

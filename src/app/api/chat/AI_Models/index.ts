@@ -1,4 +1,4 @@
-import { Ollama } from "./ollama"
+import { codeLamma } from "./code-lamma"
 import { Perplexity } from "./perplexity"
 
-export { Perplexity, Ollama }
+export { Perplexity, codeLamma }

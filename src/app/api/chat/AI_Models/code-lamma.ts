@@ -3,7 +3,7 @@ import { ChatMessage } from "../types";
 
 
 // Ollama
-export async function Ollama(messages: ChatMessage[]): Promise<string> {
+export async function codeLamma(messages: ChatMessage[]): Promise<string> {
 
     // Merges everything
     const fullMessages = [

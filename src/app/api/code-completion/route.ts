@@ -3,6 +3,7 @@ import { CodeSuggestionRequest } from "./types"
 
 import { analyzeCodeContext } from "./helper/analtize_content"
 import { buildPrompt } from "./helper/buildPrompt"
+import { codeLamma } from "./AI_models";
 
 
 export async function POST(req: NextRequest) {
@@ -27,7 +28,8 @@ export async function POST(req: NextRequest) {
 
         const prompt = buildPrompt(context, suggestionType)
 
-        const suggestion = await generateSuggestion(prompt)
+        // TODO: Add Model
+        const suggestion = await generateSuggestion(prompt,"")
 
 
         return NextResponse.json({
@@ -51,44 +53,16 @@ export async function POST(req: NextRequest) {
 }
 
 
-async function generateSuggestion(prompt: string): Promise<string> {
+async function generateSuggestion(prompt: string, model: string): Promise<string> {
 
-    try {
-        const response = await fetch("http://localhost:11434/api/generate", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                // ! Improve make an env 
-                // model: "codellama:latest",
-                prompt,
-                stream: false,
-                option: {
-                    // IF this is high it can think out of context 
-                    // ? Read More
-                    temperature: 0.7,
-                    max_tokens: 300,
-                },
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`AI service error: ${response.statusText}`)
-        }
-
-        const data = await response.json()
-        let suggestion = data.response
-
-        // Clean up the suggestion
-        if (suggestion.includes("```")) {
-            const codeMatch = suggestion.match(/```[\w]*\n?([\s\S]*?)```/)
-            suggestion = codeMatch ? codeMatch[1].trim() : suggestion
-        }
-
-        return suggestion
-    } catch (error) {
-        console.error("AI generation error:", error)
-        return "// AI suggestion unavailable"
+    switch (model) {
+        case "code-lamma":
+            return await codeLamma(prompt)
+        // case "perplexity":
+        //     break
+        default:
+            throw new Error(`Unsupported model: ${model}`)
     }
+
+   
 }
