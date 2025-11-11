@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { CodeContext, CodeSuggestionRequest } from "./types"
+import { CodeSuggestionRequest } from "./types"
 
 import { analyzeCodeContext } from "./helper/analtize_content"
 import { buildPrompt } from "./helper/buildPrompt"
