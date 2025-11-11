@@ -155,7 +155,7 @@ async function Ollama(messages: ChatMessage[]): Promise<string> {
 
 
 
-function prepareHistoryForAPI(messages: ChatMessage[]) {
+function prepareHistoryForPerplexity(messages: ChatMessage[]) {
     const mergedMessages: ChatMessage[] = [];
 
     for (const msg of messages) {
@@ -186,7 +186,7 @@ async function Perplexity(messages: ChatMessage[]): Promise<string> {
         }
 
         // Merge consecutive messages (user or assistant)
-        const mergedMessages = prepareHistoryForAPI(messages);
+        const mergedMessages = prepareHistoryForPerplexity(messages);
 
         // Build final message list for API
         // Add system prompt at the start to define assistant behavior
