@@ -27,7 +27,6 @@ export async function POST(req: NextRequest) {
 
         const prompt = buildPrompt(context, suggestionType)
 
-        // TODO: Add Model
         const suggestion = await generateSuggestion(prompt,model)
 
 

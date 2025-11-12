@@ -20,6 +20,8 @@
 or 
 ✅ show folder first and then files
 
+2. ✅ Added Model Selection in Editor Also 
+
 
 
 ### 2.store files to bucket Consider
