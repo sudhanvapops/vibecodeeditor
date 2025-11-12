@@ -4,6 +4,7 @@ export interface CodeSuggestionRequest {
     cursorColumn: number;
     suggestionType: string;
     fileName?: string;
+    model: string
 }
 
 export interface CodeContext {

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useCallback } from "react";
+import { useModelStore } from "../store/modelStore";
 
 interface AISuggestionsState {
     suggestion: string | null;
@@ -27,6 +28,7 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
         decoration: [],
         isEnabled: true,
     });
+
 
 
     // Toggeling suggestion
@@ -62,7 +64,8 @@ export const useAISuggestions = (): UseAISuggestionsReturn => {
                         fileContent: model.getValue(),
                         cursorLine: cursorPosition.lineNumber - 1,
                         cursorColumn: cursorPosition.column - 1,
-                        suggestionType: type
+                        suggestionType: type,
+                        model: useModelStore.getState().modelSelected?.value
                     }
 
                     // Sends POST request to your backend
