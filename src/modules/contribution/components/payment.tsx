@@ -1,7 +1,9 @@
 "use client"
 
-import { useState, ChangeEvent, MouseEvent } from "react"
+import { useState, ChangeEvent, MouseEvent, useEffect } from "react"
 import { CreditCard, HandHeart, Phone, ShoppingBag, Truck } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 interface FormData {
     fullName: string
@@ -11,7 +13,15 @@ interface FormData {
     amount: number
 }
 
+interface RazorpayResponse {
+    razorpay_payment_id: string;
+    razorpay_order_id: string;
+    razorpay_signature: string;
+}
+
 const Payment = () => {
+
+    const router = useRouter()
 
     const [formData, setFormData] = useState<FormData>({
         fullName: "",
@@ -55,21 +65,42 @@ const Payment = () => {
                 color: "#3399cc",
             },
 
-            // handler: async function (response) {
 
-            //     // verify payment on backend
-            //     await fetch("/api/verify-payment", {
-            //         method: "POST",
-            //         body: JSON.stringify(response),
-            //     })
-            // },
+            handler: async (response: RazorpayResponse) => {
+
+                try {
+                    const res = await fetch("/api/payment/verify-payment", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(response),
+                    })
+
+                    if (!res.ok) {
+                        throw new Error("Payment verification failed")
+                    }
+
+                    const data = await res.json()
+
+                    if (data.success) {
+                        toast.success("Payment verified successfully!")
+                        router.push("/contribution/payment")
+                    } else {
+                        toast.error("Payment verification failed!")
+                    }
+
+                } catch (error) {
+                    console.error("Error verifying payment:", error)
+                    toast.error("Something went wrong while verifying your payment. Please try again.")
+                }
+            }
         }
 
-        if (typeof window !== undefined){
+        if (typeof window !== "undefined") {
             const rzp = new (window as any).Razorpay(options)
             rzp.open()
         }
     }
+
 
     const handleRazorpayPayment = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
         e.preventDefault()
@@ -80,7 +111,7 @@ const Payment = () => {
         }
 
         try {
-            const res = await fetch("/api/create-order", {
+            const res = await fetch("/api/payment/create-order", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -89,9 +120,10 @@ const Payment = () => {
             })
 
             const orderData = await res.json()
+            console.log(orderData)
 
-            if (orderData?.id) {
-                alert("Failed to create RazorPay Order")
+            if (!orderData?.id) {
+                toast.error("Failed to create RazorPay Order")
                 return
             }
 

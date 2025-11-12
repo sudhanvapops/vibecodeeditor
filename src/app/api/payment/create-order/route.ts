@@ -13,9 +13,8 @@ export async function POST(req: NextRequest) {
         })
 
         const options = {
-            "amount": Number(amount) * 100,
+            "amount": Number.parseInt(amount) * 100,
             "currency": "INR",
-            "name": "Vibe Code Editor",
             "receipt": "receipt_" + Math.floor(Math.random() * 10000),
             "notes": {
                 note
