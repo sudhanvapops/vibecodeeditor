@@ -35,16 +35,52 @@ const Payment = () => {
         }))
     }
 
+
+    const openRazorpay = (orderId: string, amount: number, fullName: string, number: string, email: string) => {
+
+        const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_API_KEY,
+            amount: amount,
+            currency: "INR",
+            name: "VIbe Code Editor",
+            description: "Payment for Contribution",
+            order_id: orderId,
+            callback_url: `${process.env.URL}/contribution/payment`,
+            prefill: {
+                "name": fullName,
+                "email": email,
+                "contact": number
+            },
+            theme: {
+                color: "#3399cc",
+            },
+
+            // handler: async function (response) {
+
+            //     // verify payment on backend
+            //     await fetch("/api/verify-payment", {
+            //         method: "POST",
+            //         body: JSON.stringify(response),
+            //     })
+            // },
+        }
+
+        if (typeof window !== undefined){
+            const rzp = new (window as any).Razorpay(options)
+            rzp.open()
+        }
+    }
+
     const handleRazorpayPayment = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
         e.preventDefault()
-        
+
         const payload = {
             ...formData,
             amount: formData.amount = totalAmount
         }
 
         try {
-            const res = await fetch("/api/create-order",{
+            const res = await fetch("/api/create-order", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -54,12 +90,12 @@ const Payment = () => {
 
             const orderData = await res.json()
 
-            if(orderData?.id){
+            if (orderData?.id) {
                 alert("Failed to create RazorPay Order")
                 return
             }
 
-            openRazorpay(orderData.id, payload.amount)
+            openRazorpay(orderData.id, payload.amount, payload.fullName, payload.phone, payload.email)
 
         } catch (error) {
             console.error("Error initiating payment:", error)
@@ -67,14 +103,14 @@ const Payment = () => {
     }
 
     return (
-        
+
         <div className="p-4 md:p-8 transition-colors duration-300">
 
             <div className="max-w-6xl mx-auto my-10">
 
                 <div className="mb-8 flex items-center gap-2 justify-center">
-                        <h1 className="text-3xl md:text-4xl font-bold ">Contribute to Us</h1>
-                        <HandHeart className="text-[#d81adb] w-10 h-10" />
+                    <h1 className="text-3xl md:text-4xl font-bold ">Contribute to Us</h1>
+                    <HandHeart className="text-[#d81adb] w-10 h-10" />
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">

@@ -5,31 +5,21 @@ import Razorpay from "razorpay"
 export async function POST(req: NextRequest) {
 
     try {
-        const { amount, fullName, email, phone, note } = await req.json()
+        const { amount, note } = await req.json()
 
         const razorpay = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID!,
-            key_secret: process.env.RAZORPAY_KEY_SECRET!,
+            key_id: process.env.NEXT_PUBLIC_RAZORPAY_TEST_API_KEY!,
+            key_secret: process.env.RAZORPAY_TEST_SECRET_KEY!,
         })
 
         const options = {
             "amount": Number(amount) * 100,
             "currency": "INR",
             "name": "Vibe Code Editor",
-            "description": "Test Transaction",
-            "order_id": "order_" + Math.floor(Math.random() * 1000000),
-            "callback_url": `${process.env.URL}/contribution/payment`,
-            "prefill": {
-                "name": fullName,
-                "email": email,
-                "contact": phone
-            },
+            "receipt": "receipt_" + Math.floor(Math.random() * 10000),
             "notes": {
                 note
             },
-            "theme": {
-                "color": "#3399cc"
-            }
         };
 
         const order = await razorpay.orders.create(options)
