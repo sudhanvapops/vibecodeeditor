@@ -8,8 +8,7 @@ export async function codeLamma(prompt: string) {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                // TODO: Add Model
-                // model: "codellama:latest",
+                model: "codellama:latest",
                 prompt,
                 stream: false,
                 option: {

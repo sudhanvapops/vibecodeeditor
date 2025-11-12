@@ -102,10 +102,12 @@ export function analyzeCodeContext(
     const beforeContext = lines.slice(startLine, line).join("\n");
     const afterContext = lines.slice(line + 1, endLine).join("\n");
 
+
     // Detect language and framework
     const language = detectLanguage(content, fileName);
     const framework = detectFramework(content);
 
+    
     // Analyze code patterns
     const isInFunction = detectInFunction(lines, line);
     const isInClass = detectInClass(lines, line);

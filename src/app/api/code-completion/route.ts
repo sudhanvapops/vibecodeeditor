@@ -12,8 +12,7 @@ export async function POST(req: NextRequest) {
 
         const body: CodeSuggestionRequest = await req.json()
 
-        const { fileContent, cursorLine, cursorColumn, suggestionType, fileName } =
-            body;
+        const { fileContent, cursorLine, cursorColumn, suggestionType, fileName } = body;
 
         // Validate input
         if (!fileContent || cursorLine < 0 || cursorColumn < 0 || !suggestionType) {
@@ -23,7 +22,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-
+        
         const context = analyzeCodeContext(fileContent, cursorLine, cursorColumn, fileName)
 
         const prompt = buildPrompt(context, suggestionType)

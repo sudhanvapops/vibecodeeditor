@@ -1,3 +1,4 @@
 import {codeLamma} from "./code-lamma"
+import { Perplexity } from "./perplexityApi"
 
-export {codeLamma}
+export {codeLamma,Perplexity}

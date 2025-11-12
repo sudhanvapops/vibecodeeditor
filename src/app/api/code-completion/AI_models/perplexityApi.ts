@@ -1,5 +1,5 @@
 // Perplexity
-export async function generateSuggestion(prompt: string): Promise<string> {
+export async function Perplexity(prompt: string): Promise<string> {
     try {
         const response = await fetch("https://api.perplexity.ai/chat/completions", {
             method: "POST",
