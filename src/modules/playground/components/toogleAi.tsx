@@ -19,10 +19,28 @@ import {
   Loader2,
   Power,
   PowerOff,
+  CircleOff,
 } from "lucide-react";
+import { } from "lucide-react"
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { AIChatSidePanel } from "@/modules/ai-chat/components/ai-chat-sidebar-panel";
+
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { useModelStore } from "../store/modelStore";
 
 
 interface ToggleAIProps {
@@ -34,29 +52,38 @@ interface ToggleAIProps {
   activeFeature?: string;
 }
 
-const ToggleAI: React.FC<ToggleAIProps> = ({
+
+const ToggleAI = ({
   isEnabled,
   onToggle,
 
   suggestionLoading,
   loadingProgress = 0,
   activeFeature,
-}) => {
+}: ToggleAIProps) => {
+
+  const { setModel, allModels, modelSelected } = useModelStore()
 
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [open, setOpen] = useState(false)
 
   // Using call back to prevent un  necssary re rednders of the functions
   const handleToggle = useCallback(() => {
     onToggle(!isEnabled)
   }, [onToggle, isEnabled])
 
-  const handleOpenChat = useCallback(()=>{
+  const handleOpenChat = useCallback(() => {
     setIsChatOpen(true)
-  },[])
+  }, [])
 
-  const handleCloseChat = useCallback(()=>{
+  const handleCloseChat = useCallback(() => {
     setIsChatOpen(false)
-  },[])
+  }, [])
+
+  const modelSelect = useCallback((value: string) => {
+    setModel(allModels.find((s) => s.value === value) ??  null)
+    setOpen(false);
+  }, [modelSelected,allModels,setModel,setOpen])
 
 
   return (
@@ -134,6 +161,57 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
 
           <DropdownMenuSeparator />
 
+          {/* Select Model */}
+
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <div className="px-2 py-1.5">
+                <div className="flex items-center justify-between w-full px-3 py-2.5 cursor-pointer rounded-md hover:bg-accent transition-all">
+                  <div className="flex items-center gap-3">
+                    {modelSelected ? (
+                      <modelSelected.icon className="h-4 w-4 text-muted-foreground" />
+                    ) : (
+                      <CircleOff className="h-4 w-4 text-muted-foreground" />
+                    )}
+                    <div>
+                      <div className="text-sm font-medium">
+                        {modelSelected ? modelSelected.label : "Select Model"}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        Choose an AI model
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent
+              className="p-0 w-[200px]"
+              side="left"
+              align="start"
+              sideOffset={12}
+            >
+              <Command>
+                <CommandInput placeholder="Search models..." />
+                <CommandList>
+                  <CommandEmpty>No models found.</CommandEmpty>
+                  <CommandGroup>
+                    {allModels.map((model) => (
+                      <CommandItem
+                        key={model.value}
+                        value={model.value}
+                        onSelect={modelSelect}
+                      >
+                        <model.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                        {model.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+
           {/* On off Ai Button */}
           <DropdownMenuItem
             onClick={handleToggle}
@@ -190,15 +268,15 @@ const ToggleAI: React.FC<ToggleAIProps> = ({
               </div>
             </div>
           </DropdownMenuItem>
-          
+
         </DropdownMenuContent>
+
       </DropdownMenu>
 
 
       <AIChatSidePanel
         isOpen={isChatOpen}
         onClose={handleCloseChat}
-
       />
 
     </>
