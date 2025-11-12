@@ -83,7 +83,7 @@ const Payment = () => {
 
                     if (data.success) {
                         toast.success("Payment verified successfully!")
-                        router.push("/contribution/payment")
+                        router.push("/contribution")
                     } else {
                         toast.error("Payment verification failed!")
                     }
