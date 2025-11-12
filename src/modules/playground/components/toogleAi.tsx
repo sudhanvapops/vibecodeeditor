@@ -164,6 +164,7 @@ const ToggleAI = ({
           {/* Select Model */}
 
           <Popover open={open} onOpenChange={setOpen}>
+
             <PopoverTrigger asChild>
               <div className="px-2 py-1.5">
                 <div className="flex items-center justify-between w-full px-3 py-2.5 cursor-pointer rounded-md hover:bg-accent transition-all">
@@ -185,16 +186,20 @@ const ToggleAI = ({
                 </div>
               </div>
             </PopoverTrigger>
+
             <PopoverContent
               className="p-0 w-[200px]"
               side="left"
               align="start"
               sideOffset={12}
             >
+
               <Command>
                 <CommandInput placeholder="Search models..." />
+
                 <CommandList>
                   <CommandEmpty>No models found.</CommandEmpty>
+
                   <CommandGroup>
                     {allModels.map((model) => (
                       <CommandItem
@@ -207,8 +212,10 @@ const ToggleAI = ({
                       </CommandItem>
                     ))}
                   </CommandGroup>
+                  
                 </CommandList>
               </Command>
+
             </PopoverContent>
           </Popover>
 

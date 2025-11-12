@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import { ThemeProvider } from "@/components/providers/themeProviders";
 import { Toaster } from "@/components/ui/sonner";
+import Script from 'next/script';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,12 @@ export default async function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          <Script
+              id="razorpay-checkout-script"
+              src="https://checkout.razorpay.com/v1/checkout.js"
+              strategy="beforeInteractive"
+              crossOrigin="anonymous"
+            />
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
