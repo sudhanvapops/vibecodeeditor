@@ -81,7 +81,7 @@ const ToggleAI = ({
   }, [])
 
   const modelSelect = useCallback((value: string) => {
-    setModel(allModels.find((s) => s.value === value) ??  null)
+    setModel(allModels.find((s) => s.value === value) ||  null)
     setOpen(false);
   }, [modelSelected,allModels,setModel,setOpen])
 

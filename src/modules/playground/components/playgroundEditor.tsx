@@ -194,12 +194,12 @@ const PlaygroundEditor = ({
         
         if (isAtPosition) {
             // We're at the right position, show the suggestion
-            console.log("Already at position, showing suggestion")
+            // console.log("Already at position, showing suggestion")
             setTimeout(() => {
                 editor.trigger("ai-suggestion", "editor.action.inlineSuggest.trigger", null)
             }, 50)
         } else {
-            console.log("Not at position yet, waiting for user to navigate there")
+            // console.log("Not at position yet, waiting for user to navigate there")
             // The suggestion will show automatically when user moves cursor to that position
         }
         

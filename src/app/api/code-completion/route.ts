@@ -3,7 +3,7 @@ import { CodeSuggestionRequest } from "./types"
 
 import { analyzeCodeContext } from "./helper/analtize_content"
 import { buildPrompt } from "./helper/buildPrompt"
-import { codeLamma } from "./AI_models";
+import { codeLamma, Perplexity } from "./AI_models";
 
 
 export async function POST(req: NextRequest) {
@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
         const body: CodeSuggestionRequest = await req.json()
 
-        const { fileContent, cursorLine, cursorColumn, suggestionType, fileName } = body;
+        const { fileContent, cursorLine, cursorColumn, suggestionType, fileName,model } = body;
 
         // Validate input
         if (!fileContent || cursorLine < 0 || cursorColumn < 0 || !suggestionType) {
@@ -22,13 +22,13 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        
+
         const context = analyzeCodeContext(fileContent, cursorLine, cursorColumn, fileName)
 
         const prompt = buildPrompt(context, suggestionType)
 
         // TODO: Add Model
-        const suggestion = await generateSuggestion(prompt,"")
+        const suggestion = await generateSuggestion(prompt,model)
 
 
         return NextResponse.json({
@@ -57,8 +57,10 @@ async function generateSuggestion(prompt: string, model: string): Promise<string
     switch (model) {
         case "code-lamma":
             return await codeLamma(prompt)
-        // case "perplexity":
-        //     break
+        case "perplexity":
+            return await Perplexity(prompt)
+        case "null":
+            return "No Model Selected"
         default:
             throw new Error(`Unsupported model: ${model}`)
     }

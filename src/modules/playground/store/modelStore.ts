@@ -15,7 +15,7 @@ interface ModelState {
 
 export const useModelStore = create<ModelState>((set) => ({
 
-    modelSelected: null,
+    modelSelected: { value: "null", label: "None", icon: XCircle },
     allModels: [
         { value: "code-lamma", label: "Code Lamma", icon: Bot },
         { value: "perplexity", label: "Perplexity", icon: Bot },
