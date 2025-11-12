@@ -55,12 +55,14 @@ export default function Header() {
                                         >
                                             Docs
                                         </Link> */}
-                                        {/* <Link
-                                            href="/pricing"
-                                            className="text-sm text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 transition-colors"
+                                        <Link
+                                            href="/contribution/payment"
+                                            className="text-sm font-bold text-zinc-600 hover:text-zinc-900 dark:text-zinc-100 dark:hover:text-[#1adb41] transition-colors"
+                                            prefetch={true}
+                                            
                                         >
-                                            Pricing
-                                        </Link> */}
+                                            Contribute
+                                        </Link>
                                         {/* <Link
                                             href="https://codesnippetui.pro/templates?utm_source=codesnippetui.com&utm_medium=header"
                                             target="_blank"
@@ -73,7 +75,7 @@ export default function Header() {
                                         </Link> */}
                                     </div>
 
-                                    <span className="hidden sm:flex justify-center items-center w-[40vw] font-bold">Unlesh The Spark Within You</span>
+                                    {/* <span className="hidden sm:flex justify-center items-center w-[40vw] font-bold">Unlesh The Spark Within You</span> */}
                                 </div>
 
                                 {/* Right side items */}

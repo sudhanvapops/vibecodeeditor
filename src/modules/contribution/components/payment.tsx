@@ -12,6 +12,7 @@ interface FormData {
 }
 
 const Payment = () => {
+
     const [formData, setFormData] = useState<FormData>({
         fullName: "",
         email: "",
@@ -19,6 +20,10 @@ const Payment = () => {
         note: "",
         amount: 20,
     })
+
+    const enteredAmount = Number(formData.amount) || 20
+    const platformFee = enteredAmount * (0.02)
+    const totalAmount = enteredAmount + platformFee
 
     const handleInputChange = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -30,31 +35,53 @@ const Payment = () => {
         }))
     }
 
-    const handleRazorpayPayment = (e: MouseEvent<HTMLButtonElement>): void => {
+    const handleRazorpayPayment = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
         e.preventDefault()
-        alert("Redirecting to Razorpay payment gateway...")
+        
+        const payload = {
+            ...formData,
+            amount: formData.amount = totalAmount
+        }
+
+        try {
+            const res = await fetch("/api/create-order",{
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            })
+
+            const orderData = await res.json()
+
+            if(orderData?.id){
+                alert("Failed to create RazorPay Order")
+                return
+            }
+
+            openRazorpay(orderData.id, payload.amount)
+
+        } catch (error) {
+            console.error("Error initiating payment:", error)
+        }
     }
 
     return (
-        <div className="min-h-screen bg-gray-100 text-gray-900 dark:bg-black dark:text-white p-4 md:p-8 transition-colors duration-300">
+        
+        <div className="p-4 md:p-8 transition-colors duration-300">
 
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-6xl mx-auto my-10">
 
-                <div className="mb-8">
-                    <div className="flex items-center gap-2">
+                <div className="mb-8 flex items-center gap-2 justify-center">
                         <h1 className="text-3xl md:text-4xl font-bold ">Contribute to Us</h1>
                         <HandHeart className="text-[#d81adb] w-10 h-10" />
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400">
-                        Complete Your Payment
-                    </p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
 
                     {/* Payment Information */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 mb-6 shadow-sm dark:shadow-lg transition-colors">
+                        <div className="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 mb-6 shadow-sm dark:shadow-lg transition-colors">
                             <div className="flex items-center mb-6">
                                 <Truck className="w-6 h-6 mr-3 text-blue-500 dark:text-blue-400" />
                                 <h2 className="text-xl font-semibold">Payment Information</h2>
@@ -111,7 +138,7 @@ const Payment = () => {
                                 {/* Amount */}
                                 <div>
                                     <label className="block text-sm font-medium mb-2">
-                                        Amount Min: ₹20
+                                        Amount (Min: ₹20)
                                     </label>
                                     <input
                                         type="number"
@@ -142,11 +169,10 @@ const Payment = () => {
                         </div>
                     </div>
 
-
                     {/* Payment Summary */}
                     <div className="lg:col-span-1">
 
-                        <div className="bg-white dark:bg-gray-900 rounded-lg p-6 shadow-sm dark:shadow-lg transition-colors">
+                        <div className="bg-gray-100 dark:bg-gray-900 rounded-lg p-6 shadow-sm dark:shadow-lg transition-colors">
                             <div className="flex items-center mb-6">
                                 <ShoppingBag className="w-6 h-6 mr-3 text-green-500 dark:text-green-400" />
                                 <h2 className="text-xl font-semibold">Payment Summary</h2>
@@ -155,7 +181,7 @@ const Payment = () => {
                             <div className="max-h-64 space-y-4 mb-6">
                                 {/* Order Details*/}
                                 <div className="flex items-start space-x-3">
-                                   
+
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-medium text-sm truncate">
                                             Contribution
@@ -176,23 +202,28 @@ const Payment = () => {
                                     <span>Subtotal</span>
                                     <span>{formData.amount && `₹${formData.amount}`}</span>
                                 </div>
-                               
-                                {/* <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
-                                    <span>Discount</span>
-                                    <span>-₹500</span>
-                                </div> */}
+
+                                <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
+                                    <span>Platform Fee 2%</span>
+                                    <span>+₹{platformFee}</span>
+                                </div>
 
                                 <div className="border-t border-gray-300 dark:border-gray-700 pt-2">
                                     <div className="flex justify-between text-lg font-bold">
                                         <span>Total</span>
-                                        <span>{formData.amount && `₹${formData.amount}`}</span>
+                                        <span><span>Pay ₹{totalAmount}</span></span>
                                     </div>
                                 </div>
                             </div>
 
                             <button
                                 onClick={handleRazorpayPayment}
-                                disabled={ !formData.fullName || !formData.email || !(formData.amount >= 20) || !formData.phone}
+                                disabled={
+                                    !formData.fullName ||
+                                    !formData.email ||
+                                    !formData.phone ||
+                                    enteredAmount < 20
+                                }
                                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-lg mt-6 transition-colors duration-200 flex items-center justify-center space-x-2  disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed"
                             >
                                 <CreditCard className="w-5 h-5" />
