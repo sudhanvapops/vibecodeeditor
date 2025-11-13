@@ -75,6 +75,7 @@ export const config = {
     matcher: [
         "/((?!.+\\.[\\w]+$|_next).*)", // ✅ all routes except static files & _next
         "/",                           // ✅ homepage only
+        "/((?!api/send-mail|api/razorpay|api/webhook).*)",
         "/(api|trpc)(.*)"              // ✅ all /api/... and /trpc/... routes
     ]
 }

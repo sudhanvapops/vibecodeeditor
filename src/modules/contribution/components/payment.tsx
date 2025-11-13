@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, ChangeEvent, MouseEvent, useEffect } from "react"
+import { useState, ChangeEvent, MouseEvent } from "react"
 import { CreditCard, HandHeart, Phone, ShoppingBag, Truck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
@@ -82,6 +82,17 @@ const Payment = () => {
                     const data = await res.json()
 
                     if (data.success) {
+
+                        await fetch("/api/send-mail", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                to: email,
+                                subject: "Payment Success!",
+                                message: `<h2>Your payment is confirmed 🎉${fullName} of ${amount} </h2>`,
+                            }),
+                        });
+
                         toast.success("Payment verified successfully!")
                         router.push("/contribution")
                     } else {
@@ -103,6 +114,7 @@ const Payment = () => {
 
 
     const handleRazorpayPayment = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
+
         e.preventDefault()
 
         const payload = {

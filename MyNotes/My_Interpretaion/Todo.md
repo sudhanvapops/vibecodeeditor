@@ -1,12 +1,14 @@
 ### Todo 
 
+✅ Integrate Payment System
+✅ SEND MAIL after Payment
+✅ COntribution PAGe
+
 Ownership-based access control
-Integrate Payment System
 Rate limiting
 
 ZOD
 Queue
 redis cache
 
-Payment Integration
 ROleBased
