@@ -1,10 +1,20 @@
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import crypto from "crypto"
+import { auth } from "@/auth";
 
 export async function POST(req: NextRequest) {
 
     try {
+        const session = await auth()
+
+        if(!session){
+            return NextResponse.json({
+                "allowed":"Unauthorized"
+            },{
+                status:401
+            })
+        }
 
         const body = await req.json()
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body

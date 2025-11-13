@@ -1,11 +1,23 @@
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import Razorpay from "razorpay"
+import { auth } from "@/auth";
 
 
 export async function POST(req: NextRequest) {
 
     try {
+
+        const session = await auth()
+
+        if (!session){
+            return NextResponse.json({
+                "auth":"Unauthorized"
+            },{
+                status:401
+            })
+        }
+        
         const { amount, note, fullName, email, phone } = await req.json()
 
         if (!amount || !fullName || !email || !phone) {
@@ -41,6 +53,7 @@ export async function POST(req: NextRequest) {
                 phone,
                 note,
                 status: "PENDING",
+                userId: session?.user?.id || null 
             }
         })
 
