@@ -56,7 +56,7 @@ export default function Header() {
                                             Docs
                                         </Link> */}
                                         <Link
-                                            href="/contribution/payment"
+                                            href="/contribution"
                                             className="text-sm font-bold text-zinc-600 hover:text-zinc-900 dark:text-zinc-100 dark:hover:text-[#1adb41] transition-colors"
                                             prefetch={true}
                                             
