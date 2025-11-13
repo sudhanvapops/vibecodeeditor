@@ -63,6 +63,7 @@ export default auth((req: NextRequest & { auth: any }) => {
     }
 
     console.log("✅ Allowing request to continue")
+    console.log("➡️ Middleware for:", req.nextUrl.pathname);
     return NextResponse.next()
 
 })
