@@ -126,9 +126,9 @@ model Payment {
   razorpayPaymentId String?
   razorpaySignature String?
   note              String?
-  email             String?
-  phone             String?
-  name              String?
+  email             String
+  phone             String
+  name              String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
