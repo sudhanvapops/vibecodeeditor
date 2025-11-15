@@ -163,7 +163,37 @@ const Payment = () => {
                     console.error("Error verifying payment:", error)
                     toast.error("Something went wrong while verifying your payment. Please try again.")
                 }
+            },
+
+            modal: {
+                ondismiss: async function () {
+                    console.log("User closed Razorpay without paying");
+
+                    try {
+                        const res = await fetch("/api/payment/order-cancelled", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ orderId }),
+                        })
+
+                        if (!res.ok) {
+                            throw new Error("Payment Cancel failed")
+                        }
+
+                        const data = await res.json()
+
+                        if (data.success) {
+                            toast.error("Payment cancelled");
+                            router.push("/contribution")
+                        } 
+
+                    } catch (error) {
+                        console.error("Error verifying payment:", error)
+                        toast.error("Something went wrong while verifying your payment. Please try again.")
+                    }
+                }
             }
+
         }
 
         if (typeof window !== "undefined") {
@@ -174,7 +204,6 @@ const Payment = () => {
 
 
     const handleRazorpayPayment = async (e: MouseEvent<HTMLButtonElement>): Promise<void> => {
-
         e.preventDefault()
 
         const payload = {

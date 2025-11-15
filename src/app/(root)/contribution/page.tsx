@@ -2,17 +2,18 @@ import { Heart, Sparkles, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import Carousel from "@/modules/contribution/components/Contributions/Carousel/Carousel";
 
-import { getContributionSummary } from "@/modules/contribution/actions/contriButionSummary";
+import { contributorCount } from "@/modules/contribution/actions/contributorCount";
+import { getTotalAmount } from "@/modules/contribution/actions/getTotal";
+import { topTen } from "@/modules/contribution/actions/top_ten";
 
 
 
 export default async function ContributionPage() {
 
-  const {
-    totalAmount,
-    totalContributors,
-    topContributors
-  } = await getContributionSummary();
+
+  const totalContributors = await contributorCount()
+  const totalAmount = await getTotalAmount()
+  const topContributors = await topTen()
 
 
 
