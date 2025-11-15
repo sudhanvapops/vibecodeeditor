@@ -91,7 +91,7 @@ export default async function ContributionPage() {
       {/* Donate Button */}
       <div className="relative z-10 text-center py-16 px-4">
         <Link href="/contribution/payment">
-          <button className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/50 hover:shadow-indigo-500/70 transition-all duration-300 hover:scale-105 overflow-hidden">
+          <button className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-lg shadow-2xl shadow-indigo-500/50 hover:shadow-indigo-500/70 transition-all duration-300 hover:scale-105 overflow-hidden hover:cursor-pointer">
             <span className="absolute inset-0 bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             <Heart className="relative z-10 group-hover:scale-110 transition-transform" size={24} fill="currentColor" />
             <span className="relative z-10">Donate Now</span>
