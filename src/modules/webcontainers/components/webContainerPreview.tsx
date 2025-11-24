@@ -6,7 +6,11 @@ import { WebContainer } from "@webcontainer/api";
 import { transformToWebContainerFormat } from "../hooks/transformer";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import TerminalComponent from "./terminal";
+import dynamic from "next/dynamic";
+const TerminalComponent = dynamic(
+  () => import("./terminal"),
+  { ssr: false }
+);
 // import TerminalComponent from "./terminal";
 
 // 290 See this video once again 
