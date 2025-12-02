@@ -384,8 +384,9 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
     }
   }, []);
 
-  
+  // Terminal Initialization + Resize Handling
   useEffect(() => {
+    // Initialize terminal on mount
     initializeTerminal();
 
     // Handle resize
@@ -418,6 +419,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
   }, [initializeTerminal]);
 
 
+  // Connect to WebContainer
   useEffect(() => {
     if (webContainerInstance && term.current && !isConnected) {
       connectToWebContainer();
@@ -427,8 +429,11 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
 
   return (
     <div className={cn("flex flex-col h-full bg-background border rounded-lg overflow-hidden", className)}>
+
+
       {/* Terminal Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/50">
+
         <div className="flex items-center gap-2">
           <div className="flex gap-1">
             <div className="w-3 h-3 rounded-full bg-red-500"></div>
@@ -436,6 +441,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
             <div className="w-3 h-3 rounded-full bg-green-500"></div>
           </div>
           <span className="text-sm font-medium">WebContainer Terminal</span>
+
           {isConnected && (
             <div className="flex items-center gap-1">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
@@ -445,6 +451,8 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
         </div>
 
         <div className="flex items-center gap-1">
+
+          {/* Search */}
           {showSearch && (
             <div className="flex items-center gap-2">
               <Input
@@ -495,6 +503,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
             <Trash2 className="h-3 w-3" />
           </Button>
         </div>
+
       </div>
 
       {/* Terminal Content */}
