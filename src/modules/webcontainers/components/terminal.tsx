@@ -83,7 +83,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
     },
   }));
 
-
+  // Core Logic
   const executeCommand = useCallback(async (command: string) => {
 
     // Check if web container instance exists
@@ -152,7 +152,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
         },
       }));
 
-      
+
       // Wait for process to complete
       const exitCode = await process.exit;
       currentProcess.current = null;
@@ -170,6 +170,8 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
   }, [webContainerInstance, writePrompt]);
 
 
+  // This is the shell input engine.
+  // Handles Key stroke
   const handleTerminalInput = useCallback((data: string) => {
     if (!term.current) return;
 
@@ -203,13 +205,17 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
       case '\u001b[A': // Up arrow
         if (commandHistory.current.length > 0) {
           if (historyIndex.current === -1) {
+            // If not browsing history → start at last command.
             historyIndex.current = commandHistory.current.length - 1;
           } else if (historyIndex.current > 0) {
+            // Otherwise → move one command UP in history.
             historyIndex.current--;
           }
 
           // Clear current line and write history command
           const historyCommand = commandHistory.current[historyIndex.current];
+
+          // clear prev output and rewrite new one
           term.current.write('\r$ ' + ' '.repeat(currentLine.current.length) + '\r$ ');
           term.current.write(historyCommand);
           currentLine.current = historyCommand;
@@ -219,6 +225,8 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
 
       case '\u001b[B': // Down arrow
         if (historyIndex.current !== -1) {
+
+          // If in middle of commands
           if (historyIndex.current < commandHistory.current.length - 1) {
             historyIndex.current++;
             const historyCommand = commandHistory.current[historyIndex.current];
@@ -227,6 +235,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
             currentLine.current = historyCommand;
             cursorPosition.current = historyCommand.length;
           } else {
+            // IF at last 
             historyIndex.current = -1;
             term.current.write('\r$ ' + ' '.repeat(currentLine.current.length) + '\r$ ');
             currentLine.current = "";
@@ -235,8 +244,8 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
         }
         break;
 
-      default:
-        // Regular character input
+      default: // Regular character input
+        
         if (data >= ' ' || data === '\t') {
           currentLine.current =
             currentLine.current.slice(0, cursorPosition.current) +
