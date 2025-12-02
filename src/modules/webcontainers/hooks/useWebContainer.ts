@@ -29,13 +29,13 @@ export const useWebContainer = ({ templateData }: useWebContainerProps): useWebC
 
 
     useEffect(() => {
+        // This prevents state updates after the component unmounts.
         let mounted = true;
 
         async function initializeWebContainer() {
             try {
-                // Read Docs
-                // ! Can onl be called once something like that
-                const webcontainerInstance = await WebContainer.boot();
+                // This starts your entire virtual Linux machine.
+                const webcontainerInstance = await WebContainer.boot(); // can only be called once
 
                 if (!mounted) return;
 
@@ -57,7 +57,7 @@ export const useWebContainer = ({ templateData }: useWebContainerProps): useWebC
 
         initializeWebContainer()
 
-        // See what it does
+        // This shuts down the VM to avoid memory leaks.
         return () => {
             mounted = false
             if (instance) {
@@ -68,11 +68,7 @@ export const useWebContainer = ({ templateData }: useWebContainerProps): useWebC
     }, [])
 
 
-    // ! They give fs functions
-    // When ever you write in webIDe 
-    // To see output in real time 
-    // We are using this to get updated
-    // Learn More
+ 
     const writeFileSync = useCallback(
         async (path: string, content: string): Promise<void> => {
 
@@ -81,11 +77,12 @@ export const useWebContainer = ({ templateData }: useWebContainerProps): useWebC
             }
 
             try {
+                // Break path into folder + file
                 const pathParts = path.split("/");
                 const folderPath = pathParts.slice(0, -1).join("/");
 
                 if (folderPath) {
-                    await instance.fs.mkdir(folderPath, { recursive: true }); // Create folder structure recursively
+                    await instance.fs.mkdir(folderPath, { recursive: true }); // Create folder structure recursively inside VM
                 }
 
                 await instance.fs.writeFile(path, content);
@@ -100,6 +97,8 @@ export const useWebContainer = ({ templateData }: useWebContainerProps): useWebC
         [instance]
     );
 
+    // instance.teardown() shuts down the VM completely.
+    // Clears instance + serverUrl from state.
     const destroy = useCallback(() => {
         if (instance) {
             instance.teardown()
