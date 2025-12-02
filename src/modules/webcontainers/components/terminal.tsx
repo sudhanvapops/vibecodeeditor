@@ -22,6 +22,7 @@ interface TerminalProps {
   webContainerInstance?: any;
 }
 
+
 // Define the methods that will be exposed through the ref
 export interface TerminalRef {
   writeToTerminal: (data: string) => void;
@@ -29,6 +30,8 @@ export interface TerminalRef {
   focusTerminal: () => void;
 }
 
+
+// Actual terminal component
 const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
   webcontainerUrl,
   className,
@@ -82,22 +85,29 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
 
 
   const executeCommand = useCallback(async (command: string) => {
+
+    // Check if web container instance exists
     if (!webContainerInstance || !term.current) return;
 
     // Add to history
     if (command.trim() && commandHistory.current[commandHistory.current.length - 1] !== command) {
       commandHistory.current.push(command);
     }
+    // Reset History Index To -1
     historyIndex.current = -1;
 
     try {
+
       // Handle built-in commands
+
+      // Clears the terminal screen.
       if (command.trim() === "clear") {
         term.current.clear();
         writePrompt();
         return;
       }
 
+      // Prints all previous commands.
       if (command.trim() === "history") {
         commandHistory.current.forEach((cmd, index) => {
           term.current!.writeln(`  ${index + 1}  ${cmd}`);
@@ -106,15 +116,19 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
         return;
       }
 
+      // Typing nothing should just show the next $ .
+      // Enter
       if (command.trim() === "") {
         writePrompt();
         return;
       }
 
+
       // Parse command
       const parts = command.trim().split(' ');
       const cmd = parts[0];
       const args = parts.slice(1);
+
 
       // Execute in WebContainer
       term.current.writeln("");
@@ -125,9 +139,11 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
         },
       });
 
+      // Store process reference
       currentProcess.current = process;
 
-      // Handle process output
+
+      // Handle process output from webContainer to Xterm
       process.output.pipeTo(new WritableStream({
         write(data) {
           if (term.current) {
@@ -136,6 +152,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
         },
       }));
 
+      
       // Wait for process to complete
       const exitCode = await process.exit;
       currentProcess.current = null;

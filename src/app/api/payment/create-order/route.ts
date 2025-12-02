@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
 
         const razorpay = new Razorpay({
-            key_id: process.env.NEXT_PUBLIC_RAZORPAY_TEST_API_KEY!,
+            key_id: process.env.RAZORPAY_TEST_KEY_ID!,
             key_secret: process.env.RAZORPAY_TEST_SECRET_KEY!,
         });
         const options = {

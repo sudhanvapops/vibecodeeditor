@@ -34,7 +34,7 @@ const buildMessage = (amount:number,fullName:string) => {
     color: #4f46e5;
     font-size: 24px;
     margin-bottom: 12px;
-  ">
+  ">    
     🎉 Payment Confirmed!
   </h2>
   
@@ -108,97 +108,102 @@ const Payment = () => {
 
     const openRazorpay = (orderId: string, amount: number, fullName: string, number: string, email: string) => {
 
-        const options = {
-            key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_API_KEY,
-            amount: amount,
-            currency: "INR",
-            name: "VIbe Code Editor",
-            description: "Payment for Contribution",
-            order_id: orderId,
-            callback_url: `${process.env.URL}/contribution/payment`,
-            prefill: {
-                "name": fullName,
-                "email": email,
-                "contact": number
-            },
-            theme: {
-                color: "#3399cc",
-            },
-
-
-            handler: async (response: RazorpayResponse) => {
-
-                try {
-                    const res = await fetch("/api/payment/verify-payment", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(response),
-                    })
-
-                    if (!res.ok) {
-                        throw new Error("Payment verification failed")
-                    }
-
-                    const data = await res.json()
-
-                    if (data.success) {
-
-                        await fetch("/api/send-mail", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                to: email,
-                                subject: "Payment Success!",
-                                message: buildMessage(amount,fullName),
-                            }),
-                        });
-
-                        toast.success("Payment verified successfully!")
-                        router.push("/contribution")
-                    } else {
-                        toast.error("Payment verification failed!")
-                    }
-
-                } catch (error) {
-                    console.error("Error verifying payment:", error)
-                    toast.error("Something went wrong while verifying your payment. Please try again.")
-                }
-            },
-
-            modal: {
-                ondismiss: async function () {
-                    console.log("User closed Razorpay without paying");
-
+        try {
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_TEST_API_KEY,
+                amount: amount,
+                currency: "INR",
+                name: "Vibe Code Editor",
+                description: "Payment for Contribution",
+                order_id: orderId,
+                // callback_url: `${process.env.NEXT_PUBLIC_URL}/contribution/payment`,
+                prefill: {
+                    "name": fullName,
+                    "email": email,
+                    "contact": number
+                },
+                theme: {
+                    color: "#3399cc",
+                },
+    
+    
+                handler: async (response: RazorpayResponse) => {
+    
                     try {
-                        const res = await fetch("/api/payment/order-cancelled", {
+                        const res = await fetch("/api/payment/verify-payment", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ orderId }),
+                            body: JSON.stringify(response),
                         })
-
+    
                         if (!res.ok) {
-                            throw new Error("Payment Cancel failed")
+                            throw new Error("Payment verification failed")
                         }
-
+    
                         const data = await res.json()
-
+    
                         if (data.success) {
-                            toast.error("Payment cancelled");
+    
+                            await fetch("/api/send-mail", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    to: email,
+                                    subject: "Payment Success!",
+                                    message: buildMessage(amount,fullName),
+                                }),
+                            });
+    
+                            toast.success("Payment verified successfully!")
                             router.push("/contribution")
-                        } 
-
+                        } else {
+                            toast.error("Payment verification failed!")
+                        }
+    
                     } catch (error) {
                         console.error("Error verifying payment:", error)
                         toast.error("Something went wrong while verifying your payment. Please try again.")
                     }
+                },
+    
+                modal: {
+                    ondismiss: async function () {
+                        console.log("User closed Razorpay without paying");
+    
+                        try {
+                            const res = await fetch("/api/payment/order-cancelled", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ orderId }),
+                            })
+    
+                            if (!res.ok) {
+                                throw new Error("Payment Cancel failed")
+                            }
+    
+                            const data = await res.json()
+    
+                            if (data.success) {
+                                toast.error("Payment cancelled");
+                                router.push("/contribution")
+                            } 
+    
+                        } catch (error) {
+                            console.error("Error verifying payment:", error)
+                            toast.error("Something went wrong while verifying your payment. Please try again.")
+                        }
+                    }
                 }
+    
             }
-
-        }
-
-        if (typeof window !== "undefined") {
-            const rzp = new (window as any).Razorpay(options)
-            rzp.open()
+    
+            if (typeof window !== "undefined") {
+                console.log("OPTIONS →", options)
+                const rzp = new (window as any).Razorpay(options)
+                rzp.open()
+            }
+        } catch (error) {
+            console.error("Error In Open Razorpay: ",error)
         }
     }
 
@@ -208,7 +213,7 @@ const Payment = () => {
 
         const payload = {
             ...formData,
-            amount: formData.amount = totalAmount
+            amount: Math.round(totalAmount)
         }
 
         try {
