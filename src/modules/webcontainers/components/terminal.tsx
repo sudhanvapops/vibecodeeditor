@@ -109,6 +109,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
 
       // Prints all previous commands.
       if (command.trim() === "history") {
+        term.current!.writeln("")
         commandHistory.current.forEach((cmd, index) => {
           term.current!.writeln(`  ${index + 1}  ${cmd}`);
         });
@@ -259,9 +260,11 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
   }, [executeCommand, writePrompt]);
 
 
+  // Creates the actual Terminal instance from xterm.js
   const initializeTerminal = useCallback(() => {
     if (!terminalRef.current || term.current) return;
 
+    // Creating the xterm Terminal instance
     const terminal = new Terminal({
       cursorBlink: true,
       fontFamily: '"Fira Code", "JetBrains Mono", "Consolas", monospace',
@@ -270,25 +273,30 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
       letterSpacing: 0,
       theme: terminalThemes[theme],
       allowTransparency: false,
+      // Auto convert \n to proper line movement
       convertEol: true,
+      // Keep 1000 lines of scroll history
       scrollback: 1000,
       tabStopWidth: 4,
     });
 
-    // Add addons
-    const fitAddonInstance = new FitAddon();
-    const webLinksAddon = new WebLinksAddon();
-    const searchAddonInstance = new SearchAddon();
+    // Load Add addons
+    const fitAddonInstance = new FitAddon(); // Auto resizes terminal to container width/height
+    const webLinksAddon = new WebLinksAddon(); // Makes URLs clickable
+    const searchAddonInstance = new SearchAddon(); //Allows searching inside terminal with /keyword
 
     terminal.loadAddon(fitAddonInstance);
     terminal.loadAddon(webLinksAddon);
     terminal.loadAddon(searchAddonInstance);
 
+    // Attach terminal to DOM
     terminal.open(terminalRef.current);
 
+    // Save terminal and addons to refs
     fitAddon.current = fitAddonInstance;
     searchAddon.current = searchAddonInstance;
     term.current = terminal;
+
 
     // Handle terminal input
     terminal.onData(handleTerminalInput);
@@ -300,7 +308,6 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
 
     // Welcome message
     terminal.writeln("🚀 WebContainer Terminal");
-    terminal.writeln("Type 'help' for available commands");
     writePrompt();
 
     return terminal;
