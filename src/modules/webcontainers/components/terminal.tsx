@@ -329,6 +329,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
     }
   }, [webContainerInstance, writePrompt]);
 
+  // Utility Functions
 
   const clearTerminal = useCallback(() => {
     if (term.current) {
@@ -339,6 +340,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
   }, [writePrompt]);
 
 
+  // Copies the higligted text inside terminal
   const copyTerminalContent = useCallback(async () => {
     if (term.current) {
       const content = term.current.getSelection();
@@ -352,7 +354,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
     }
   }, []);
 
-
+  // download the content to .txt file  
   const downloadTerminalLog = useCallback(() => {
     if (term.current) {
       const buffer = term.current.buffer.active;
