@@ -7,11 +7,12 @@ import { transformToWebContainerFormat } from "../hooks/transformer";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import dynamic from "next/dynamic";
+
+// Dynamic Import To Avoid Errors
 const TerminalComponent = dynamic(
-  () => import("./terminal"),
-  { ssr: false }
+    () => import("./terminal"),
+    { ssr: false }
 );
-// import TerminalComponent from "./terminal";
 
 // 290 See this video once again 
 // Terminal logic is for better UX
@@ -38,6 +39,7 @@ const WebContainerPreview = ({
 }: WebContainerPreviewProps) => {
 
     const [previewUrl, setPreviewUrl] = useState<string>("");
+    // Each boolean represents a stage in the setup pipeline.
     const [loadingState, setLoadingState] = useState({
         transforming: false,
         mounting: false,
@@ -45,21 +47,26 @@ const WebContainerPreview = ({
         starting: false,
         ready: false,
     });
+
     const [currentStep, setCurrentStep] = useState(0);
     const totalSteps = 4;
+
     const [setupError, setSetupError] = useState<string | null>(null);
     const [isSetupComplete, setIsSetupComplete] = useState(false);
     const [isSetupInProgress, setIsSetupInProgress] = useState(false);
 
     const terminalRef = useRef<any>(null);
+    // Prevent re-running setup when React re-renders.
     const hasSetupRun = useRef(false)
 
+
+    // PipeLine To Inistiate WebContainer
     useEffect(() => {
 
         async function setupContainer() {
-            if (!instance || isSetupComplete || isSetupInProgress || hasSetupRun.current) {
-                return;
-            }
+
+            // This block ensures the setup pipeline only runs once.
+            if (!instance || isSetupComplete || isSetupInProgress || hasSetupRun.current) return;
 
             hasSetupRun.current = true;
 
@@ -68,6 +75,9 @@ const WebContainerPreview = ({
                 setIsSetupInProgress(true)
                 setSetupError(null)
 
+                // Detect existing WebContainer project
+                // This block checks:
+                // If project was already installed before
                 try {
 
                     const packageJsonExists = await instance.fs.readFile(
@@ -84,8 +94,9 @@ const WebContainerPreview = ({
                             );
                         }
 
-
+                        // WebContainer emits this event when: Your dev server boots or reconnecting
                         instance.on("server-ready", (port: number, url: string) => {
+
                             if (terminalRef.current?.writeToTerminal) {
                                 terminalRef.current.writeToTerminal(
                                     `🌐 Reconnected to server at ${url}\r\n`
@@ -109,13 +120,15 @@ const WebContainerPreview = ({
 
                     }
                 } catch (error) {
-
+                    console.log("Error In Reconnecting to Sever: ", error)
                 }
 
 
                 // step 1 transform data
                 setLoadingState((prev) => ({ ...prev, transforming: true }));
+
                 setCurrentStep(1);
+
                 // Write to terminal
                 if (terminalRef.current?.writeToTerminal) {
                     terminalRef.current.writeToTerminal(
@@ -130,10 +143,11 @@ const WebContainerPreview = ({
                     transforming: false,
                     mounting: true,
                 }));
+
                 setCurrentStep(2);
 
-                // step 2 Mount Files
 
+                // step 2 Mount Files
                 if (terminalRef.current?.writeToTerminal) {
                     terminalRef.current.writeToTerminal(
                         "📁 Mounting files to WebContainer...\r\n"
@@ -152,6 +166,7 @@ const WebContainerPreview = ({
                     mounting: false,
                     installing: true,
                 }));
+
                 setCurrentStep(3);
 
 
@@ -175,6 +190,7 @@ const WebContainerPreview = ({
                     })
                 );
 
+                // If npm fails → throw error and stop pipeline.
                 const installExitCode = await installProcess.exit
 
                 if (installExitCode !== 0) {
@@ -193,11 +209,12 @@ const WebContainerPreview = ({
                     installing: false,
                     starting: true,
                 }));
+
+
                 setCurrentStep(4);
 
 
                 // STEP-4 Start The Server
-
                 if (terminalRef.current?.writeToTerminal) {
                     terminalRef.current.writeToTerminal(
                         "🚀 Starting development server...\r\n"
@@ -224,8 +241,8 @@ const WebContainerPreview = ({
                     setIsSetupInProgress(false);
                 })
 
-                // Handle start process output - stream to terminal
 
+                // Handle start process output - stream to terminal
                 startProcess.output.pipeTo(
                     new WritableStream({
                         write(data) {
@@ -257,11 +274,10 @@ const WebContainerPreview = ({
 
         setupContainer()
 
-    }, [
-        instance, isSetupComplete, isSetupInProgress
-    ])
+    }, [instance, isSetupComplete, isSetupInProgress])
 
-    // ? To prevent memory leaks 
+
+    // To prevent memory leaks 
     useEffect(() => {
         if (forceResetup) {
             hasSetupRun.current = false;
@@ -372,6 +388,7 @@ const WebContainerPreview = ({
                     </div>
 
                     {/* Terminal */}
+                     {/* 
                     <div className="flex-1 p-4">
                         <TerminalComponent
                             ref={terminalRef}
@@ -380,6 +397,8 @@ const WebContainerPreview = ({
                             className="h-full"
                         />
                     </div>
+                     */}
+                    
                 </div>
             ) : (
                 <div className="h-full flex flex-col">
@@ -391,16 +410,19 @@ const WebContainerPreview = ({
                         />
                     </div>
 
-                    <div className="h-64 border-t">
-                        <TerminalComponent
-                            ref={terminalRef}
-                            webContainerInstance={instance}
-                            theme="dark"
-                            className="h-full"
-                        />
-                    </div>
+                   
+
                 </div>
             )}
+
+            <div className="h-full border-t">
+                <TerminalComponent
+                    ref={terminalRef}
+                    webContainerInstance={instance}
+                    theme="dark"
+                    className="h-full"
+                />
+            </div>
         </div>
     );
 }
