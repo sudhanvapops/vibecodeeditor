@@ -313,7 +313,7 @@ const TerminalComponent = forwardRef<TerminalRef, TerminalProps>(({
     return terminal;
   }, [theme, handleTerminalInput, writePrompt]);
 
-
+  // Connect to web container
   const connectToWebContainer = useCallback(async () => {
     if (!webContainerInstance || !term.current) return;
 
