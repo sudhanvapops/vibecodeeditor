@@ -39,6 +39,7 @@ const WebContainerPreview = ({
 }: WebContainerPreviewProps) => {
 
     const [previewUrl, setPreviewUrl] = useState<string>("");
+    
     // Each boolean represents a stage in the setup pipeline.
     const [loadingState, setLoadingState] = useState({
         transforming: false,
