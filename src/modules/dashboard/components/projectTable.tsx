@@ -162,6 +162,7 @@ export default function ProjectTable({
             <TableRow>
               <TableHead>Project</TableHead>
               <TableHead>Template</TableHead>
+              <TableHead>Version</TableHead>
               <TableHead>Created</TableHead>
               <TableHead>User</TableHead>
               <TableHead className="w-[50px]">Actions</TableHead>
@@ -177,7 +178,7 @@ export default function ProjectTable({
                   <div className="flex flex-col">
 
                     <Link
-                      href={`/playground/${project.id}`}
+                      href={`/playground-wasm/${project.id}`}
                       target="_blank" // Open in new page
                       rel="noopener noreferrer"  // for security purpose
                       className="hover:underline"
@@ -194,6 +195,12 @@ export default function ProjectTable({
                   <Badge variant="outline" className="bg-[#9b63ff15] text-[#9b63ff] border-[#9b63ff]">
                     {project.template}
                   </Badge>
+                </TableCell>
+
+                {/* // ! Temprorary */}
+                {/* Version */}
+                <TableCell>
+                   <span className="font-bold"> WASM</span>
                 </TableCell>
 
                 {/* Created At */}
