@@ -8,22 +8,26 @@ import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import dynamic from "next/dynamic";
 
+import { RuntimeAdapter } from "@/modules/runtime/types"
+import { ur } from "zod/v4/locales";
+
 // Dynamic Import To Avoid Errors
 const TerminalComponent = dynamic(
     () => import("./terminal"),
     { ssr: false }
 );
 
+
 // 290 See this video once again 
 // Terminal logic is for better UX
 
 interface WebContainerPreviewProps {
     templateData: TemplateFolder;
-    serverUrl: string;
+    // serverUrl: string;
     isLoading: boolean;
     error: string | null;
-    instance: WebContainer | null;
-    writeFileSync: (path: string, content: string) => Promise<void>;
+    instance: RuntimeAdapter | null;
+    // writeFileSync: (path: string, content: string) => Promise<void>;
     forceResetup?: boolean; // Optional prop to force re-setup
 }
 
@@ -33,13 +37,13 @@ const WebContainerPreview = ({
     error,
     instance,
     isLoading,
-    serverUrl,
-    writeFileSync,
+    // serverUrl,
+    // writeFileSync,
     forceResetup = false,
 }: WebContainerPreviewProps) => {
 
     const [previewUrl, setPreviewUrl] = useState<string>("");
-    
+
     // Each boolean represents a stage in the setup pipeline.
     const [loadingState, setLoadingState] = useState({
         transforming: false,
@@ -81,10 +85,7 @@ const WebContainerPreview = ({
                 // If project was already installed before
                 try {
 
-                    const packageJsonExists = await instance.fs.readFile(
-                        "package.json",
-                        "utf-8"
-                    )
+                    const packageJsonExists = await instance?.readFile("package.json")
 
                     if (packageJsonExists && !forceResetup) {
 
@@ -96,12 +97,10 @@ const WebContainerPreview = ({
                         }
 
                         // WebContainer emits this event when: Your dev server boots or reconnecting
-                        instance.on("server-ready", (port: number, url: string) => {
+                        instance.onServerReady((url: string) => {
 
                             if (terminalRef.current?.writeToTerminal) {
-                                terminalRef.current.writeToTerminal(
-                                    `🌐 Reconnected to server at ${url}\r\n`
-                                );
+                                terminalRef.current.writeToTerminal(`🌐 Reconnected to server at ${url}\r\n`)
                             }
 
                             setPreviewUrl(url);
@@ -110,7 +109,8 @@ const WebContainerPreview = ({
                                 starting: false,
                                 ready: true,
                             }));
-                        });
+
+                        })
 
                         setCurrentStep(4)
                         setLoadingState((prev) => ({
@@ -154,7 +154,7 @@ const WebContainerPreview = ({
                         "📁 Mounting files to WebContainer...\r\n"
                     );
                 }
-                await instance.mount(files)
+                await instance.mountProject(files)
 
                 if (terminalRef.current?.writeToTerminal) {
                     terminalRef.current.writeToTerminal(
@@ -181,22 +181,31 @@ const WebContainerPreview = ({
                 const installProcess = await instance.spawn("npm", ["install"])
 
                 // Learn streams
-                installProcess.output.pipeTo(
-                    new WritableStream({
-                        write(data) {
-                            if (terminalRef.current?.writeToTerminal) {
-                                terminalRef.current.writeToTerminal(data);
-                            }
-                        },
-                    })
-                );
+                if (!(installProcess instanceof WebSocket)) {
+                    installProcess.output.pipeTo(
+                        new WritableStream({
+                            write(data) {
+                                if (terminalRef.current?.writeToTerminal) {
+                                    terminalRef.current.writeToTerminal(data);
+                                }
+                            },
+                        })
+                    );
 
-                // If npm fails → throw error and stop pipeline.
-                const installExitCode = await installProcess.exit
+                    const installExitCode = await installProcess.exit
 
-                if (installExitCode !== 0) {
-                    throw new Error(`Failed to insatll dependencies, ${installExitCode}`)
+                    // If npm fails → throw error and stop pipeline.
+                    if (installExitCode !== 0) {
+                        throw new Error(`Failed to insatll dependencies, ${installExitCode}`)
+                    }
+
+
+
+                } else {
+                    // TODO: Docker
                 }
+
+
 
                 if (terminalRef.current?.writeToTerminal) {
                     terminalRef.current.writeToTerminal(
@@ -224,8 +233,8 @@ const WebContainerPreview = ({
 
                 const startProcess = await instance.spawn("npm", ["run", "start"])
 
-                instance.on("server-ready", (port: number, url: string) => {
 
+                instance.onServerReady((url: string) => {
                     if (terminalRef.current?.writeToTerminal) {
                         terminalRef.current.writeToTerminal(
                             `🌐 Server ready at ${url}\r\n`
@@ -243,16 +252,23 @@ const WebContainerPreview = ({
                 })
 
 
-                // Handle start process output - stream to terminal
-                startProcess.output.pipeTo(
-                    new WritableStream({
-                        write(data) {
-                            if (terminalRef.current?.writeToTerminal) {
-                                terminalRef.current.writeToTerminal(data);
-                            }
-                        },
-                    })
-                );
+                if (!(startProcess instanceof WebSocket)) {
+
+                    // startProcess is RuntimeProcess
+                    // Handle start process output - stream to terminal
+                    startProcess.output.pipeTo(
+                        new WritableStream({
+                            write(data) {
+                                if (terminalRef.current?.writeToTerminal) {
+                                    terminalRef.current.writeToTerminal(data);
+                                }
+                            },
+                        })
+                    );
+                } else {
+                    // This for Docker
+                    // TODO: Docker
+                }
 
             } catch (error) {
                 console.error("Error setting up container:", error);
@@ -389,7 +405,7 @@ const WebContainerPreview = ({
                     </div>
 
                     {/* Terminal */}
-                     {/* 
+                    {/* 
                     <div className="flex-1 p-4">
                         <TerminalComponent
                             ref={terminalRef}
@@ -399,7 +415,7 @@ const WebContainerPreview = ({
                         />
                     </div>
                      */}
-                    
+
                 </div>
             ) : (
                 <div className="h-full flex flex-col">
@@ -411,7 +427,7 @@ const WebContainerPreview = ({
                         />
                     </div>
 
-                   
+
 
                 </div>
             )}

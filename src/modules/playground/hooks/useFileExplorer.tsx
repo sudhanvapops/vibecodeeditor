@@ -4,6 +4,8 @@ import { create } from "zustand"
 import { TemplateFile, TemplateFolder } from "../lib/pathToJson-util"
 import { generateFileId } from "../lib"
 import { sortFileExplorer } from "../lib/sortJson"
+import type { RuntimeAdapter } from "@/modules/runtime/types"
+
 
 
 interface OpenFile extends TemplateFile {
@@ -39,14 +41,14 @@ interface FileExplorerState {
         newFile: TemplateFile,
         parentPath: string,
         writeFileSync: (filePath: string, content: string) => Promise<void>,
-        instance: any,
+        instance: RuntimeAdapter,
         saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
     handleAddFolder: (
         newFolder: TemplateFolder,
         parentPath: string,
-        instance: any,
+        instance: RuntimeAdapter,
         saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
     ) => Promise<void>;
 
@@ -276,11 +278,11 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
             await saveTemplateData(updatedTemplateData);
 
             // Sync with web container
-            if (instance && instance.fs) {
+            if (instance) {
                 const folderPath = parentPath
                     ? `${parentPath}/${newFolder.folderName}`
                     : newFolder.folderName;
-                await instance.fs.mkdir(folderPath, { recursive: true });
+                await instance.makeFolder(folderPath);
             }
         } catch (error) {
             console.error("Error adding folder:", error);

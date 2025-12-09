@@ -113,19 +113,19 @@ const PlaygroundEditor = ({
         const monaco = monacoRef.current
         const language = getEditorLanguage(activeFile.fileExtension || "")
 
-        console.log("Registering inline completions provider for language:", language)
+        // console.log("Registering inline completions provider for language:", language)
 
         // Register provider for the current language
         providerRef.current = monaco.languages.registerInlineCompletionsProvider(language, {
 
             provideInlineCompletions: async (model, position, context, token) => {
 
-                console.log("provideInlineCompletions called", {
-                    hasSuggestion: !!suggestion,
-                    hasPosition: !!suggestionPosition,
-                    currentPos: `${position.lineNumber}:${position.column}`,
-                    suggestionPos: suggestionPosition ? `${suggestionPosition.line}:${suggestionPosition.column}` : null,
-                })
+                // console.log("provideInlineCompletions called", {
+                //     hasSuggestion: !!suggestion,
+                //     hasPosition: !!suggestionPosition,
+                //     currentPos: `${position.lineNumber}:${position.column}`,
+                //     suggestionPos: suggestionPosition ? `${suggestionPosition.line}:${suggestionPosition.column}` : null,
+                // })
 
                 // No suggestion available
                 if (!suggestion || !suggestionPosition) {
@@ -142,7 +142,7 @@ const PlaygroundEditor = ({
                 // sanitize the suggetsion
                 const cleanSuggestion = suggestion.replace(/\r/g, "")
                 
-                console.log("Returning inline completion:", cleanSuggestion.substring(0, 50))
+                // console.log("Returning inline completion:", cleanSuggestion.substring(0, 50))
 
                 return {
                     items: [{
@@ -181,12 +181,12 @@ const PlaygroundEditor = ({
         const editor = editorRef.current
         const currentPosition = editor.getPosition()
         
-        console.log("New suggestion available", {
-            currentPos: `${currentPosition.lineNumber}:${currentPosition.column}`,
-            suggestionPos: `${suggestionPosition.line}:${suggestionPosition.column}`,
-            atCorrectPosition: currentPosition.lineNumber === suggestionPosition.line && 
-                              currentPosition.column === suggestionPosition.column
-        })
+        // console.log("New suggestion available", {
+        //     currentPos: `${currentPosition.lineNumber}:${currentPosition.column}`,
+        //     suggestionPos: `${suggestionPosition.line}:${suggestionPosition.column}`,
+        //     atCorrectPosition: currentPosition.lineNumber === suggestionPosition.line && 
+        //                       currentPosition.column === suggestionPosition.column
+        // })
         
         // Check if cursor is already at the suggestion position
         const isAtPosition = currentPosition.lineNumber === suggestionPosition.line && 

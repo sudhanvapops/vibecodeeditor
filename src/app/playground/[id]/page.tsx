@@ -17,6 +17,7 @@ import { usePlayground } from '@/modules/playground/hooks/usePlayground'
 import { findFilePath } from '@/modules/playground/lib'
 import { TemplateFile, TemplateFolder } from '@/modules/playground/lib/pathToJson-util'
 import { sortFileExplorer } from '@/modules/playground/lib/sortJson'
+import { useRuntime } from '@/modules/runtime/hooks/useRuntime'
 import WebContainerPreview from '@/modules/webcontainers/components/webContainerPreview'
 import { useWebContainer } from '@/modules/webcontainers/hooks/useWebContainer'
 import { AlertCircle, Bot, FileText, FolderOpen, Save, Settings, X } from 'lucide-react'
@@ -56,14 +57,24 @@ const MainPlaygroudPage = () => {
   } = useFileExplorer()
 
 
+  // const {
+  //   serverUrl,
+  //   isLoading: containerLoading,
+  //   error: containerError,
+  //   instance,
+  //   writeFileSync
+  //   // @ts-ignore
+  // } = useWebContainer()
+
   const {
-    serverUrl,
-    isLoading: containerLoading,
-    error: containerError,
-    instance,
-    writeFileSync
-    // @ts-ignore
-  } = useWebContainer({ templateData })
+    error: adapterError,
+    isLoading: adapterLoading,
+    runtime: adapter
+  } = useRuntime({
+    // ?
+    projectId: "",
+    type: "wasm"
+  })
 
 
   const lastSyncedContent = useRef<Map<string, string>>(new Map())
@@ -89,19 +100,19 @@ const MainPlaygroudPage = () => {
       return handleAddFile(
         newFile,
         parentPath,
-        writeFileSync!,
-        instance,
+        adapter?.writeFile!,
+        adapter!,
         saveTemplateData
       );
     },
-    [handleAddFile, writeFileSync, instance, saveTemplateData]
+    [handleAddFile, adapter?.writeFile, adapter, saveTemplateData]
   );
 
   const wrappedHandleAddFolder = useCallback(
     (newFolder: TemplateFolder, parentPath: string) => {
-      return handleAddFolder(newFolder, parentPath, instance, saveTemplateData);
+      return handleAddFolder(newFolder, parentPath, adapter!, saveTemplateData);
     },
-    [handleAddFolder, instance, saveTemplateData]
+    [handleAddFolder, adapter!, saveTemplateData]
   );
 
   const wrappedHandleDeleteFile = useCallback(
@@ -209,11 +220,11 @@ const MainPlaygroudPage = () => {
 
 
         // Sync with WebContainer
-        if (writeFileSync) {
-          await writeFileSync(filePath, fileToSave.content);
+        if (adapter?.writeFile) {
+          await adapter?.writeFile(filePath, fileToSave.content);
           lastSyncedContent.current.set(fileToSave.id, fileToSave.content);
-          if (instance && instance.fs) {
-            await instance.fs.writeFile(filePath, fileToSave.content);
+          if (adapter) {
+            await adapter?.writeFile(filePath, fileToSave.content);
           }
         }
 
@@ -248,8 +259,8 @@ const MainPlaygroudPage = () => {
     }, [
     activeFileId,
     openFiles,
-    writeFileSync,
-    instance,
+    adapter?.writeFile,
+    adapter,
     saveTemplateData,
     setTemplateData,
     setOpenFiles
@@ -563,11 +574,10 @@ const MainPlaygroudPage = () => {
                   >
                     <WebContainerPreview
                       templateData={templateData}
-                      instance={instance}
-                      writeFileSync={writeFileSync}
-                      isLoading={containerLoading}
-                      error={containerError}
-                      serverUrl={serverUrl!}
+                      instance={adapter}
+                      isLoading={adapterLoading}
+                      error={adapterError}
+                      // serverUrl={serverUrl!}
                       forceResetup={false}
                     />
                   </ResizablePanel>
