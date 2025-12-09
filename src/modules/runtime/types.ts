@@ -7,6 +7,7 @@ export interface RuntimeProcess {
 
 export interface RuntimeAdapter {
   writeFile(path: string, content: string): Promise<void>;
+  makeFolder(path: string): Promise<void>;
   readFile(path: string): Promise<string>;
   mountProject(files: any): Promise<void>;
   spawn(cmd: string, args?: string[]): Promise<RuntimeProcess | WebSocket>;

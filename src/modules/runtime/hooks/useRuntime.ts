@@ -1,7 +1,5 @@
-// src/modules/runtime/hooks/useRuntime.ts
 
 import { useState, useEffect } from "react";
-import { WebContainer } from "@webcontainer/api";
 import { createWasmAdapter } from "../adapters/WebContainerAdapter";
 // import { DockerAdapter } from "../adapters/DockerAdapter";
 import type { RuntimeAdapter, RuntimeType, RuntimeConfig } from "../types";
@@ -23,9 +21,9 @@ export function useRuntime(config: RuntimeConfig) {
 
                 if (config.type === "wasm") {
 
-                    if (!mounted) return
-
+                    
                     const adapter = await createWasmAdapter(config);
+                    if (!mounted) return
                     setRuntime(adapter)
                 }
                 // TODO: Docker
@@ -46,7 +44,7 @@ export function useRuntime(config: RuntimeConfig) {
                 //     }
                 // }
             } catch (err) {
-                console.error("Failed to initialize WebContainer:", error);
+                console.error(`Failed to initialize ${config.type}:`, error);
 
                 if (mounted) {
                     setError(err instanceof Error ? err.message : "Failed to initialize runtime");
@@ -67,6 +65,7 @@ export function useRuntime(config: RuntimeConfig) {
             }
         };
     }, [config.type]);
+    
 
     return { runtime, isLoading, error, };
 }

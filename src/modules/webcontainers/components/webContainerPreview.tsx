@@ -84,10 +84,7 @@ const WebContainerPreview = ({
                 // If project was already installed before
                 try {
 
-                    const packageJsonExists = await instance.fs.readFile(
-                        "package.json",
-                        "utf-8"
-                    )
+                    const packageJsonExists = await instance?.readFile("package.json")
 
                     if (packageJsonExists && !forceResetup) {
 
@@ -157,7 +154,7 @@ const WebContainerPreview = ({
                         "📁 Mounting files to WebContainer...\r\n"
                     );
                 }
-                await instance.mount(files)
+                await instance.mountProject(files)
 
                 if (terminalRef.current?.writeToTerminal) {
                     terminalRef.current.writeToTerminal(

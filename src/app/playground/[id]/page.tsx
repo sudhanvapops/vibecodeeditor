@@ -220,11 +220,11 @@ const MainPlaygroudPage = () => {
 
 
         // Sync with WebContainer
-        if (writeFileSync) {
-          await writeFileSync(filePath, fileToSave.content);
+        if (adapter?.writeFile) {
+          await adapter?.writeFile(filePath, fileToSave.content);
           lastSyncedContent.current.set(fileToSave.id, fileToSave.content);
-          if (instance && instance.fs) {
-            await instance.fs.writeFile(filePath, fileToSave.content);
+          if (adapter) {
+            await adapter?.writeFile(filePath, fileToSave.content);
           }
         }
 
@@ -259,8 +259,8 @@ const MainPlaygroudPage = () => {
     }, [
     activeFileId,
     openFiles,
-    writeFileSync,
-    instance,
+    adapter?.writeFile,
+    adapter,
     saveTemplateData,
     setTemplateData,
     setOpenFiles
