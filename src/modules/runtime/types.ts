@@ -1,10 +1,12 @@
 export type RuntimeType = "wasm" | "docker";
 
+// For Spawn 
 export interface RuntimeProcess {
   output: ReadableStream;
   exit: Promise<number>;
 }
 
+// Both(WebContainer and Docker )/All should adopt these methods
 export interface RuntimeAdapter {
   writeFile(path: string, content: string): Promise<void>;
   makeFolder(path: string): Promise<void>;
@@ -15,6 +17,7 @@ export interface RuntimeAdapter {
   destroy(): Promise<void>;
 }
 
+// Given for useRuntime() 
 export interface RuntimeConfig {
   type: RuntimeType;
   projectId: string;

@@ -2,14 +2,12 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { TemplateFolder } from "@/modules/playground/lib/pathToJson-util";
-import { WebContainer } from "@webcontainer/api";
 import { transformToWebContainerFormat } from "../hooks/transformer";
 import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import dynamic from "next/dynamic";
 
 import { RuntimeAdapter } from "@/modules/runtime/types"
-import { ur } from "zod/v4/locales";
 
 // Dynamic Import To Avoid Errors
 const TerminalComponent = dynamic(

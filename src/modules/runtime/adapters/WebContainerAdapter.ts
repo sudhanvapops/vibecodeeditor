@@ -55,13 +55,18 @@ export async function createWasmAdapter(config: RuntimeConfig): Promise<RuntimeA
 
 
         async mountProject(files) {
-            return await wc.mount(files)
+            try {
+                return await wc.mount(files)
+            } catch (error) {
+                console.error(`Failed to mountProject at ${files}:`, error);
+                throw new Error(`Failed to mountProject at ${files}: ${error}`);
+            }
         },
 
         // Runs Commands on the server
         async spawn(cmd, args: []) {
             const proc = await wc.spawn(cmd, args)
-            
+
             return {
                 output: proc.output,
                 exit: proc.exit
@@ -70,9 +75,14 @@ export async function createWasmAdapter(config: RuntimeConfig): Promise<RuntimeA
 
 
         async onServerReady(cb) {
-            wc.on("server-ready",(port,url)=>{
-                cb(url)
-            })
+            try {
+                wc.on("server-ready", (port, url) => {
+                    cb(url)
+                })
+            } catch (error) {
+                console.error(`Failed to onServerReady at ${config.type}:`, error);
+                throw new Error(`Failed to onServerReady at ${config.type}: ${error}`);
+            }
         },
 
         async destroy() {

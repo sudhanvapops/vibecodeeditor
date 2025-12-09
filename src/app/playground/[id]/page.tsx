@@ -19,7 +19,6 @@ import { TemplateFile, TemplateFolder } from '@/modules/playground/lib/pathToJso
 import { sortFileExplorer } from '@/modules/playground/lib/sortJson'
 import { useRuntime } from '@/modules/runtime/hooks/useRuntime'
 import WebContainerPreview from '@/modules/webcontainers/components/webContainerPreview'
-import { useWebContainer } from '@/modules/webcontainers/hooks/useWebContainer'
 import { AlertCircle, Bot, FileText, FolderOpen, Save, Settings, X } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
@@ -56,15 +55,6 @@ const MainPlaygroudPage = () => {
 
   } = useFileExplorer()
 
-
-  // const {
-  //   serverUrl,
-  //   isLoading: containerLoading,
-  //   error: containerError,
-  //   instance,
-  //   writeFileSync
-  //   // @ts-ignore
-  // } = useWebContainer()
 
   const {
     error: adapterError,
