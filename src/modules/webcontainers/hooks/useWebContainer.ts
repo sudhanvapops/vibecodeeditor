@@ -5,9 +5,6 @@ import { WebContainer } from "@webcontainer/api";
 import { TemplateFolder } from "@/modules/playground/lib/pathToJson-util";
 
 
-interface useWebContainerProps {
-    templateData: TemplateFolder
-}
 
 interface useWebContainerReturn {
     serverUrl: string | null,
@@ -20,7 +17,7 @@ interface useWebContainerReturn {
 }
 
 
-export const useWebContainer = ({ templateData }: useWebContainerProps): useWebContainerReturn => {
+export const useWebContainer = (): useWebContainerReturn => {
 
     const [serverUrl, setServerUrl] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -34,10 +31,11 @@ export const useWebContainer = ({ templateData }: useWebContainerProps): useWebC
 
         async function initializeWebContainer() {
             try {
+                if (!mounted) return;
+
                 // This starts your entire virtual Linux machine.
                 const webcontainerInstance = await WebContainer.boot(); // can only be called once
 
-                if (!mounted) return;
 
                 setInstance(webcontainerInstance);
                 setIsLoading(false);

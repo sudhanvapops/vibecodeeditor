@@ -59,7 +59,6 @@ model User {
 }
 
 // Templates 
-
 enum Templates {
   REACT
   NEXTJS
@@ -72,6 +71,7 @@ enum Templates {
 model Playground {
   id            String         @id @default(cuid()) @map("_id")
   title         String
+  // runtime       String         @default("wasm") // "wasm" or "docker"
   description   String?
   template      Templates      @default(REACT)
   createdAt     DateTime       @default(now())

@@ -8,11 +8,14 @@ import { CheckCircle, Loader2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import dynamic from "next/dynamic";
 
+import { RuntimeAdapter } from "@/modules/runtime/types"
+
 // Dynamic Import To Avoid Errors
 const TerminalComponent = dynamic(
     () => import("./terminal"),
     { ssr: false }
 );
+
 
 // 290 See this video once again 
 // Terminal logic is for better UX
@@ -22,8 +25,8 @@ interface WebContainerPreviewProps {
     serverUrl: string;
     isLoading: boolean;
     error: string | null;
-    instance: WebContainer | null;
-    writeFileSync: (path: string, content: string) => Promise<void>;
+    instance: RuntimeAdapter | null;
+    // writeFileSync: (path: string, content: string) => Promise<void>;
     forceResetup?: boolean; // Optional prop to force re-setup
 }
 
@@ -34,12 +37,12 @@ const WebContainerPreview = ({
     instance,
     isLoading,
     serverUrl,
-    writeFileSync,
+    // writeFileSync,
     forceResetup = false,
 }: WebContainerPreviewProps) => {
 
     const [previewUrl, setPreviewUrl] = useState<string>("");
-    
+
     // Each boolean represents a stage in the setup pipeline.
     const [loadingState, setLoadingState] = useState({
         transforming: false,
@@ -389,7 +392,7 @@ const WebContainerPreview = ({
                     </div>
 
                     {/* Terminal */}
-                     {/* 
+                    {/* 
                     <div className="flex-1 p-4">
                         <TerminalComponent
                             ref={terminalRef}
@@ -399,7 +402,7 @@ const WebContainerPreview = ({
                         />
                     </div>
                      */}
-                    
+
                 </div>
             ) : (
                 <div className="h-full flex flex-col">
@@ -411,7 +414,7 @@ const WebContainerPreview = ({
                         />
                     </div>
 
-                   
+
 
                 </div>
             )}
