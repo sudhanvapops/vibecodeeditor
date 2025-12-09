@@ -577,7 +577,7 @@ const MainPlaygroudPage = () => {
                       instance={adapter}
                       isLoading={adapterLoading}
                       error={adapterError}
-                      serverUrl={serverUrl!}
+                      // serverUrl={serverUrl!}
                       forceResetup={false}
                     />
                   </ResizablePanel>

@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import dynamic from "next/dynamic";
 
 import { RuntimeAdapter } from "@/modules/runtime/types"
+import { ur } from "zod/v4/locales";
 
 // Dynamic Import To Avoid Errors
 const TerminalComponent = dynamic(
@@ -22,7 +23,7 @@ const TerminalComponent = dynamic(
 
 interface WebContainerPreviewProps {
     templateData: TemplateFolder;
-    serverUrl: string;
+    // serverUrl: string;
     isLoading: boolean;
     error: string | null;
     instance: RuntimeAdapter | null;
@@ -36,7 +37,7 @@ const WebContainerPreview = ({
     error,
     instance,
     isLoading,
-    serverUrl,
+    // serverUrl,
     // writeFileSync,
     forceResetup = false,
 }: WebContainerPreviewProps) => {
@@ -96,12 +97,10 @@ const WebContainerPreview = ({
                         }
 
                         // WebContainer emits this event when: Your dev server boots or reconnecting
-                        instance.on("server-ready", (port: number, url: string) => {
+                        instance.onServerReady((url: string) => {
 
                             if (terminalRef.current?.writeToTerminal) {
-                                terminalRef.current.writeToTerminal(
-                                    `🌐 Reconnected to server at ${url}\r\n`
-                                );
+                                terminalRef.current.writeToTerminal(`🌐 Reconnected to server at ${url}\r\n`)
                             }
 
                             setPreviewUrl(url);
@@ -110,7 +109,8 @@ const WebContainerPreview = ({
                                 starting: false,
                                 ready: true,
                             }));
-                        });
+
+                        })
 
                         setCurrentStep(4)
                         setLoadingState((prev) => ({
@@ -181,22 +181,31 @@ const WebContainerPreview = ({
                 const installProcess = await instance.spawn("npm", ["install"])
 
                 // Learn streams
-                installProcess.output.pipeTo(
-                    new WritableStream({
-                        write(data) {
-                            if (terminalRef.current?.writeToTerminal) {
-                                terminalRef.current.writeToTerminal(data);
-                            }
-                        },
-                    })
-                );
+                if (!(installProcess instanceof WebSocket)) {
+                    installProcess.output.pipeTo(
+                        new WritableStream({
+                            write(data) {
+                                if (terminalRef.current?.writeToTerminal) {
+                                    terminalRef.current.writeToTerminal(data);
+                                }
+                            },
+                        })
+                    );
 
-                // If npm fails → throw error and stop pipeline.
-                const installExitCode = await installProcess.exit
+                    const installExitCode = await installProcess.exit
 
-                if (installExitCode !== 0) {
-                    throw new Error(`Failed to insatll dependencies, ${installExitCode}`)
+                    // If npm fails → throw error and stop pipeline.
+                    if (installExitCode !== 0) {
+                        throw new Error(`Failed to insatll dependencies, ${installExitCode}`)
+                    }
+
+
+
+                } else {
+                    // TODO: Docker
                 }
+
+
 
                 if (terminalRef.current?.writeToTerminal) {
                     terminalRef.current.writeToTerminal(
@@ -224,8 +233,8 @@ const WebContainerPreview = ({
 
                 const startProcess = await instance.spawn("npm", ["run", "start"])
 
-                instance.on("server-ready", (port: number, url: string) => {
 
+                instance.onServerReady((url: string) => {
                     if (terminalRef.current?.writeToTerminal) {
                         terminalRef.current.writeToTerminal(
                             `🌐 Server ready at ${url}\r\n`
@@ -243,16 +252,23 @@ const WebContainerPreview = ({
                 })
 
 
-                // Handle start process output - stream to terminal
-                startProcess.output.pipeTo(
-                    new WritableStream({
-                        write(data) {
-                            if (terminalRef.current?.writeToTerminal) {
-                                terminalRef.current.writeToTerminal(data);
-                            }
-                        },
-                    })
-                );
+                if (!(startProcess instanceof WebSocket)) {
+
+                    // startProcess is RuntimeProcess
+                    // Handle start process output - stream to terminal
+                    startProcess.output.pipeTo(
+                        new WritableStream({
+                            write(data) {
+                                if (terminalRef.current?.writeToTerminal) {
+                                    terminalRef.current.writeToTerminal(data);
+                                }
+                            },
+                        })
+                    );
+                } else {
+                    // This for Docker
+                    // TODO: Docker
+                }
 
             } catch (error) {
                 console.error("Error setting up container:", error);

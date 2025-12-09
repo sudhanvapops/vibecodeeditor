@@ -55,15 +55,24 @@ export async function createWasmAdapter(config: RuntimeConfig): Promise<RuntimeA
 
 
         async mountProject(files) {
-
+            return await wc.mount(files)
         },
 
-        async spawn(cmd, args = []) {
-
+        // Runs Commands on the server
+        async spawn(cmd, args: []) {
+            const proc = await wc.spawn(cmd, args)
+            
+            return {
+                output: proc.output,
+                exit: proc.exit
+            } satisfies RuntimeProcess;
         },
+
 
         async onServerReady(cb) {
-
+            wc.on("server-ready",(port,url)=>{
+                cb(url)
+            })
         },
 
         async destroy() {
