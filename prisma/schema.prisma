@@ -128,7 +128,7 @@ model Payment {
   amount            Int
   currency          String      @default("INR")
   status            OrderStatus @default(PENDING) // 'SUCCESS', 'FAILED'
-  razorpayOrderId   String
+  razorpayOrderId   String      @unique
   razorpayPaymentId String?
   razorpaySignature String?
   note              String?
