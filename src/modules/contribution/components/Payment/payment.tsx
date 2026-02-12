@@ -126,7 +126,7 @@ const Payment = () => {
                     color: "#3399cc",
                 },
     
-    
+                // handler → Runs After Successful Payment
                 handler: async (response: RazorpayResponse) => {
     
                     try {
