@@ -19,15 +19,37 @@ import {
     Copy
 } from "lucide-react";
 
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+import { repoSchema, RepoFormData } from "@/lib/repo_schema"
+
+
 type AddRepoModalProps = {
     isOpen: boolean;
     onClose: () => void;
     onSubmit: (data: { name: string, cloneLink: string }) => void;
 }
 
+
 const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
 
-    const handleClone = () => { }
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        reset,
+
+    } = useForm<RepoFormData>({
+        resolver: zodResolver(repoSchema),
+    });
+
+    const handleSubmitRepo = (data: RepoFormData) => {
+        console.log(`Clone Repo Data: `, data)
+        onSubmit(data)
+        reset()
+        onClose()
+    }
 
     return (
         <Dialog
@@ -36,12 +58,12 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
                 // open is fasle meaning wants to close then do below
                 if (!open) {
                     onClose()
+                    reset()
                 }
             }}
         >
-            <form onSubmit={handleClone}>
-                <DialogContent className="sm:max-w-sm">
-
+            <DialogContent className="sm:max-w-sm">
+                <form onSubmit={(e) => { handleSubmit(handleSubmitRepo)(e) }}>
                     <DialogHeader>
                         <DialogTitle
                             className="text-xl font-bold text-[#9b63ff] flex items-center gap-2"
@@ -57,12 +79,22 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
                     <FieldGroup>
                         <Field>
                             <Label htmlFor="name-1">Name</Label>
-                            <Input id="name-1" type="text" name="name" placeholder="Eg: test project" />
+                            <Input {...register("name")} placeholder="Eg: test project" />
+                            {errors.name && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.name.message}
+                                </p>
+                            )}
                         </Field>
                         <Field>
                             <Label htmlFor="username-1">Repo Link</Label>
                             <FieldDescription>Only Public Repo</FieldDescription>
-                            <Input id="username-1" type="url" name="cloneLink" placeholder="Eg: https://github.com/" />
+                            <Input {...register("cloneLink")} type="url" placeholder="Eg: https://github.com/" />
+                            {errors.cloneLink && (
+                                <p className="text-red-500 text-sm">
+                                    {errors.cloneLink.message}
+                                </p>
+                            )}
                         </Field>
                     </FieldGroup>
 
@@ -75,15 +107,15 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
                         </DialogClose>
 
                         {/* Clone Button */}
-                        <Button className="cursor-pointer hover:bg-[#9b63ff] bg-[#8746f9] text-white" type="submit">
+                        <Button className="cursor-pointer hover:bg-[#9b63ff] bg-[#8746f9] text-white" type="submit" disabled={isSubmitting}>
                             <Copy />
                             Clone
                         </Button>
 
                     </DialogFooter>
-                </DialogContent>
-            </form>
-        </Dialog>
+                </form>
+            </DialogContent>
+        </Dialog >
     )
 }
 
