@@ -5,13 +5,20 @@ import { ArrowDown } from "lucide-react"
 import Image from "next/image"
 import AddRepoModal from "./addRepoModal"
 import { useState } from "react"
+import { RepoFormData } from "@/lib/repo_schema"
+import { toast } from "sonner"
 
 const AddRepo = () => {
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
 
-  const handleSubmit = () => {
+  const handleSubmit = async (data: RepoFormData) => {
+    try {
 
+    } catch (error) {
+      toast.error("Failed to clone repo");
+      console.error("Error in handleSubmit addRepo.tsx ", error)
+    }
   }
 
   return (
@@ -55,8 +62,8 @@ const AddRepo = () => {
 
       <AddRepoModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false) }
-        onSubmit={() => handleSubmit } 
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={() => handleSubmit}
       />
     </>
   )
