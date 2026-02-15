@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
         if (!process.env.SMTP_USER || !process.env.SMTP_MAIL_PASSWORD || !transporter) {
             console.error("SMTP not configured; skipping email send in dev.");
-            return NextResponse.json({ success: false, message: "SEND MAIL Error" },{status:400});
+            return NextResponse.json({ success: false, message: "SEND MAIL Error" }, { status: 400 });
         }
 
         if (!to || !subject || !message) {

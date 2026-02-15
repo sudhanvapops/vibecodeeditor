@@ -1,11 +1,15 @@
 import { NextResponse, NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import Razorpay from "razorpay"
+import { currentUser } from "@/modules/auth/actions";
 
 
 export async function POST(req: NextRequest) {
 
     try {
+
+        const user = await currentUser()
+
         const { amount, note, fullName, email, phone } = await req.json()
 
         if (!amount || !fullName || !email || !phone) {
@@ -34,6 +38,7 @@ export async function POST(req: NextRequest) {
 
         await db.payment.create({
             data: {
+                userId: user?.id ?? null,
                 razorpayOrderId: order.id,
                 amount: Number(amount),
                 name: fullName,

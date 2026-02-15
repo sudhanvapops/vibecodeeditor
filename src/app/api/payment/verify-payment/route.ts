@@ -5,7 +5,6 @@ import crypto from "crypto"
 export async function POST(req: NextRequest) {
 
     try {
-
         const body = await req.json()
         const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = body
 
@@ -16,7 +15,9 @@ export async function POST(req: NextRequest) {
 
         if (generated_signature === razorpay_signature) {
             await db.payment.updateMany({
-                where: { razorpayOrderId: razorpay_order_id },
+                where: { 
+                    razorpayOrderId: razorpay_order_id
+                },
                 data: {
                     status: "SUCCESS",
                     razorpayPaymentId: razorpay_payment_id,
