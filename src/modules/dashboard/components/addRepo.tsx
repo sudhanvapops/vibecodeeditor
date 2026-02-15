@@ -14,7 +14,8 @@ const AddRepo = () => {
 
   const handleSubmit = async (data: RepoFormData) => {
     try {
-
+      // call server action here
+      setIsModalOpen(false)
     } catch (error) {
       toast.error("Failed to clone repo");
       console.error("Error in handleSubmit addRepo.tsx ", error)

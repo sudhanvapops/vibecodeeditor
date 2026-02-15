@@ -64,7 +64,7 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
         >
             <DialogContent className="sm:max-w-sm">
                 <form onSubmit={(e) => { handleSubmit(handleSubmitRepo)(e) }}>
-                    <DialogHeader>
+                    <DialogHeader className="py-4">
                         <DialogTitle
                             className="text-xl font-bold text-[#9b63ff] flex items-center gap-2"
                         >
@@ -81,9 +81,9 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
                             <Label htmlFor="name-1">Name</Label>
                             <Input {...register("name")} placeholder="Eg: test project" />
                             {errors.name && (
-                                <p className="text-red-500 text-sm">
+                                <FieldDescription className="text-red-500 text-sm">
                                     {errors.name.message}
-                                </p>
+                                </FieldDescription>
                             )}
                         </Field>
                         <Field>
@@ -91,15 +91,15 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
                             <FieldDescription>Only Public Repo</FieldDescription>
                             <Input {...register("cloneLink")} type="url" placeholder="Eg: https://github.com/" />
                             {errors.cloneLink && (
-                                <p className="text-red-500 text-sm">
+                                <FieldDescription className="text-red-500 text-sm">
                                     {errors.cloneLink.message}
-                                </p>
+                                </FieldDescription>
                             )}
                         </Field>
                     </FieldGroup>
 
 
-                    <DialogFooter>
+                    <DialogFooter className="py-4">
 
                         {/* Close Button */}
                         <DialogClose asChild>
