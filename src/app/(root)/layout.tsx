@@ -15,15 +15,15 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
     return (
         <>
             {/* Header */}
-            <Header />
 
             <main className="z-20 relative w-full pt-0 overflow-hidden">
+            <Header />
                 {children}
+            <Footer />
             </main>
 
             
             {/* Footer */}
-            <Footer />
         </>
     )
 }
