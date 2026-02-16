@@ -1,5 +1,19 @@
 import { z } from "zod"
 
+export const TemplateSchema = z.enum(
+    [
+        "REACT",
+        "NEXTJS",
+        "EXPRESS",
+        "VUE",
+        "HONO",
+        "ANGULAR",
+        "OTHER"
+    ],{
+        message: "Template is required"
+    }
+)
+
 export const repoSchema = z.object({
     name: z
         .string()
@@ -27,7 +41,9 @@ export const repoSchema = z.object({
             {
                 message: "Must be a valid GitHub repository URL",
             }
-        )
+        ),
+
+    templates: TemplateSchema
 })
 
 export type RepoFormData = z.infer<typeof repoSchema>

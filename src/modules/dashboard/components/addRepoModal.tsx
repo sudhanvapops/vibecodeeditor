@@ -19,10 +19,12 @@ import {
     Copy
 } from "lucide-react";
 
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 
-import { repoSchema, RepoFormData } from "@/lib/repo_schema"
+import { TemplateSchema, repoSchema, RepoFormData } from "@/lib/repo_schema"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+
 
 
 type AddRepoModalProps = {
@@ -39,7 +41,7 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
         handleSubmit,
         formState: { errors, isSubmitting },
         reset,
-
+        control
     } = useForm<RepoFormData>({
         resolver: zodResolver(repoSchema),
     });
@@ -86,6 +88,43 @@ const AddRepoModal = ({ isOpen, onClose, onSubmit }: AddRepoModalProps) => {
                                 </FieldDescription>
                             )}
                         </Field>
+
+                        <Field>
+                            <Label>Templates:</Label>
+                            < Controller
+                                control={control}
+                                name="templates"
+                                render={
+                                    ({ field }) => (
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            value={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Template" />
+                                            </SelectTrigger>
+
+                                            <SelectContent>
+                                                <SelectGroup>
+                                                    {
+                                                        TemplateSchema.options.map((template) => (
+                                                            <SelectItem key={template} value={template}>{template}</SelectItem>
+                                                        ))
+                                                    }
+                                                </SelectGroup>
+                                            </SelectContent>
+                                        </Select>
+                                    )
+                                }
+                            />
+                            {errors.templates && (
+                                <FieldDescription className="text-red-500 text-sm">
+                                    {errors.templates.message}
+                                </FieldDescription>
+                            )}
+
+                        </Field>
+
                         <Field>
                             <Label htmlFor="username-1">Repo Link</Label>
                             <FieldDescription>Only Public Repo</FieldDescription>

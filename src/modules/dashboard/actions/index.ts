@@ -4,11 +4,8 @@ import { db } from "@/lib/db"
 import { currentUser } from "@/modules/auth/actions"
 import { revalidatePath } from "next/cache"
 
-interface Data {
-    title: string,
-    template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
-    description?: string
-}
+import { Data } from "../types" 
+
 
 export const toggleStarMarked = async (playgroundId: string, isChecked: boolean) => {
     
