@@ -66,6 +66,7 @@ enum Templates {
   VUE
   HONO
   ANGULAR
+  OTHER
 }
 
 model Playground {

@@ -9,13 +9,15 @@ export const TemplateSchema = z.enum(
         "HONO",
         "ANGULAR",
         "OTHER"
-    ],{
-        message: "Template is required"
-    }
+    ], {
+    message: "Template is required"
+}
 )
 
+export type TemplateData = z.infer<typeof TemplateSchema>
+
 export const repoSchema = z.object({
-    name: z
+    title: z
         .string()
         .min(1, "Name is required")
         .min(3, "Name must be at least 3 charcharacters"),
@@ -43,7 +45,10 @@ export const repoSchema = z.object({
             }
         ),
 
-    templates: TemplateSchema
+    description: z
+        .string(),
+
+    template: TemplateSchema
 })
 
 export type RepoFormData = z.infer<typeof repoSchema>

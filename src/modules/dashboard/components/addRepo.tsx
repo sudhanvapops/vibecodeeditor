@@ -7,14 +7,21 @@ import AddRepoModal from "./addRepoModal"
 import { useState } from "react"
 import { RepoFormData } from "@/lib/repo_schema"
 import { toast } from "sonner"
+import { createPlayground } from "../actions"
+import { useRouter } from "next/navigation"
 
 const AddRepo = () => {
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+  const router = useRouter()
+
 
   const handleSubmit = async (data: RepoFormData) => {
     try {
-      // call server action here
+      const res = await createPlayground(data)
+      toast.success("Cloned Successfully")
+      router.refresh()
+      console.log("resposnse",res)
       setIsModalOpen(false)
     } catch (error) {
       toast.error("Failed to clone repo");
@@ -64,7 +71,7 @@ const AddRepo = () => {
       <AddRepoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSubmit={() => handleSubmit}
+        onSubmit={handleSubmit}
       />
     </>
   )

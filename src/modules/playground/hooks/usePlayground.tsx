@@ -43,8 +43,9 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
             // @ts-ignore
             setPlaygroundData(data)
+            
+            // If content of file already present
             const rawContent = data?.templateFiles?.[0]?.content
-
             if (typeof rawContent === "string") {
                 const parsedContent = JSON.parse(rawContent)
                 setTemplateData(()=>sortFileExplorer(parsedContent))

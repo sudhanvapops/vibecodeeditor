@@ -16,8 +16,8 @@ make the request and do it
 
 Frontend → sends repo URL → Backend → downloads repo → extracts → loads files → Store in Db → sends to frontend/editor
 
-### Future: Make it also for Private REPO
 
+### Future: Make it also for Private REPO
 
 Add rate limiting to donation payment api to prevent abuse 
 Libraries:

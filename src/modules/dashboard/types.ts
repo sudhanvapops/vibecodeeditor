@@ -22,6 +22,6 @@ export interface Project {
 
 export interface Data {
   title: string,
-  template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
+  template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR" | "OTHER",
   description?: string,
 }
