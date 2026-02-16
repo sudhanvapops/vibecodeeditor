@@ -2,7 +2,7 @@
 
 import Image from "next/image"
 import { format } from "date-fns"
-import type { Project } from "../types"
+import type { Data, Project } from "../types"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
@@ -37,6 +37,7 @@ import { MoreHorizontal, Edit3, Trash2, ExternalLink, Copy, Download, Eye } from
 import { toast } from "sonner"
 import { MarkedToggleButton } from "./MarkedToggleButton"
 import EditDialog from "./editDialog"
+import { TemplateData } from "@/lib/repo_schema"
 
 interface DuplicatedPlayground {
   id: string;
@@ -45,7 +46,7 @@ interface DuplicatedPlayground {
   updatedAt: Date;
   title: string;
   description: string | null;
-  template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR";
+  template: TemplateData;
 }
 
 interface ProjectTableProps {

@@ -39,7 +39,8 @@ export async function GET(req: NextRequest,{params}:{params:Promise<{id:string}>
     const templateKey = playground.template as keyof typeof templatePaths
     const templatePath = templatePaths[templateKey]
 
-    if(!templatePath) return NextResponse.json({error:"Invalid template"},{status: 404})    
+    // ! changed
+    // if(!templatePath) return NextResponse.json({error:"Invalid template"},{status: 404})    
     
     try {
         const inputPath = path.join(process.cwd(),templatePath)
@@ -52,7 +53,7 @@ export async function GET(req: NextRequest,{params}:{params:Promise<{id:string}>
 
         // ! Uncomment it after 
         // Store the json and call it from db next time 
-        // await fs.unlink(outputFile)
+        await fs.unlink(outputFile)
 
         return NextResponse.json({
             success: true,

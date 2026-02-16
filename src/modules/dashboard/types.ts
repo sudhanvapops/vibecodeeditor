@@ -19,3 +19,9 @@ export interface Project {
     user: User
     starMark: { isMarked: boolean}[]
 }
+
+export interface Data {
+  title: string,
+  template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR" | "OTHER",
+  description?: string,
+}

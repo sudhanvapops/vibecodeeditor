@@ -10,12 +10,8 @@ import { toast } from "sonner";
 import TemplateSelectingModal from "./templateSelectingModal";
 import { createPlayground } from "@/modules/dashboard/actions";
 
+import { Data } from "../types";
 
-interface Data {
-  title: string,
-  template: "REACT" | "NEXTJS" | "EXPRESS" | "VUE" | "HONO" | "ANGULAR",
-  description?: string,
-}
 
 const AddNewButton = () => {
 
