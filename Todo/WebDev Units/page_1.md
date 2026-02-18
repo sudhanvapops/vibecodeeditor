@@ -13,6 +13,15 @@
     [] 
 
 
+[] Replace Monaco With CodeMirror
+    [] Phase 1 — Replace Monaco with basic CodeMirror
+    [] Phase 2 — Connect your file JSON system
+    [] Phase 3 — Add syntax highlighting
+    [] Phase 4 — Add tab system
+    [] Phase 5 — Add AI ghost text
+    [] Phase 6 — Add Git integration
+
+
 [] Work Space
     [] openWorkspace(projectId)
     [] closeWorkspace(projectId)
