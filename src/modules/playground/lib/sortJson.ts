@@ -14,7 +14,7 @@ export const sortFileExplorer = (node: TemplateFolder): TemplateFolder => {
     return node;
   }
 
-  // console.log("Sort Renderd")
+  console.log("Sort Renderd")
 
   const folders = node.items
     .filter((item): item is TemplateFolder => (

@@ -8,5 +8,20 @@
         [] Store it in DB
         [] unlink the local Folder
 
+
+[] Make Use of Storage Bucket
+
+
+[] Work Space
+    [] openWorkspace(projectId)
+    [] closeWorkspace(projectId)
+    [] syncWorkspaceToS3(projectId)
+    [] restoreWorkspaceFromS3(projectId)
+    [] deleteWorkspace(projectId)
+
+[] Export To Github
+    [] New Project
+    [] Existing project to git push 
+    
 [] See !
 [] See ?
