@@ -8,7 +8,7 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import LoadingStep from '@/modules/playground/components/loader'
-import PlaygroundEditor from '@/modules/playground/components/playgroundEditor'
+// import PlaygroundEditor from '@/modules/playground/components/playgroundEditor'
 import { TemplateFileTree } from '@/modules/playground/components/playgroundExplorer'
 import ToggleAI from '@/modules/playground/components/toogleAi'
 import { useAISuggestions } from '@/modules/playground/hooks/useAISuggestion'
@@ -20,11 +20,15 @@ import { sortFileExplorer } from '@/modules/playground/lib/sortJson'
 import { useRuntime } from '@/modules/runtime/hooks/useRuntime'
 import WebContainerPreview from '@/modules/webcontainers/components/webContainerPreview'
 import { AlertCircle, Bot, FileText, FolderOpen, Save, Settings, X } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-
+const PlaygroundEditor = dynamic(
+  () => import("@/modules/playground/components/playgroundEditor"),
+  { ssr: false }
+)
 
 const MainPlaygroudPage = () => {
 
@@ -469,6 +473,7 @@ const MainPlaygroudPage = () => {
               <div className='border-b bg-muted/30'>
                 <Tabs value={activeFileId || ""} onValueChange={setActiveFileId}>
                   <div className="flex items-center justify-between px-4 py-2">
+                    {/* Tabs */}
                     <TabsList className="h-8 bg-transparent p-0">
                       {openFiles.map((file) => (
                         <TabsTrigger
@@ -541,6 +546,8 @@ const MainPlaygroudPage = () => {
                             aiSuggestions.fetchSuggestion(type, editor)
                           }
                         />
+                      // <CodeEditor/>
+                        
                       ) : (
                         <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-4">
                           <FileText className="h-16 w-16 text-gray-300" />

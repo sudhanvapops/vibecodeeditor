@@ -1,0 +1,183 @@
+{
+  "_id": "cmls59q7z000jhyjcc33ce14p",
+  "content": {
+    "folderName": "express-simple",
+    "items": [
+      {
+        "folderName": "pages",
+        "items": [
+          {
+            "filename": "index",
+            "fileExtension": "html",
+            "content": "<!DOCTYPE html>
+<html lang=\"en\">
+
+<head>
+  <meta charset=\"UTF-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+  <title>Simple UI Demo</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+            }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+            }
+
+    .card {
+      background: rgba(255,
+              255,
+              255,
+              0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,
+              0,
+              0,
+              0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+            }
+
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+            }
+
+    p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+            }
+
+    .btn {
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+            }
+
+    .btn:hover {
+      transform: translateY(-2px);
+            }
+  </style>
+</head>
+
+<body>
+  <div class=\"card\">
+    <h1>Simple Beautiful UI</h1>
+    <p>
+      Modern glassmorphism design with smooth gradients,
+      responsive layout, and hover effects.
+      Single file, no frameworks.
+    </p>
+    <button class=\"btn\">Get Started</button>
+  </div>
+</body>
+
+</html>"
+          },
+          {
+            "filename": "test",
+            "fileExtension": "js",
+            "content": "console.log('This is a project');"
+          }
+        ]
+      },
+      {
+        "folderName": "static",
+        "items": [
+          {
+            "filename": "style",
+            "fileExtension": "css",
+            "content": "* {
+  box-sizing: border-box;
+          }
+
+body {
+  margin: 0;
+  padding: 1rem;
+  font-family: system-ui, sans-serif;
+  color: black;
+  background-color: white;
+          }
+
+h1 {
+  font-weight: 800;
+  font-size: 1.5rem;
+          }"
+        }
+      ]
+    },
+    {
+      "filename": "index",
+      "fileExtension": "js",
+      "content": "const express = require('express');
+const { resolve
+      } = require('path');
+
+const app = express();
+const port = 3010;
+
+app.use(express.static('static'));
+
+app.get('/', (req, res) => {
+  res.sendFile(resolve(__dirname, 'pages/index.html'));
+      });
+
+app.listen(port, () => {
+  console.log(`Example app listening at http: //localhost:${port}`);
+      });"
+    },
+    {
+      "filename": "package",
+      "fileExtension": "json",
+      "content": "{
+  \"name\": \"express-simple-starter\",
+  \"private\": true,
+  \"scripts\": {
+    \"start\": \"nodemon --ext js,html index.js\"
+    },
+  \"dependencies\": {
+    \"express\": \"^4.18.2\",
+    \"nodemon\": \"^3.0.1\"
+  }
+}"
+},
+{
+"filename": "README",
+"fileExtension": "md",
+"content": "# Simple Express Demo
+
+Express: fast, unopinionated, minimalist web framework for Node.js.
+
+This project shows a simple Express server serving a single HTML page and static assets.
+
+See https: //expressjs.com for documentation."
+}
+]
+},
+"createdAt": {
+"$date": "2026-02-18T14:45:44.063Z"
+},
+"updatedAt": {
+"$date": "2026-02-21T04:01:27.330Z"
+},
+"playgroundId": "cmls54q70000fhyjcct8w3o5e"
+}
