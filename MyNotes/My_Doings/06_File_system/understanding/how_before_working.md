@@ -34,12 +34,12 @@ model TemplateFile {
 ### Impossible future features
 
 You cannot easily add:
-realtime collaboration
-partial sync
-file history
-diff syncing
-Yjs
-Git-like commits
+     realtime collaboration
+     partial sync
+     file history
+     diff syncing
+     Yjs
+     Git-like commits
 
 And breaks at scale 
 
@@ -111,12 +111,12 @@ Like Google Docs.
 ### Future Advantage
 Later you get for free:
 
-✅ Offline editing
-✅ Multiplayer collaboration
-✅ Git commits
-✅ Undo history
-✅ Version snapshots
-✅ Conflict resolution
+     ✅ Offline editing
+     ✅ Multiplayer collaboration
+     ✅ Git commits
+     ✅ Undo history
+     ✅ Version snapshots
+     ✅ Conflict resolution
 
 
 ### Problems Your Brain Must Now Solve
@@ -126,29 +126,27 @@ Later you get for free:
 4. Large project download?
 
 
-1. What if tab crashes before sync?
+❓1. What if tab crashes before sync?
 
 Answer direction:
-
 Persist Local FS → IndexedDB
+
 ❓2. Two tabs open same project?
 
 You need:
-
 BroadcastChannel
 or
 Yjs awareness
+
 ❓3. Sync conflict?
 
 You need:
-
 version / updatedAt check
+
 ❓4. Large project download?
 
 Think:
-
 lazy file loading
-
 (Not full project at once)
 
 
