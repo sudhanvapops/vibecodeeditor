@@ -1,0 +1,45 @@
+{
+    "folderName": "express-simple",
+    "items": [
+        {
+            "folderName": "pages",
+            "items": [
+                {
+                    "filename": "index",
+                    "fileExtension": "html",
+                    "content": "<!DOCTYPE html>\r\n<html lang=\"en\">\r\n\r\n<head>\r\n  <meta charset=\"UTF-8\">\r\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n  <title>Simple UI Demo</title>\r\n  <style>\r\n    * {\r\n      margin: 0; \r\n      padding: 0;\r\n      box-sizing: border-box;\r\n    }\r\n\r\n    body {\r\n      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;\r\n      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\r\n      min-height: 100vh;\r\n      display: flex;\r\n      align-items: center;\r\n      justify-content: center;\r\n    }\r\n\r\n    .card {\r\n      background: rgba(255, 255, 255, 0.95);\r\n      backdrop-filter: blur(10px);\r\n      padding: 2rem;\r\n      border-radius: 20px;\r\n      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);\r\n      max-width: 400px;\r\n      width: 90%;\r\n      text-align: center;\r\n    }\r\n\r\n    h1 {\r\n      color: #333;\r\n      margin-bottom: 1rem;\r\n      font-size: 2rem;\r\n    }\r\n\r\n    p {\r\n      color: #666;\r\n      line-height: 1.6;\r\n      margin-bottom: 2rem;\r\n    }\r\n\r\n    .btn {\r\n      background: linear-gradient(45deg, #667eea, #764ba2);\r\n      color: white;\r\n      padding: 12px 30px;\r\n      border: none;\r\n      border-radius: 50px;\r\n      font-size: 1rem;\r\n      cursor: pointer;\r\n      transition: transform 0.2s;\r\n    }\r\n\r\n    .btn:hover {\r\n      transform: translateY(-2px);\r\n    }\r\n  </style>\r\n</head>\r\n\r\n<body>\r\n  <div class=\"card\">\r\n    <h1>**Simple Beautiful UI**</h1>\r\n    <p>Modern glassmorphism design with smooth gradients, responsive layout, and hover effects. Single file, no\r\n      frameworks.</p>\r\n    <button class=\"btn\">Get Started</button>\r\n  </div>\r\n</body>\r\n\r\n</html>"
+                },
+                {
+                    "filename": "test",
+                    "fileExtension": "js",
+                    "content": "this is a prjoect "
+                }
+            ]
+        },
+        {
+            "folderName": "static",
+            "items": [
+                {
+                    "filename": "style",
+                    "fileExtension": "css",
+                    "content": "* {\r\n  box-sizing: border-box;\r\n}\r\n\r\nbody {\r\n  margin: 0;\r\n  padding: 1rem;\r\n  font-family: system-ui, sans-serif;\r\n  color: black;\r\n  background-color: white;\r\n}\r\n\r\nh1 {\r\n  font-weight: 800;\r\n  font-size: 1.5rem;\r\n}\r\n"
+                }
+            ]
+        },
+        {
+            "filename": "index",
+            "fileExtension": "js",
+            "content": "const express = require('express');\r\nconst { resolve } = require('path');\r\n\r\nconst app = express();\r\nconst port = 3010;\r\n\r\napp.use(express.static('static'));\r\n\r\napp.get('/', (req, res) => {\r\n  res.sendFile(resolve(__dirname, 'pages/index.html'));\r\n});\r\n\r\napp.listen(port, () => {\r\n  console.log(`Example app listening at http://localhost:${port}`);\r\n});\r\n"
+        },
+        {
+            "filename": "package",
+            "fileExtension": "json",
+            "content": "{\r\n  \"name\": \"express-simple-starter\",\r\n  \"private\": true,\r\n  \"scripts\": {\r\n    \"start\": \"nodemon --ext js,html index.js\"\r\n  },\r\n  \"dependencies\": {\r\n    \"express\": \"^4.18.2\",\r\n    \"nodemon\": \"^3.0.1\"\r\n  }\r\n}\r\n"
+        },
+        {
+            "filename": "README",
+            "fileExtension": "md",
+            "content": "# Simple express demo\r\n\r\n> Express: fast, unopinionated, minimalist web framework for Node.js\r\n\r\nThis project shows a simple express server serving a single HTML page and using `express.static` to serve static files.\r\n\r\nCheck out the [express documentation](https://expressjs.com/) for more information.\r\n"
+        }
+    ]
+}

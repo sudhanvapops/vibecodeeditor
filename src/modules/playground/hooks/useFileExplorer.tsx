@@ -5,14 +5,14 @@ import { TemplateFile, TemplateFolder } from "../lib/pathToJson-util"
 import { generateFileId } from "../lib"
 import { sortFileExplorer } from "../lib/sortJson"
 import type { RuntimeAdapter } from "@/modules/runtime/types"
+import { fileManager } from "../file-system/FileManager"
 
 
 
-interface OpenFile extends TemplateFile {
-    id: string, 
-    hasUnsavedChanges: boolean
-    content: string,
-    originalContent: string
+interface OpenFile {
+    id: string,
+    filename: string;
+    fileExtension: string;
 }
 
 interface FileExplorerState {
@@ -21,12 +21,10 @@ interface FileExplorerState {
     templateData: TemplateFolder | null,
     openFiles: OpenFile[],
     activeFileId: string | null,
-    editorContent: string
 
     //   Setter Functions
     setPlaygroundId: (id: string) => void;
     setTemplateData: (data: TemplateFolder | null) => void;
-    setEditorContent: (content: string) => void;
     setOpenFiles: (files: OpenFile[]) => void;
     setActiveFileId: (fileId: string | null) => void;
 
@@ -87,20 +85,16 @@ interface FileExplorerState {
 // @ts-ignore
 export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
-    // Data
+    // ! Data
     templateData: null,
     playgroundId: "",
     openFiles: [] satisfies OpenFile[],
     activeFileId: null,
-    editorContent: "",
 
-    // setters
+    // ! setters
     setTemplateData: (data) => set({ templateData: data }), // folder structure data
     setPlaygroundId(id) {
         set({ playgroundId: id })
-    },
-    setEditorContent(content) {
-        set({ editorContent: content })
     },
     setOpenFiles: (files) => set({ openFiles: files }),
     setActiveFileId(fileId) {
@@ -108,92 +102,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
     },
 
 
-    // Can be better
-    openFile(file) {
-
-        // Generates File ID
-        const fileId = generateFileId(file, get().templateData!)
-        const { openFiles } = get()
-        const existingFile = openFiles.find((f) => f.id === fileId)
-
-        // If there mark as activeFile, Update the editor window 
-        if (existingFile) {
-            set({ activeFileId: fileId, editorContent: existingFile.content })
-            return
-        }
-
-        
-        // new file
-        const newOpenFile: OpenFile = {
-            ...file,
-            id: fileId,
-            hasUnsavedChanges: false,
-            content: file.content || "",
-            originalContent: file.content || "",
-        }
-
-        set((state) => ({
-            openFiles: [...state.openFiles, newOpenFile],
-            activeFileId: fileId,
-            editorContent: file.content || ""
-        }))
-
-
-    },
-
-
-    closeFile(fileId) {
-
-        const { openFiles, activeFileId } = get()
-        const newFiles = openFiles.filter((f) => f.id !== fileId)
-
-        // If we are closing the active file switch to another file or clear active
-        // Prepare temporary variables to decide the next active file and editor content.
-        // Start with current active file and content.
-        let newActiveFileId = activeFileId
-        let newEditorContent = get().editorContent
-
-        if (activeFileId === fileId) {
-            if (newFiles.length > 0) {
-                const lastFile = newFiles[newFiles.length - 1]
-                newActiveFileId = lastFile.id
-                newEditorContent = lastFile.content
-            } else {
-                newActiveFileId = null
-                newEditorContent = ""
-            }
-        }
-
-        set({
-            openFiles: newFiles,
-            activeFileId: newActiveFileId,
-            editorContent: newEditorContent
-        })
-
-
-    },
-
-
-    closeAllFiles() {
-        const { openFiles } = get();
-        const openedFiles = openFiles;
-
-        if (openedFiles.length === 0) {
-            toast.info("No Open Files");
-            return;
-        }
-
-        try {
-            for (const file of openedFiles) {
-                get().closeFile(file.id); 
-            }
-            toast.success(`Closed ${openedFiles.length} file(s)`);
-        } catch (error) {
-            toast.error("Failed to close some files");
-            console.error("Error closing all files:", error);
-        }
-    },
-
+    // ! No Changes For Now
 
     async handleAddFile(newFile, parentPath, writeFileSync, instance, saveTemplateData) {
 
@@ -221,7 +130,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
             currentFolder.items.push(newFile);
             // Update state so sidebar/file tree shows the new file.
             sortFileExplorer(currentFolder)
-            set({ templateData:  updatedTemplateData });
+            set({ templateData: updatedTemplateData });
             toast.success(`Created file: ${newFile.filename}.${newFile.fileExtension}`);
 
 
@@ -247,7 +156,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
     },
 
-    
+
     handleAddFolder: async (newFolder, parentPath, instance, saveTemplateData) => {
 
         // If No Folder Structure return
@@ -255,7 +164,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         if (!templateData) return;
 
         try {
-            
+
             const updatedTemplateData = JSON.parse(JSON.stringify(templateData)) as TemplateFolder;
             const pathParts = parentPath.split("/");
             let currentFolder = updatedTemplateData;
@@ -327,7 +236,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 // Close the file using the closeFile method
                 get().closeFile(fileId);
             }
-            
+
             sortFileExplorer(currentFolder)
             set({ templateData: updatedTemplateData });
 
@@ -382,7 +291,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
             closeFilesInFolder(folder, parentPath ? `${parentPath}/${folder.folderName}` : folder.folderName);
 
-            
+
             sortFileExplorer(currentFolder)
             set({ templateData: updatedTemplateData });
 
@@ -504,7 +413,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 } as TemplateFolder;
                 currentFolder.items[folderIndex] = updatedFolder;
 
-                
+
                 sortFileExplorer(currentFolder)
                 set({ templateData: updatedTemplateData });
 
@@ -518,21 +427,98 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         }
     },
 
+    // ! Changed Functions
+
+    // Can be better
+    openFile(file) {
+
+        // Generates File ID
+        const fileId = generateFileId(file, get().templateData!)
+        const { openFiles } = get()
+
+        const existingFile = openFiles.find((f) => f.id === fileId)
+
+
+        // register inside FileManager
+        fileManager.registerFile(fileId, file.content || "")
+
+
+        // If there mark as activeFile, Update the editor window 
+        if (existingFile) {
+            set({ activeFileId: fileId })
+            // set({ activeFileId: fileId, editorContent: existingFile.content })
+            return
+        }
+
+
+        // new file
+        const newOpenFile: OpenFile = {
+            id: fileId,
+            filename: file.filename,
+            fileExtension: file.fileExtension
+        }
+
+        set((state) => ({
+            openFiles: [...state.openFiles, newOpenFile],
+            activeFileId: fileId,
+        }))
+
+        // Zustand no longer owns editor content.
+
+    },
+
+
+    closeFile(fileId) {
+
+        const { openFiles, activeFileId } = get()
+        const newFiles = openFiles.filter((f) => f.id !== fileId)
+
+        // If we are closing the active file switch to another file or clear active
+        // Prepare temporary variables to decide the next active file and editor content.
+        // Start with current active file and content.
+        let newActiveFileId = activeFileId
+
+
+        if (activeFileId === fileId) {
+
+            newActiveFileId =
+                newFiles.length > 0
+                    ? newFiles[newFiles.length - 1].id
+                    : null
+
+        }
+        fileManager.unregisterFile(fileId)
+
+        set({
+            openFiles: newFiles,
+            activeFileId: newActiveFileId,
+        })
+
+
+    },
+
+
+    closeAllFiles() {
+        const { openFiles } = get();
+
+        if (openFiles.length === 0) {
+            toast.info("No Open Files");
+            return;
+        }
+
+        fileManager.clear()
+
+        set({
+            openFiles: [],
+            activeFileId: null
+        })
+        toast.success(`Closed ${openFiles.length} file(s)`);
+
+    },
+
 
     updateFileContent: (fileId, content) => {
-        set((state) => ({
-            openFiles: state.openFiles.map((file) =>
-                file.id === fileId
-                    ? {
-                        ...file,
-                        content,
-                        hasUnsavedChanges: content !== file.originalContent,
-                    }
-                    : file
-            ),
-            editorContent:
-                fileId === state.activeFileId ? content : state.editorContent,
-        }));
+        fileManager.updateFile(fileId, content)
     },
 
 })) 

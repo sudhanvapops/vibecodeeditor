@@ -215,7 +215,7 @@ export default function DashboardSidebar({ initialPlaygroundData }: { initialPla
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip="View all">
-                  <Link href="/playgrounds" className="text-muted-foreground">
+                  <Link href="/playground" className="text-muted-foreground">
                     <Compass className="h-4 w-4 mr-2" /> View all playgrounds
                   </Link>
                 </SidebarMenuButton>

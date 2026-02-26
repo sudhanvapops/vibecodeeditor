@@ -116,7 +116,7 @@ const Payment = () => {
                 name: "Vibe Code Editor",
                 description: "Payment for Contribution",
                 order_id: orderId,
-                // callback_url: `${process.env.NEXT_PUBLIC_URL}/contribution/payment`,
+                callback_url: `${process.env.NEXT_PUBLIC_URL}/contribution/payment`,
                 prefill: {
                     "name": fullName,
                     "email": email,
@@ -130,6 +130,7 @@ const Payment = () => {
                 handler: async (response: RazorpayResponse) => {
     
                     try {
+
                         const res = await fetch("/api/payment/verify-payment", {
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
@@ -144,6 +145,7 @@ const Payment = () => {
     
                         if (data.success) {
     
+                            // TODO: Redis Queue Background Send Email Async ly
                             await fetch("/api/send-mail", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },

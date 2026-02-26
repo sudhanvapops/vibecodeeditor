@@ -8,23 +8,30 @@ import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import LoadingStep from '@/modules/playground/components/loader'
-import PlaygroundEditor from '@/modules/playground/components/playgroundEditor'
+// import PlaygroundEditor from '@/modules/playground/components/playgroundEditor'
 import { TemplateFileTree } from '@/modules/playground/components/playgroundExplorer'
 import ToggleAI from '@/modules/playground/components/toogleAi'
+import { fileManager } from '@/modules/playground/file-system/FileManager'
 import { useAISuggestions } from '@/modules/playground/hooks/useAISuggestion'
+import { useDirtyFiles, useFileContent } from '@/modules/playground/hooks/useFileContent'
 import { useFileExplorer } from '@/modules/playground/hooks/useFileExplorer'
 import { usePlayground } from '@/modules/playground/hooks/usePlayground'
 import { findFilePath } from '@/modules/playground/lib'
 import { TemplateFile, TemplateFolder } from '@/modules/playground/lib/pathToJson-util'
 import { sortFileExplorer } from '@/modules/playground/lib/sortJson'
+import { toTemplateFile } from '@/modules/playground/lib/toTemplateFile'
 import { useRuntime } from '@/modules/runtime/hooks/useRuntime'
 import WebContainerPreview from '@/modules/webcontainers/components/webContainerPreview'
 import { AlertCircle, Bot, FileText, FolderOpen, Save, Settings, X } from 'lucide-react'
+import dynamic from 'next/dynamic'
 import { useParams } from 'next/navigation'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
-
+const PlaygroundEditor = dynamic(
+  () => import("@/modules/playground/components/playgroundEditor"),
+  { ssr: false }
+)
 
 const MainPlaygroudPage = () => {
 
@@ -150,8 +157,12 @@ const MainPlaygroudPage = () => {
   );
 
 
-  const activeFile = openFiles.find((file) => file.id === activeFileId)
-  const hasUnsavedChanges = openFiles.some((file) => file.hasUnsavedChanges)
+  const activeFile = openFiles.find(file => file.id === activeFileId)
+  const editorContent = useFileContent(activeFileId)
+
+  // Now truth comes from filesystem.
+  const dirtyFiles = useDirtyFiles();
+  const hasUnsavedChanges = dirtyFiles.length > 0
 
   const handleFileSelect = (file: TemplateFile) => {
     openFile(file)
@@ -165,40 +176,44 @@ const MainPlaygroudPage = () => {
       const targetFileId = fileId || activeFileId;
       if (!targetFileId) return;
 
-      const fileToSave = openFiles.find((f) => f.id === targetFileId);
-
-      if (!fileToSave) return;
+      const fileMeta = openFiles.find(f => f.id === targetFileId);
+      if (!fileMeta) return;
 
       const latestTemplateData = useFileExplorer.getState().templateData;
       if (!latestTemplateData) return
 
+      const content = fileManager.readFile(targetFileId)
 
       try {
 
-        const filePath = findFilePath(fileToSave, latestTemplateData);
+        const filePath = findFilePath(toTemplateFile(fileMeta), latestTemplateData);
         if (!filePath) {
           toast.error(
-            `Could not find path for file: ${fileToSave.filename}.${fileToSave.fileExtension}`
+            `Could not find path for file: ${fileMeta.filename}.${fileMeta.fileExtension}`
           );
           return;
         }
 
-        // TO Make a Deep Copy
+        // ---------- Deep Copy ----------
         const updatedTemplateData: TemplateFolder = JSON.parse(
           JSON.stringify(latestTemplateData)
         );
 
-        // @ts-ignore
-        const updateFileContent = (items: any[]) =>
-          // @ts-ignore
+        const updateFileContent = (items: any[]): any[] =>
           items.map((item) => {
+
             if ("folderName" in item) {
-              return { ...item, items: updateFileContent(item.items) };
-            } else if (
-              item.filename === fileToSave.filename &&
-              item.fileExtension === fileToSave.fileExtension
+              return {
+                ...item,
+                items: updateFileContent(item.items)
+              };
+            }
+
+            if (
+              item.filename === fileMeta.filename &&
+              item.fileExtension === fileMeta.fileExtension
             ) {
-              return { ...item, content: fileToSave.content };
+              return { ...item, content };
             }
             return item;
           });
@@ -209,40 +224,27 @@ const MainPlaygroudPage = () => {
         );
 
 
-        // Sync with WebContainer
+        // ---------- WebContainer Sync ----------
         if (adapter?.writeFile) {
-          await adapter?.writeFile(filePath, fileToSave.content);
-          lastSyncedContent.current.set(fileToSave.id, fileToSave.content);
-          if (adapter) {
-            await adapter?.writeFile(filePath, fileToSave.content);
-          }
+          await adapter?.writeFile(filePath, content);
+          lastSyncedContent.current.set(targetFileId, content);
         }
+
+        // ---------- Persist DB ----------
 
         const newTemplateData = await saveTemplateData(updatedTemplateData);
         setTemplateData(sortFileExplorer(newTemplateData || updatedTemplateData));
 
-
-        // Update open files
-        const updatedOpenFiles = openFiles.map((file) =>
-          file.id === targetFileId
-            ? {
-              ...file,
-              content: fileToSave.content,
-              originalContent: fileToSave.content,
-              hasUnsavedChanges: false,
-            }
-            : file
-        );
-        setOpenFiles(updatedOpenFiles);
+        fileManager.markSaved(targetFileId)
 
         toast.success(
-          `Saved ${fileToSave.filename}.${fileToSave.fileExtension}`
+          `Saved ${fileMeta.filename}.${fileMeta.fileExtension}`
         );
 
       } catch (error) {
         console.error("Error saving file:", error);
         toast.error(
-          `Failed to save ${fileToSave.filename}.${fileToSave.fileExtension}`
+          `Failed to save ${fileMeta.filename}.${fileMeta.fileExtension}`
         );
         throw error;
       }
@@ -259,7 +261,7 @@ const MainPlaygroudPage = () => {
 
   const handleSaveAll = async () => {
 
-    const unsavedFiles = openFiles.filter((f) => f.hasUnsavedChanges);
+    const unsavedFiles = openFiles.filter((f) => fileManager.isDirty(f.id));
 
     if (unsavedFiles.length === 0) {
       toast.info("No unsaved changes");
@@ -401,7 +403,7 @@ const MainPlaygroudPage = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => handleSave()}
-                      disabled={!activeFile || !activeFile.hasUnsavedChanges}
+                      disabled={!activeFile || !fileManager.isDirty(activeFile.id)}
                     >
                       <Save className="h-4 w-4" />
                     </Button>
@@ -469,6 +471,7 @@ const MainPlaygroudPage = () => {
               <div className='border-b bg-muted/30'>
                 <Tabs value={activeFileId || ""} onValueChange={setActiveFileId}>
                   <div className="flex items-center justify-between px-4 py-2">
+                    {/* Tabs */}
                     <TabsList className="h-8 bg-transparent p-0">
                       {openFiles.map((file) => (
                         <TabsTrigger
@@ -481,7 +484,7 @@ const MainPlaygroudPage = () => {
                             <span>
                               {file.filename}.{file.fileExtension}
                             </span>
-                            {file.hasUnsavedChanges && (
+                            {fileManager.isDirty(file.id) && (
                               <span className="h-2 w-2 rounded-full bg-orange-500" />
                             )}
                             <span
@@ -524,10 +527,11 @@ const MainPlaygroudPage = () => {
                       {openFiles.length > 0 ? (
                         <PlaygroundEditor
                           activeFile={activeFile}
-                          content={activeFile?.content || ""}
+                          content={editorContent}
                           onContentChange={(value) => {
                             activeFileId && updateFileContent(activeFileId, value);
                           }}
+
                           suggestion={aiSuggestions.suggestion}
                           suggestionLoading={aiSuggestions.isLoading}
                           suggestionPosition={aiSuggestions.position}
@@ -541,6 +545,8 @@ const MainPlaygroudPage = () => {
                             aiSuggestions.fetchSuggestion(type, editor)
                           }
                         />
+                        // <CodeEditor/>
+
                       ) : (
                         <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-4">
                           <FileText className="h-16 w-16 text-gray-300" />
