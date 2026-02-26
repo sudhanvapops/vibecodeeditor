@@ -6,6 +6,14 @@ interface ManagedFile {
     isDirty: boolean
 }
 
+// Uses PUB/SUB model + useSyncExternalStore(subscribe,getSnapshot)
+// EG: updateFile -> publish event (emits)
+// React Component Subscribes 
+
+// Here
+//  Publisher → notify only
+// React → pulls latest state itself
+// Subscriber updates UI immediately
 
 class FileManager {
 
@@ -15,6 +23,7 @@ class FileManager {
     // To Make Reactive 
     private listeners = new Set<Listener>();
 
+    // List of dirty files
     private dirtyCache: string[] = [];
 
 
@@ -83,6 +92,13 @@ class FileManager {
     getDirtyFiles() {
         return this.dirtyCache;
     }
+    
+    private recomputeDirtyCache() {
+        this.dirtyCache = [...this.files.entries()]
+            .filter(([_, f]) => f.isDirty)
+            .map(([id]) => id);
+    }
+
 
     markSaved(fileId: string) {
         const file = this.files.get(fileId)
@@ -94,11 +110,6 @@ class FileManager {
         file.isDirty = false
     }
 
-    private recomputeDirtyCache() {
-        this.dirtyCache = [...this.files.entries()]
-            .filter(([_, f]) => f.isDirty)
-            .map(([id]) => id);
-    }
 
 }
 

@@ -19,6 +19,7 @@ import { usePlayground } from '@/modules/playground/hooks/usePlayground'
 import { findFilePath } from '@/modules/playground/lib'
 import { TemplateFile, TemplateFolder } from '@/modules/playground/lib/pathToJson-util'
 import { sortFileExplorer } from '@/modules/playground/lib/sortJson'
+import { toTemplateFile } from '@/modules/playground/lib/toTemplateFile'
 import { useRuntime } from '@/modules/runtime/hooks/useRuntime'
 import WebContainerPreview from '@/modules/webcontainers/components/webContainerPreview'
 import { AlertCircle, Bot, FileText, FolderOpen, Save, Settings, X } from 'lucide-react'
@@ -185,7 +186,7 @@ const MainPlaygroudPage = () => {
 
       try {
 
-        const filePath = findFilePath(fileMeta, latestTemplateData);
+        const filePath = findFilePath(toTemplateFile(fileMeta), latestTemplateData);
         if (!filePath) {
           toast.error(
             `Could not find path for file: ${fileMeta.filename}.${fileMeta.fileExtension}`
@@ -260,7 +261,7 @@ const MainPlaygroudPage = () => {
 
   const handleSaveAll = async () => {
 
-    const unsavedFiles = openFiles.filter((f) => f.hasUnsavedChanges);
+    const unsavedFiles = openFiles.filter((f) => fileManager.isDirty(f.id));
 
     if (unsavedFiles.length === 0) {
       toast.info("No unsaved changes");
@@ -402,7 +403,7 @@ const MainPlaygroudPage = () => {
                       size="sm"
                       variant="outline"
                       onClick={() => handleSave()}
-                      disabled={!activeFile || !activeFile.hasUnsavedChanges}
+                      disabled={!activeFile || !fileManager.isDirty(activeFile.id)}
                     >
                       <Save className="h-4 w-4" />
                     </Button>

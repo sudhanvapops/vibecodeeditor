@@ -9,11 +9,10 @@ import { fileManager } from "../file-system/FileManager"
 
 
 
-interface OpenFile extends TemplateFile {
+interface OpenFile {
     id: string,
-    hasUnsavedChanges: boolean
-    content: string,
-    originalContent: string
+    filename: string;
+    fileExtension: string;
 }
 
 interface FileExplorerState {
@@ -428,7 +427,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         }
     },
 
-
+    // ! Changed Functions
 
     // Can be better
     openFile(file) {
@@ -464,7 +463,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
             activeFileId: fileId,
         }))
 
-        // Zustand no longer owns content.
+        // Zustand no longer owns editor content.
 
     },
 

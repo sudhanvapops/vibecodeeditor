@@ -20,7 +20,6 @@ export function useFileContent(fileId: string | null) {
 
 export function useDirtyFiles() {
 
-    
     return useSyncExternalStore(
         fileManager.subscribe.bind(fileManager),
         () => fileManager.getDirtyFiles(),
