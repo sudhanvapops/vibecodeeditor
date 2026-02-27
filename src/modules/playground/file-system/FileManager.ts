@@ -1,10 +1,31 @@
-type Listener = () => void;
-
 interface ManagedFile {
     content: string
     originalContent: String
     isDirty: boolean
 }
+
+type Listener = () => void;
+
+interface IFileManager {
+
+    // Reactive contract
+    subscribe(listener: Listener): () => void
+
+    // File LifeCycle
+    registerFile(fileId: string, content: string): void
+    unregisterFile(fileId: string): void
+    clear(): void
+
+    // Updates
+    updateFile(fileId: string, content: string): void
+    markSaved(fileId: string): void
+
+    // Reads
+    readFile(fileId: string | null): string
+    isDirty(fileId: string): boolean
+    getDirtyFiles(): string[]
+}
+
 
 // Uses PUB/SUB model + useSyncExternalStore(subscribe,getSnapshot)
 // EG: updateFile -> publish event (emits)
@@ -15,7 +36,7 @@ interface ManagedFile {
 // React → pulls latest state itself
 // Subscriber updates UI immediately
 
-class FileManager {
+class FileManager implements IFileManager {
 
     // Making a hashMap
     private files = new Map<string, ManagedFile>()
@@ -92,7 +113,7 @@ class FileManager {
     getDirtyFiles() {
         return this.dirtyCache;
     }
-    
+
     private recomputeDirtyCache() {
         this.dirtyCache = [...this.files.entries()]
             .filter(([_, f]) => f.isDirty)

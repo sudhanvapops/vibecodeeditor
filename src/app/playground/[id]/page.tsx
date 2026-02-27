@@ -121,7 +121,7 @@ const MainPlaygroudPage = () => {
 
   const wrappedHandleDeleteFolder = useCallback(
     (folder: TemplateFolder, parentPath: string) => {
-      return handleDeleteFolder(folder, parentPath, saveTemplateData);
+      return handleDeleteFolder(folder, parentPath, saveTemplateData,adapter!);
     },
     [handleDeleteFolder, saveTemplateData]
   );
@@ -138,7 +138,8 @@ const MainPlaygroudPage = () => {
         newFilename,
         newExtension,
         parentPath,
-        saveTemplateData
+        saveTemplateData,
+        adapter!
       );
     },
     [handleRenameFile, saveTemplateData]
@@ -150,7 +151,8 @@ const MainPlaygroudPage = () => {
         folder,
         newFolderName,
         parentPath,
-        saveTemplateData
+        saveTemplateData,
+        adapter!
       );
     },
     [handleRenameFolder, saveTemplateData]
