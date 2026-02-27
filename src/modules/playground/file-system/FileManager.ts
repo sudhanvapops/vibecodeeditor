@@ -6,6 +6,13 @@ interface ManagedFile {
 
 type Listener = () => void;
 
+
+// By using this 
+// later can create:
+// class IndexedDBFileManager implements IFileManager {}
+// class CRDTFileManager implements IFileManager {}
+// class RemoteFileManager implements IFileManager {}
+
 interface IFileManager {
 
     // Reactive contract
@@ -40,10 +47,8 @@ class FileManager implements IFileManager {
 
     // Making a hashMap
     private files = new Map<string, ManagedFile>()
-
     // To Make Reactive 
     private listeners = new Set<Listener>();
-
     // List of dirty files
     private dirtyCache: string[] = [];
 
@@ -59,20 +64,9 @@ class FileManager implements IFileManager {
     }
 
 
-    // ! For Updating File
-    updateFile(fileId: string, content: string) {
-        const file = this.files.get(fileId)
-        if (!file) return
-
-        file.content = content
-        file.isDirty = content !== file.originalContent
-        this.recomputeDirtyCache();
-        this.emit()
-    }
-
     // ! For Opening File
     registerFile(fileId: string, content: string) {
-        // if no matching files return 
+        // if matching files got
         if (this.files.has(fileId)) return
 
         this.files.set(fileId, {
@@ -85,10 +79,26 @@ class FileManager implements IFileManager {
 
     }
 
-
     // ! closing file
     unregisterFile(fileId: string) {
-        this.files.delete(fileId)
+        const existed = this.files.delete(fileId)
+
+        if(!existed){
+            console.warn(`Unregister called for unknown file: ${fileId}`)
+            throw new Error(`Unregister called for unknown file: ${fileId}`)
+        }
+
+        this.recomputeDirtyCache();
+        this.emit()
+    }
+
+    // ! For Updating File
+    updateFile(fileId: string, content: string) {
+        const file = this.files.get(fileId)
+        if (!file) return
+
+        file.content = content
+        file.isDirty = content !== file.originalContent
         this.recomputeDirtyCache();
         this.emit()
     }
@@ -120,7 +130,6 @@ class FileManager implements IFileManager {
             .map(([id]) => id);
     }
 
-
     markSaved(fileId: string) {
         const file = this.files.get(fileId)
         if (!file) return
@@ -131,8 +140,6 @@ class FileManager implements IFileManager {
         this.recomputeDirtyCache();
         this.emit()
     }
-
-
 }
 
 export const fileManager = new FileManager()
@@ -140,4 +147,4 @@ export const fileManager = new FileManager()
 // No Zustand
 // No React
 // No Toast
-// Pure ownership
+// Pure ownership of data
