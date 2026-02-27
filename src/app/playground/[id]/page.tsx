@@ -114,7 +114,7 @@ const MainPlaygroudPage = () => {
 
   const wrappedHandleDeleteFile = useCallback(
     (file: TemplateFile, parentPath: string) => {
-      return handleDeleteFile(file, parentPath, saveTemplateData);
+      return handleDeleteFile(file, parentPath, saveTemplateData,adapter!);
     },
     [handleDeleteFile, saveTemplateData]
   );

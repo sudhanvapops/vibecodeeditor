@@ -103,11 +103,12 @@ class FileManager {
     markSaved(fileId: string) {
         const file = this.files.get(fileId)
         if (!file) return
-        this.recomputeDirtyCache();
-        this.emit()
 
         file.originalContent = file.content
         file.isDirty = false
+
+        this.recomputeDirtyCache();
+        this.emit()
     }
 
 
