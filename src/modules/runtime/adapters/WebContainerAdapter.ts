@@ -33,6 +33,45 @@ export async function createWasmAdapter(config: RuntimeConfig): Promise<RuntimeA
             }
         },
 
+        async removeFile(path: string) {
+            if (!wc) throw new Error("Web Container not Available")
+            wc.fs.rm(path, { recursive: true })
+            try {
+
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to remove file";
+                console.error(`Failed to remove file at ${path}:`, err);
+                throw new Error(`Failed to remove file at ${path}: ${message}`);
+            }
+        },
+
+        async removeFolder(path: string) {
+            if (!wc) throw new Error("WebContainer not available");
+
+            try {
+                await wc.fs.rm(path, { recursive: true });
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to remove folder";
+                console.error(`Failed to remove folder at ${path}:`, err);
+                throw new Error(`Failed to remove folder at ${path}: ${message}`);
+            }
+        },
+
+        async rename(oldPath: string, newPath: string) {
+            if (!wc) throw new Error("WebContainer not available")
+
+            try {
+                await wc.fs.rename(oldPath, newPath);
+            } catch (err) {
+                const message =
+                    err instanceof Error ? err.message : "Failed to rename";
+                console.error(`Failed to rename ${oldPath} → ${newPath}`, err);
+                throw new Error(`Rename failed: ${message}`);
+            }
+        },
+
         async makeFolder(path) {
             if (!wc) throw new Error("WebContainer Instance not available")
 
@@ -63,6 +102,14 @@ export async function createWasmAdapter(config: RuntimeConfig): Promise<RuntimeA
             }
         },
 
+        // TODO: important later.
+        // If user runs:
+        // npm install
+        // and destroys adapter before exit → zombie process possible.
+        // Real IDEs track processes:
+        // const processes = new Set()
+        // Then kill on destroy.
+
         // Runs Commands on the server
         async spawn(cmd, args: []) {
             const proc = await wc.spawn(cmd, args)
@@ -72,7 +119,6 @@ export async function createWasmAdapter(config: RuntimeConfig): Promise<RuntimeA
                 exit: proc.exit
             } satisfies RuntimeProcess;
         },
-
 
         async onServerReady(cb) {
             try {

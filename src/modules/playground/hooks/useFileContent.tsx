@@ -10,10 +10,11 @@ const EMPTY_STRING = "";
 export function useFileContent(fileId: string | null) {
 
     return useSyncExternalStore(
+        // Subscriber Function
         fileManager.subscribe.bind(fileManager),
-
+        // getSnaphot Function
         () => fileManager.readFile(fileId),
-
+        // getServerSnaphot Function
         () => EMPTY_STRING
     )
 }

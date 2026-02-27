@@ -90,7 +90,7 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
             // DB call 
             // data is JSON
             const sortedData = sortFileExplorer(data)
-            console.log("Data Stroing:\n",data)
+            // console.log("Data Storing:\n",data)
             const result = await saveUpdatedCode(id, sortedData)
             if (result == null){
                 throw new Error("Failed to save changes: unauthorized or not found")

@@ -11,6 +11,9 @@ export interface RuntimeAdapter {
   writeFile(path: string, content: string): Promise<void>;
   makeFolder(path: string): Promise<void>;
   readFile(path: string): Promise<string>;
+  removeFile(path: string): Promise<void>;
+  removeFolder(path: string): Promise<void>;
+  rename(oldpath: string,newpath: string): Promise<void>;
   mountProject(files: any): Promise<void>;
   spawn(cmd: string, args?: string[]): Promise<RuntimeProcess | WebSocket>;
   onServerReady(cb: (url: string) => void): void;
