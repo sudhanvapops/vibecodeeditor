@@ -17,6 +17,9 @@ interface UsePlaygroundReturn {
     isLoading: boolean,
     error: string | null,
     loadPlayground: () => Promise<void>
+    /**
+    * Saves Data to Mongo DB 
+    */
     saveTemplateData: (data: TemplateFolder) => Promise<TemplateFolder>
 }
 
@@ -43,12 +46,12 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
             // @ts-ignore
             setPlaygroundData(data)
-            
+
             // If content of file already present
             const rawContent = data?.templateFiles?.[0]?.content
             if (typeof rawContent === "string") {
                 const parsedContent = JSON.parse(rawContent)
-                setTemplateData(()=>sortFileExplorer(parsedContent))
+                setTemplateData(sortFileExplorer(parsedContent))
                 toast.success("Playground loaded successfully")
                 return
             }
@@ -85,6 +88,10 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
 
     }, [id])
 
+
+    /**
+     * Saves template data to MongoDB and updates local state.
+    */
     const saveTemplateData = useCallback(async (data: TemplateFolder) => {
         try {
             // DB call 
@@ -92,7 +99,7 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
             const sortedData = sortFileExplorer(data)
             // console.log("Data Storing:\n",data)
             const result = await saveUpdatedCode(id, sortedData)
-            if (result == null){
+            if (result == null) {
                 throw new Error("Failed to save changes: unauthorized or not found")
             }
 
@@ -102,7 +109,7 @@ export const usePlayground = (id: string): UsePlaygroundReturn => {
             return sortedData
 
         } catch (error) {
-            console.error("Failed to save changes",error)
+            console.error("Failed to save changes", error)
             toast.error("Failed to save changes")
             throw error
         }

@@ -114,14 +114,14 @@ const MainPlaygroudPage = () => {
 
   const wrappedHandleDeleteFile = useCallback(
     (file: TemplateFile, parentPath: string) => {
-      return handleDeleteFile(file, parentPath, saveTemplateData,adapter!);
+      return handleDeleteFile(file, parentPath, saveTemplateData, adapter!);
     },
     [handleDeleteFile, saveTemplateData]
   );
 
   const wrappedHandleDeleteFolder = useCallback(
     (folder: TemplateFolder, parentPath: string) => {
-      return handleDeleteFolder(folder, parentPath, saveTemplateData,adapter!);
+      return handleDeleteFolder(folder, parentPath, saveTemplateData, adapter!);
     },
     [handleDeleteFolder, saveTemplateData]
   );
@@ -201,13 +201,13 @@ const MainPlaygroudPage = () => {
           JSON.stringify(latestTemplateData)
         );
 
-        const updateFileContent = (items: any[]): any[] =>
+        const updateFileContentInTree = (items: any[]): any[] =>
           items.map((item) => {
 
             if ("folderName" in item) {
               return {
                 ...item,
-                items: updateFileContent(item.items)
+                items: updateFileContentInTree(item.items)
               };
             }
 
@@ -221,7 +221,7 @@ const MainPlaygroudPage = () => {
           });
 
 
-        updatedTemplateData.items = updateFileContent(
+        updatedTemplateData.items = updateFileContentInTree(
           updatedTemplateData.items
         );
 
@@ -531,7 +531,8 @@ const MainPlaygroudPage = () => {
                           activeFile={activeFile}
                           content={editorContent}
                           onContentChange={(value) => {
-                            activeFileId && updateFileContent(activeFileId, value);
+                            if (!activeFileId) return;
+                            updateFileContent(activeFileId, value);
                           }}
 
                           suggestion={aiSuggestions.suggestion}
