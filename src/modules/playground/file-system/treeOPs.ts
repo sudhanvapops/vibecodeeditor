@@ -1,9 +1,9 @@
 import { TemplateFile, TemplateFolder } from "../lib/pathToJson-util";
 import { sortFileExplorer } from "../lib/sortJson";
+import { traveseFolder } from "./utilities";
 
 
 // TODO: Duplicate name handle still not done
-
 
 export const renameFile = (
     templateData: TemplateFolder,
@@ -14,19 +14,9 @@ export const renameFile = (
     parentPath: string
 ): TemplateFolder | undefined => {
 
-    const pathParts = parentPath.split("/")
-    let currentFolder: TemplateFolder = templateData
-
     // Tree traversal to find required folder
-    for (const part of pathParts) {
-        if (part) {
-            const nextFolder = currentFolder.items.find(
-                (item) => "folderName" in item && item.folderName === part
-            )
-            if (!nextFolder) return 
-            currentFolder = nextFolder as TemplateFolder
-        }
-    }
+    let currentFolder = traveseFolder(parentPath,templateData)
+    if (!currentFolder) return
 
     const fileIndex = currentFolder.items.findIndex(
         (item) => "filename" in item &&
@@ -40,15 +30,9 @@ export const renameFile = (
     // TODO: structured clone caan be expensive if too much data
     const updateTemplateData = structuredClone(templateData)
 
-    let folderToModify: TemplateFolder = updateTemplateData
-
     // traverse again
-    for (const part of pathParts) {
-        const nextFolder = folderToModify.items.find(
-            (item) => "folderName" in item && item.folderName === part
-        );
-        folderToModify = nextFolder as TemplateFolder;
-    }
+    let folderToModify = traveseFolder(parentPath,updateTemplateData) 
+    if (!folderToModify) return
 
     const targetFile = folderToModify.items[fileIndex] as TemplateFile;
 
@@ -58,7 +42,7 @@ export const renameFile = (
         fileExtension: newExtension
     }
 
-    sortFileExplorer(currentFolder);
+    sortFileExplorer(folderToModify);
     return updateTemplateData
 
 }
@@ -70,18 +54,9 @@ export const renameFolder = (
     newFolderName: string
 ):TemplateFolder | undefined => {
 
-    const pathParts = parentPath.split("/");
-    let currentFolder = templateData;
 
-    for (const part of pathParts){
-        if(part){
-            const nextFolder = currentFolder.items.find(
-                (item) => "folderName" in item && item.folderName === part
-            )
-            if (!nextFolder) return
-            currentFolder = nextFolder as TemplateFolder
-        }
-    }
+    const currentFolder = traveseFolder(parentPath,templateData)
+    if (!currentFolder) return
     
     const folderIndex = currentFolder.items.findIndex(
         (item) => 
@@ -92,22 +67,18 @@ export const renameFolder = (
     if (folderIndex === -1) return
 
     const updateTemplateData = structuredClone(templateData)
-    let folderToModify: TemplateFolder = updateTemplateData
 
-    for (const part of pathParts) {
-        const nextFolder = folderToModify.items.find(
-            (item) => "folderName" in item && item.folderName === part
-        );
-        folderToModify = nextFolder as TemplateFolder;
-    }
-    
-    const targetFolder = folderToModify
+    let folderToModify = traveseFolder(parentPath,updateTemplateData)
+    if (!folderToModify) return
+
+    const targetFolder = folderToModify.items[folderIndex] as TemplateFolder
 
     folderToModify.items[folderIndex] = {
         ...targetFolder,
         folderName: newFolderName
     }
 
-    sortFileExplorer(currentFolder);
+    sortFileExplorer(folderToModify);
     return updateTemplateData
 }
+
