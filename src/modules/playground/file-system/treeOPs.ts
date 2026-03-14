@@ -91,9 +91,6 @@ export const deleteFile = (
     fileExtension: string
 ): TemplateFolder | undefined => {
 
-    let currentFolder = traveseFolder(parentPath, templateData)
-    if (!currentFolder) return
-
     const updatedTemplateData = structuredClone(templateData)
     let folderToModify = traveseFolder(parentPath, updatedTemplateData)
     if (!folderToModify) return
@@ -117,9 +114,6 @@ export const deleteFolder = (
     folderName: string,
 ): TemplateFolder | undefined => {
 
-    let currentFolder = traveseFolder(parentPath, templateData)
-    if (!currentFolder) return
-
     const updatedTemplateData = structuredClone(templateData)
     let folderToModify = traveseFolder(parentPath, updatedTemplateData)
     if (!folderToModify) return
@@ -129,7 +123,27 @@ export const deleteFolder = (
             !("folderName" in item) || item.folderName !== folderName
     );
 
-    sortFileExplorer(currentFolder)
+    sortFileExplorer(folderToModify)
     return updatedTemplateData
 
 }
+
+
+export const addFile = (
+    templateData: TemplateFolder,
+    parentPath: string,
+    newFile: TemplateFile
+): TemplateFolder | undefined => {
+    
+    const updatedTemplateData = structuredClone(templateData)
+    let folderToModify = traveseFolder(parentPath, updatedTemplateData)
+    if(!folderToModify) return 
+
+    // Add the new file to items[].
+    folderToModify.items.push(newFile);
+
+    sortFileExplorer(folderToModify)
+
+    return updatedTemplateData
+}
+

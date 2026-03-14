@@ -6,7 +6,7 @@ import { generateFileId } from "../lib"
 import { sortFileExplorer } from "../lib/sortJson"
 import type { RuntimeAdapter } from "@/modules/runtime/types"
 import { fileManager } from "../file-system/FileManager"
-import { deleteFile, deleteFolder, renameFile, renameFolder } from "../file-system/treeOPs"
+import { addFile, deleteFile, deleteFolder, renameFile, renameFolder } from "../file-system/treeOPs"
 
 
 
@@ -111,17 +111,13 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
     async handleAddFile(newFile, parentPath, writeFileSync, instance, saveTemplateData) {
 
-        // If the folder structure isn’t loaded yet → abort.
+        // If the folder structure isn't loaded yet → abort.
         const { templateData } = get()
         if (!templateData) return
 
         try {
 
-            const updatedTemplateData = structuredClone(templateData);
-            const pathParts = parentPath.split("/");
-            let currentFolder = updatedTemplateData; // refrence of deep copy of new object
-
-            const exists = currentFolder.items.some(
+            const exists = templateData.items.some(
                 item => "filename" in item &&
                     item.filename === newFile.filename &&
                     item.fileExtension === newFile.fileExtension
@@ -132,22 +128,10 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 return
             }
 
-            // Traverse Folder Path EG: src/components -> split it and traverse the array to reach target folder
-            for (const part of pathParts) {
-                if (part) {
-                    const nextFolder = currentFolder.items.find(
-                        (item) => "folderName" in item && item.folderName === part
-                    ) as TemplateFolder;
-                    if (nextFolder) currentFolder = nextFolder;
-                }
-            }
-
-            // Add the new file to items[].
-            currentFolder.items.push(newFile);
+            let updatedTemplateData = addFile(templateData,parentPath,newFile); // refrence of deep copy of new object
+            if (!updatedTemplateData) return
+            
             // Update state so sidebar/file tree shows the new file.
-            sortFileExplorer(currentFolder)
-
-            const previous = templateData
             set({ templateData: updatedTemplateData });
 
             try {
@@ -157,7 +141,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 toast.success(`Created file: ${newFile.filename}.${newFile.fileExtension}`);
             } catch (error) {
                 toast.error(`Error creating the file ${newFile.filename}.${newFile.fileExtension}`)
-                set({ templateData: previous });
+                set({ templateData: templateData });
                 throw error
             }
 
@@ -232,7 +216,6 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 set({ templateData: previous })
                 throw error
             }
-
 
 
             // Sync with web container
