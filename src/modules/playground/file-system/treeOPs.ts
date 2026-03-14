@@ -63,3 +63,51 @@ export const renameFile = (
 
 }
 
+export const renameFolder = (
+    templateData: TemplateFolder,
+    parentPath: string,
+    oldFolderName: string,
+    newFolderName: string
+):TemplateFolder | undefined => {
+
+    const pathParts = parentPath.split("/");
+    let currentFolder = templateData;
+
+    for (const part of pathParts){
+        if(part){
+            const nextFolder = currentFolder.items.find(
+                (item) => "folderName" in item && item.folderName === part
+            )
+            if (!nextFolder) return
+            currentFolder = nextFolder as TemplateFolder
+        }
+    }
+    
+    const folderIndex = currentFolder.items.findIndex(
+        (item) => 
+            "folderName" in item &&
+            item.folderName === oldFolderName
+    )
+
+    if (folderIndex === -1) return
+
+    const updateTemplateData = structuredClone(templateData)
+    let folderToModify: TemplateFolder = updateTemplateData
+
+    for (const part of pathParts) {
+        const nextFolder = folderToModify.items.find(
+            (item) => "folderName" in item && item.folderName === part
+        );
+        folderToModify = nextFolder as TemplateFolder;
+    }
+    
+    const targetFolder = folderToModify
+
+    folderToModify.items[folderIndex] = {
+        ...targetFolder,
+        folderName: newFolderName
+    }
+
+    sortFileExplorer(currentFolder);
+    return updateTemplateData
+}
