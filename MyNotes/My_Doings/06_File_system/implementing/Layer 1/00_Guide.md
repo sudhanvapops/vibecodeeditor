@@ -32,10 +32,10 @@ type FileRecord = {
 
 Example:
 
-"/src/index.ts" → {
-  path: "/src/index.ts",
-  content: "console.log('hi')",
-  isDirty: false
+"file id" → {
+    originalContnet: "console.log("Hello world)"
+    content: "console.log('hi')",
+    isDirty: false
 }
 
 That’s your entire filesystem.
@@ -49,12 +49,21 @@ Before implementation, define what your filesystem can do.
 
 Write this interface first:
     interface IFileSystem {
-    createFile(path: string, content?: string): void
-    readFile(path: string): string | undefined
-    updateFile(path: string, content: string): void
-    deleteFile(path: string): void
-    listFiles(): string[]
-    exists(path: string): boolean
+         subscribe(listener: Listener): () => void
+
+        // File LifeCycle
+        registerFile(fileId: string, content: string): void
+        unregisterFile(fileId: string): void
+        clear(): void
+
+        // Updates
+        updateFile(fileId: string, content: string): void
+        markSaved(fileId: string): void
+
+        // Reads
+        readFile(fileId: string | null): string
+        isDirty(fileId: string): boolean
+        getDirtyFiles(): string[]
     }
 
 First ask yourself:
@@ -62,6 +71,7 @@ First ask yourself:
     Do I need move?
     Do I need directories?
 Right now → NO.
+
 
 ### STEP 3 — Implement Basic CRUD
 
@@ -80,6 +90,7 @@ Rules:
 
 That’s it.
 Don’t add features.
+
 
 ### STEP 4 — Connect Editor To FileManager
 ### STEP 5 — Test The System Without Backend
