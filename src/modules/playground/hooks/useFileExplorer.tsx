@@ -107,7 +107,6 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
     },
 
 
-    // ! No Changes For Now
     // ! File Tree Related Functions
 
     async handleAddFile(newFile, parentPath, writeFileSync, instance, saveTemplateData) {
@@ -420,7 +419,6 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         }
     },
 
-    // ! Changed Functions
     // ! Content Related Function
 
     // Can be better
