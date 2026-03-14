@@ -147,3 +147,22 @@ export const addFile = (
     return updatedTemplateData
 }
 
+
+export const addFolder = (
+    templateData: TemplateFolder,
+    parentPath: string,
+    newFolder: TemplateFolder
+): TemplateFolder | undefined => {
+    
+    const updatedTemplateData = structuredClone(templateData)
+    let folderToModify = traveseFolder(parentPath, updatedTemplateData)
+    if(!folderToModify) return 
+
+    // Add the new file to items[].
+    folderToModify.items.push(newFolder);
+
+    sortFileExplorer(folderToModify)
+
+    return updatedTemplateData
+}
+

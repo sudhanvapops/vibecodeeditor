@@ -6,7 +6,7 @@ import { generateFileId } from "../lib"
 import { sortFileExplorer } from "../lib/sortJson"
 import type { RuntimeAdapter } from "@/modules/runtime/types"
 import { fileManager } from "../file-system/FileManager"
-import { addFile, deleteFile, deleteFolder, renameFile, renameFolder } from "../file-system/treeOPs"
+import { addFile, addFolder, deleteFile, deleteFolder, renameFile, renameFolder } from "../file-system/treeOPs"
 
 
 
@@ -172,13 +172,8 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
         try {
 
-            const updatedTemplateData = structuredClone(templateData)
-            const pathParts = parentPath.split("/");
-            let currentFolder = updatedTemplateData;
-
-
             // To check if Folder exists are not
-            const exists = currentFolder.items.some(
+            const exists = templateData.items.some(
                 item => "foldername" in item &&
                     item.foldername === newFolder.folderName
             )
@@ -188,23 +183,10 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 return
             }
 
+            const updatedTemplateData = addFolder(templateData,parentPath,newFolder)
+            if (!updatedTemplateData) return
 
-            for (const part of pathParts) {
-                if (part) {
-                    const nextFolder = currentFolder.items.find(
-                        (item) => "folderName" in item && item.folderName === part
-                    ) as TemplateFolder;
-                    if (!nextFolder) {
-                        throw new Error(`Folder not found: ${part}`)
-                    }
-                    currentFolder = nextFolder;
-                }
-            }
-
-            currentFolder.items.push(newFolder);
-            sortFileExplorer(currentFolder)
-
-            const previous = templateData
+            
             set({ templateData: updatedTemplateData });
 
             // This try catch is for if db fails rollBack
@@ -213,7 +195,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 await saveTemplateData(updatedTemplateData);
                 toast.success(`Created folder: ${newFolder.folderName}`);
             } catch (error) {
-                set({ templateData: previous })
+                set({ templateData: templateData})
                 throw error
             }
 
