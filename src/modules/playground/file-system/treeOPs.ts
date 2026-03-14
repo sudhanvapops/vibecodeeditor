@@ -47,6 +47,7 @@ export const renameFile = (
 
 }
 
+
 export const renameFolder = (
     templateData: TemplateFolder,
     parentPath: string,
@@ -82,6 +83,7 @@ export const renameFolder = (
     return updateTemplateData
 }
 
+
 export const deleteFile = (
     templateData: TemplateFolder,
     parentPath: string,
@@ -91,7 +93,7 @@ export const deleteFile = (
 
     let currentFolder = traveseFolder(parentPath, templateData)
     if (!currentFolder) return
-    
+
     const updatedTemplateData = structuredClone(templateData)
     let folderToModify = traveseFolder(parentPath, updatedTemplateData)
     if (!folderToModify) return
@@ -105,5 +107,29 @@ export const deleteFile = (
 
     sortFileExplorer(folderToModify)
     return updatedTemplateData
-    
+
+}
+
+
+export const deleteFolder = (
+    templateData: TemplateFolder,
+    parentPath: string,
+    folderName: string,
+): TemplateFolder | undefined => {
+
+    let currentFolder = traveseFolder(parentPath, templateData)
+    if (!currentFolder) return
+
+    const updatedTemplateData = structuredClone(templateData)
+    let folderToModify = traveseFolder(parentPath, updatedTemplateData)
+    if (!folderToModify) return
+
+    folderToModify.items = folderToModify.items.filter(
+        (item) =>
+            !("folderName" in item) || item.folderName !== folderName
+    );
+
+    sortFileExplorer(currentFolder)
+    return updatedTemplateData
+
 }

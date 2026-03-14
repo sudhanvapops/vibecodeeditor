@@ -6,7 +6,7 @@ import { generateFileId } from "../lib"
 import { sortFileExplorer } from "../lib/sortJson"
 import type { RuntimeAdapter } from "@/modules/runtime/types"
 import { fileManager } from "../file-system/FileManager"
-import { deleteFile, renameFile, renameFolder } from "../file-system/treeOPs"
+import { deleteFile, deleteFolder, renameFile, renameFolder } from "../file-system/treeOPs"
 
 
 
@@ -296,23 +296,9 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         if (!templateData) return;
 
         try {
-            const updatedTemplateData = structuredClone(templateData)
-            const pathParts = parentPath.split("/");
-            let currentFolder = updatedTemplateData;
-
-            for (const part of pathParts) {
-                if (part) {
-                    const nextFolder = currentFolder.items.find(
-                        (item) => "folderName" in item && item.folderName === part
-                    ) as TemplateFolder;
-                    if (nextFolder) currentFolder = nextFolder;
-                }
-            }
-
-            currentFolder.items = currentFolder.items.filter(
-                (item) =>
-                    !("folderName" in item) || item.folderName !== folder.folderName
-            );
+            
+            const updatedTemplateData = deleteFolder(templateData,parentPath,folder.folderName)
+            if (!updatedTemplateData) return
 
             // Close all files in the deleted folder recursively
             const closeFilesInFolder = (folder: TemplateFolder, currentPath: string = "") => {
@@ -331,7 +317,6 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
             closeFilesInFolder(folder, parentPath ? `${parentPath}/${folder.folderName}` : folder.folderName);
 
 
-            sortFileExplorer(currentFolder)
             set({ templateData: updatedTemplateData });
 
             // Use the passed saveTemplateData function
