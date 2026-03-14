@@ -6,7 +6,7 @@ import { generateFileId } from "../lib"
 import { sortFileExplorer } from "../lib/sortJson"
 import type { RuntimeAdapter } from "@/modules/runtime/types"
 import { fileManager } from "../file-system/FileManager"
-import { renameFile, renameFolder } from "../file-system/treeOPs"
+import { deleteFile, renameFile, renameFolder } from "../file-system/treeOPs"
 
 
 
@@ -254,25 +254,10 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         if (!templateData) return;
 
         try {
-            const updatedTemplateData = structuredClone(templateData)
-            const pathParts = parentPath.split("/");
-            let currentFolder = updatedTemplateData;
+           
+            const updatedTemplateData = deleteFile(templateData,parentPath,file.filename,file.fileExtension)
 
-            for (const part of pathParts) {
-                if (part) {
-                    const nextFolder = currentFolder.items.find(
-                        (item) => "folderName" in item && item.folderName === part
-                    ) as TemplateFolder;
-                    if (nextFolder) currentFolder = nextFolder;
-                }
-            }
-
-            currentFolder.items = currentFolder.items.filter(
-                (item) =>
-                    !("filename" in item) ||
-                    item.filename !== file.filename ||
-                    item.fileExtension !== file.fileExtension
-            );
+            if (!updatedTemplateData) return
 
             // Find and close the file if it's open
             // Use the same ID generation logic as in openFile
@@ -284,7 +269,6 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 get().closeFile(fileId);
             }
 
-            sortFileExplorer(currentFolder)
             set({ templateData: updatedTemplateData });
 
             // Use the passed saveTemplateData function
