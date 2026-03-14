@@ -1,6 +1,6 @@
 import { TemplateFile, TemplateFolder } from "../lib/pathToJson-util";
 import { sortFileExplorer } from "../lib/sortJson";
-import { traveseFolder } from "./utilities";
+import { traverseFolder } from "./utilities";
 
 
 // TODO: Duplicate name handle still not done
@@ -15,7 +15,7 @@ export const renameFile = (
 ): TemplateFolder | undefined => {
 
     // Tree traversal to find required folder
-    let currentFolder = traveseFolder(parentPath, templateData)
+    let currentFolder = traverseFolder(parentPath, templateData)
     if (!currentFolder) return
 
     const fileIndex = currentFolder.items.findIndex(
@@ -31,7 +31,7 @@ export const renameFile = (
     const updateTemplateData = structuredClone(templateData)
 
     // traverse again
-    let folderToModify = traveseFolder(parentPath, updateTemplateData)
+    let folderToModify = traverseFolder(parentPath, updateTemplateData)
     if (!folderToModify) return
 
     const targetFile = folderToModify.items[fileIndex] as TemplateFile;
@@ -56,7 +56,7 @@ export const renameFolder = (
 ): TemplateFolder | undefined => {
 
 
-    const currentFolder = traveseFolder(parentPath, templateData)
+    const currentFolder = traverseFolder(parentPath, templateData)
     if (!currentFolder) return
 
     const folderIndex = currentFolder.items.findIndex(
@@ -69,7 +69,7 @@ export const renameFolder = (
 
     const updateTemplateData = structuredClone(templateData)
 
-    let folderToModify = traveseFolder(parentPath, updateTemplateData)
+    let folderToModify = traverseFolder(parentPath, updateTemplateData)
     if (!folderToModify) return
 
     const targetFolder = folderToModify.items[folderIndex] as TemplateFolder
@@ -91,8 +91,12 @@ export const deleteFile = (
     fileExtension: string
 ): TemplateFolder | undefined => {
 
+    let currentFolder = traverseFolder(parentPath, templateData)
+    if (!currentFolder) return
+
     const updatedTemplateData = structuredClone(templateData)
-    let folderToModify = traveseFolder(parentPath, updatedTemplateData)
+
+    let folderToModify = traverseFolder(parentPath, updatedTemplateData)
     if (!folderToModify) return
 
     folderToModify.items = folderToModify.items.filter(
@@ -114,8 +118,12 @@ export const deleteFolder = (
     folderName: string,
 ): TemplateFolder | undefined => {
 
+    let currentFolder = traverseFolder(parentPath, templateData)
+    if (!currentFolder) return
+
     const updatedTemplateData = structuredClone(templateData)
-    let folderToModify = traveseFolder(parentPath, updatedTemplateData)
+
+    let folderToModify = traverseFolder(parentPath, updatedTemplateData)
     if (!folderToModify) return
 
     folderToModify.items = folderToModify.items.filter(
@@ -134,9 +142,12 @@ export const addFile = (
     parentPath: string,
     newFile: TemplateFile
 ): TemplateFolder | undefined => {
+
+    let currentFolder = traverseFolder(parentPath, templateData)
+    if (!currentFolder) return
     
     const updatedTemplateData = structuredClone(templateData)
-    let folderToModify = traveseFolder(parentPath, updatedTemplateData)
+    let folderToModify = traverseFolder(parentPath, updatedTemplateData)
     if(!folderToModify) return 
 
     // Add the new file to items[].
@@ -153,9 +164,12 @@ export const addFolder = (
     parentPath: string,
     newFolder: TemplateFolder
 ): TemplateFolder | undefined => {
+
+    let currentFolder = traverseFolder(parentPath, templateData)
+    if (!currentFolder) return
     
     const updatedTemplateData = structuredClone(templateData)
-    let folderToModify = traveseFolder(parentPath, updatedTemplateData)
+    let folderToModify = traverseFolder(parentPath, updatedTemplateData)
     if(!folderToModify) return 
 
     // Add the new file to items[].

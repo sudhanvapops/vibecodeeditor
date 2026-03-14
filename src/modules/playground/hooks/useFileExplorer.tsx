@@ -7,6 +7,7 @@ import { sortFileExplorer } from "../lib/sortJson"
 import type { RuntimeAdapter } from "@/modules/runtime/types"
 import { fileManager } from "../file-system/FileManager"
 import { addFile, addFolder, deleteFile, deleteFolder, renameFile, renameFolder } from "../file-system/treeOPs"
+import { traverseFolder } from "../file-system/utilities"
 
 
 
@@ -116,9 +117,12 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         if (!templateData) return
 
         try {
+            const folder = traverseFolder(parentPath, templateData)
+            if (!folder) return
 
-            const exists = templateData.items.some(
-                item => "filename" in item &&
+            const exists = folder.items.some(
+                item =>
+                    "filename" in item &&
                     item.filename === newFile.filename &&
                     item.fileExtension === newFile.fileExtension
             )
@@ -128,9 +132,9 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 return
             }
 
-            let updatedTemplateData = addFile(templateData,parentPath,newFile); // refrence of deep copy of new object
+            let updatedTemplateData = addFile(templateData, parentPath, newFile); // refrence of deep copy of new object
             if (!updatedTemplateData) return
-            
+
             // Update state so sidebar/file tree shows the new file.
             set({ templateData: updatedTemplateData });
 
@@ -172,10 +176,14 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
         try {
 
+            const folder = traverseFolder(parentPath, templateData)
+            if (!folder) return
+
             // To check if Folder exists are not
-            const exists = templateData.items.some(
-                item => "foldername" in item &&
-                    item.foldername === newFolder.folderName
+            const exists = folder.items.some(
+                item =>
+                    "folderName" in item &&
+                    item.folderName === newFolder.folderName
             )
 
             if (exists) {
@@ -183,10 +191,10 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 return
             }
 
-            const updatedTemplateData = addFolder(templateData,parentPath,newFolder)
+            const updatedTemplateData = addFolder(templateData, parentPath, newFolder)
             if (!updatedTemplateData) return
 
-            
+
             set({ templateData: updatedTemplateData });
 
             // This try catch is for if db fails rollBack
@@ -195,7 +203,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
                 await saveTemplateData(updatedTemplateData);
                 toast.success(`Created folder: ${newFolder.folderName}`);
             } catch (error) {
-                set({ templateData: templateData})
+                set({ templateData: templateData })
                 throw error
             }
 
@@ -219,8 +227,8 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         if (!templateData) return;
 
         try {
-           
-            const updatedTemplateData = deleteFile(templateData,parentPath,file.filename,file.fileExtension)
+
+            const updatedTemplateData = deleteFile(templateData, parentPath, file.filename, file.fileExtension)
 
             if (!updatedTemplateData) return
 
@@ -261,8 +269,8 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
         if (!templateData) return;
 
         try {
-            
-            const updatedTemplateData = deleteFolder(templateData,parentPath,folder.folderName)
+
+            const updatedTemplateData = deleteFolder(templateData, parentPath, folder.folderName)
             if (!updatedTemplateData) return
 
             // Close all files in the deleted folder recursively
@@ -384,7 +392,7 @@ export const useFileExplorer = create<FileExplorerState>((set, get) => ({
 
         try {
 
-            const updatedTemplateData = renameFolder(templateData,parentPath,folder.folderName,newFolderName)
+            const updatedTemplateData = renameFolder(templateData, parentPath, folder.folderName, newFolderName)
 
             if (!updatedTemplateData) return
 

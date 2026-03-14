@@ -1,6 +1,6 @@
 import { TemplateFolder } from "../lib/pathToJson-util"
 
-export const traveseFolder = (parentPath: string, templateData: TemplateFolder): TemplateFolder | undefined => {
+export const traverseFolder = (parentPath: string, templateData: TemplateFolder): TemplateFolder | undefined => {
 
     const pathParts = parentPath.split("/")
     let currentFolder: TemplateFolder = templateData
